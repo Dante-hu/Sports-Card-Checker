@@ -1,0 +1,16 @@
+# Python/flask
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.env
+
+
+#Node / Vite 
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
+# Docker / Redis
