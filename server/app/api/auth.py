@@ -1,32 +1,13 @@
-# server/app/api/auth.py
-from datetime import datetime
-
-
+from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, DateTime, Integer, String
 from werkzeug.security import check_password_hash, generate_password_hash
-
-
-db = SQLAlchemy()
-
-
-# Models
-class User(db.Model):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    password_hash = Column(String(255), nullable=False)
-    created_at = Column(
-        DateTime, default=datetime.now(datetime.timezone.utc), nullable=False
-    )
-
+from ..models import User 
+from ..extensions import db 
 
 # Blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
-
-# Schemas (manual for now, or use marshmallow later)
+# Schemas
 def _validate_signup(data):
     email = data.get("email")
     password = data.get("password")
@@ -34,10 +15,8 @@ def _validate_signup(data):
         return None, {"error": "email and password required"}, 400
     return {"email": email.strip().lower(), "password": password}, None, None
 
-
 def _validate_login(data):
-    return _validate_signup(data)  # same required fields
-
+    return _validate_signup(data)  
 
 # Routes
 @auth_bp.post("/signup")
@@ -58,7 +37,6 @@ def signup():
     db.session.commit()
     return jsonify({"id": user.id, "email": user.email}), 201
 
-
 @auth_bp.post("/login")
 def login():
     data, err, code = _validate_login(request.get_json())
@@ -66,11 +44,7 @@ def login():
         return jsonify(err), code
 
     user = User.query.filter_by(email=data["email"]).first()
-    # error here
-    if (
-        not user
-        or not check_password_hash(user.password_hash, data["password"])
-    ):
+    if not user or not check_password_hash(user.password_hash, data["password"]):
         return jsonify({"error": "Invalid email or password"}), 401
 
     return jsonify({"message": "Login successful"}), 200
