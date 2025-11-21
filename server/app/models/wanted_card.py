@@ -1,5 +1,4 @@
-from datetime import datetime
-from sqlalchemy import Column, DateTime, Integer, String, Numeric, Text, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, Numeric, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from ..extensions import db
 import datetime
@@ -15,9 +14,11 @@ class WantedCard(db.Model):
     priority = Column(Integer, nullable=True)  # 1 = highest
     max_price_willing_to_pay = Column(Numeric(10, 2), nullable=True)
     notes = Column(Text, nullable=True)
-    date_added = Column(DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
+    date_added = Column(
+        DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False
+    )
 
-    #relationships 
+    # relationships
     user = relationship("User", back_populates="wanted_cards")
     card = relationship("Card", back_populates="wanted_entries")
 

@@ -1,4 +1,3 @@
-from datetime import datetime
 from sqlalchemy import Column, DateTime, Integer, String, Numeric, ForeignKey
 from sqlalchemy.orm import relationship
 from ..extensions import db
@@ -10,14 +9,18 @@ class PriceSnapshot(db.Model):
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey("cards.id"), nullable=False, index=True)
-    source_user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)  # who requested the check
+    source_user_id = Column(
+        Integer, ForeignKey("users.id"), nullable=True, index=True
+    )  # who requested the check
 
     source = Column(String(30), nullable=False, default="ebay")  # ebay, tcgplayer, etc.
     median_price = Column(Numeric(10, 2), nullable=False)
     high_price = Column(Numeric(10, 2), nullable=True)
     low_price = Column(Numeric(10, 2), nullable=True)
     currency = Column(String(3), nullable=False, default="USD")
-    recorded_at = Column(DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False)
+    recorded_at = Column(
+        DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False
+    )
 
     # ----- relationships -----
     card = relationship("Card", back_populates="price_history")

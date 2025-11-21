@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
-from ..models import User 
-from ..extensions import db 
+from ..models import User
+from ..extensions import db
 
 # Blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
+
 
 # Schemas
 def _validate_signup(data):
@@ -15,8 +15,10 @@ def _validate_signup(data):
         return None, {"error": "email and password required"}, 400
     return {"email": email.strip().lower(), "password": password}, None, None
 
+
 def _validate_login(data):
-    return _validate_signup(data)  
+    return _validate_signup(data)
+
 
 # Routes
 @auth_bp.post("/signup")
@@ -36,6 +38,7 @@ def signup():
     db.session.add(user)
     db.session.commit()
     return jsonify({"id": user.id, "email": user.email}), 201
+
 
 @auth_bp.post("/login")
 def login():
