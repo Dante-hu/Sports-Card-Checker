@@ -2,6 +2,7 @@ from flask import Flask
 from .extensions import db
 from .models import *  # registers all model classes
 from .api.auth import auth_bp
+from .api.cards import cards_bp
 
 
 def create_app():
@@ -10,8 +11,11 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+
     app.register_blueprint(auth_bp)
+    app.register_blueprint(cards_bp)
 
     with app.app_context():
         db.create_all()  # create tables
+
     return app
