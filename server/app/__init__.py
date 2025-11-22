@@ -5,17 +5,17 @@ from .api.auth import auth_bp
 from .api.cards import cards_bp
 
 
-
 def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(cards_bp)
 
-
     with app.app_context():
         db.create_all()  # create tables
+
     return app

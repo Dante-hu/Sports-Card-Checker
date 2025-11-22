@@ -23,6 +23,36 @@ def list_cards():
         for c in cards
     ])
 
+
+@cards_bp.post("/sample")
+def create_sample_card():
+    """Create one hard-coded sample card so we can see data show up."""
+    existing = Card.query.filter_by(
+        sport="Hockey",
+        year=2023,
+        brand="Upper Deck",
+        set_name="Series 1",
+        card_number="101",
+    ).first()
+
+    if existing:
+        return jsonify({"message": "Sample card already exists", "id": existing.id})
+
+    card = Card(
+        sport="Hockey",
+        year=2023,
+        brand="Upper Deck",
+        set_name="Series 1",
+        card_number="101",
+        player_name="Sample Player",
+        team="Sample Team",
+        image_url=None,
+    )
+    db.session.add(card)
+    db.session.commit()
+    return jsonify({"message": "Sample card created", "id": card.id})
+
+
 @cards_bp.post("/")
 def create_card():
     """Create a real card from JSON data."""
@@ -45,7 +75,7 @@ def create_card():
             400,
         )
 
-    #creates the Card object
+    # Create the Card object
     card = Card(
         sport=data["sport"],
         year=int(data["year"]),
@@ -54,7 +84,7 @@ def create_card():
         card_number=data["card_number"],
         player_name=data["player_name"],
         team=data["team"],
-        image_url=data.get("image_url"),  # optional
+        image_url=data.get("image_url"),
     )
 
     db.session.add(card)
@@ -75,5 +105,3 @@ def create_card():
         ),
         201,
     )
-
-
