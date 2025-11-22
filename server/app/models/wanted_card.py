@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, Numeric, Text, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from ..extensions import db
 import datetime
@@ -8,19 +8,34 @@ class WantedCard(db.Model):
     __tablename__ = "wanted_cards"
 
     id = Column(Integer, primary_key=True)
+
+    # Foreign keys
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     card_id = Column(Integer, ForeignKey("cards.id"), nullable=False, index=True)
 
-    priority = Column(Integer, nullable=True)  # 1 = highest
-    max_price_willing_to_pay = Column(Numeric(10, 2), nullable=True)
+    # Optional notes
     notes = Column(Text, nullable=True)
+
+    # Timestamp
     date_added = Column(
-        DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False
+        DateTime,
+        default=datetime.datetime.now(datetime.timezone.utc),
+        nullable=False,
     )
 
-    # relationships
+    # Relationships
     user = relationship("User", back_populates="wanted_cards")
     card = relationship("Card", back_populates="wanted_entries")
 
     def __repr__(self):
-        return f"<WantedCard {self.card} by {self.user.email}>"
+        user_email = getattr(self.user, "email", "unknown user")
+        return f"<WantedCard card_id={self.card_id} user={user_email}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "card_id": self.card_id,
+            "notes": self.notes,
+            "date_added": self.date_added.isoformat() if self.date_added else None,
+        }
