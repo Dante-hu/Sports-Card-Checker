@@ -4,6 +4,7 @@ from .models import *  # registers all model classes
 from .api.auth import auth_bp
 from .api.cards import cards_bp
 from .api.sets import sets_bp
+from .api.wanted_cards import wanted_cards_bp
 
 
 def create_app():
@@ -16,6 +17,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(cards_bp)
     app.register_blueprint(sets_bp)
+    app.register_blueprint(wanted_cards_bp)
 
     with app.app_context():
         db.create_all()
