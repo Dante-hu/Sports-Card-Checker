@@ -62,6 +62,7 @@ def get_cards_for_set(set_id):
 
     return jsonify(result), 200
 
+
 @sets_bp.get("/<int:set_id>")
 def get_set(set_id):
     s = Set.query.get(set_id)
@@ -77,4 +78,3 @@ def get_set(set_id):
             "set_name": s.set_name,
         }
     ), 200
-
