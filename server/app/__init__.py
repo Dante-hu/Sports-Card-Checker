@@ -3,6 +3,7 @@ from .extensions import db
 from .models import *  # registers all model classes
 from .api.auth import auth_bp
 from .api.cards import cards_bp
+from .api.sets import sets_bp
 
 
 def create_app():
@@ -14,8 +15,9 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(cards_bp)
+    app.register_blueprint(sets_bp)
 
     with app.app_context():
-        db.create_all()  # create tables
+        db.create_all()
 
     return app
