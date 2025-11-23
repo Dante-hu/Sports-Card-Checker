@@ -8,21 +8,50 @@ cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 @cards_bp.get("/")
 def list_cards():
-    cards = Card.query.all()
-    return jsonify([
-        {
-            "id": c.id,
-            "sport": c.sport,
-            "year": c.year,
-            "brand": c.brand,
-            "set_name": c.set_name,
-            "card_number": c.card_number,
-            "player_name": c.player_name,
-            "team": c.team,
-            "image_url": c.image_url,
-        }
-        for c in cards
-    ])
+    # Start with base query
+    query = Card.query
+
+    # Read filters from query string
+    sport = request.args.get("sport")
+    year = request.args.get("year", type=int)
+    brand = request.args.get("brand")
+    set_name = request.args.get("set_name")
+    player_name = request.args.get("player_name")
+
+    # Apply filters if present
+    if sport:
+        query = query.filter(Card.sport.ilike(f"%{sport}%"))
+
+    if year is not None:
+        query = query.filter(Card.year == year)
+
+    if brand:
+        query = query.filter(Card.brand.ilike(f"%{brand}%"))
+
+    if set_name:
+        query = query.filter(Card.set_name.ilike(f"%{set_name}%"))
+
+    if player_name:
+        query = query.filter(Card.player_name.ilike(f"%{player_name}%"))
+
+    cards = query.all()
+
+    return jsonify(
+        [
+            {
+                "id": c.id,
+                "sport": c.sport,
+                "year": c.year,
+                "brand": c.brand,
+                "set_name": c.set_name,
+                "card_number": c.card_number,
+                "player_name": c.player_name,
+                "team": c.team,
+                "image_url": c.image_url,
+            }
+            for c in cards
+        ]
+    )
 
 
 @cards_bp.post("/")
@@ -107,8 +136,6 @@ def delete_card(card_id):
 @cards_bp.get("/<int:card_id>")
 def get_card(card_id):
     """Return details for a single card by its ID."""
-    from app.models.card import Card  # remove this line if Card is already imported at the top
-
     card = Card.query.get(card_id)
     if not card:
         return jsonify({"error": f"Card with id {card_id} not found"}), 404
