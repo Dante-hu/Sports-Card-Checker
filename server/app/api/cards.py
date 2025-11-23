@@ -23,19 +23,9 @@ def serialize_card(card: Card) -> dict:
 
 @cards_bp.get("/")
 def list_cards():
-    """
-    List cards, with optional filters:
-
-    /api/cards/
-    /api/cards/?player=Bedard
-    /api/cards/?team=Leafs
-    /api/cards/?sport=Hockey&year=2023
-    /api/cards/?brand=Upper%20Deck
-    /api/cards/?set=Series%201
-    /api/cards/?q=Bedard   (search in player/set/team/brand)
-    """
     query = Card.query
 
+    # ----- filters -----
     sport = request.args.get("sport")
     year = request.args.get("year", type=int)
     brand = request.args.get("brand")
@@ -67,8 +57,31 @@ def list_cards():
             )
         )
 
-    cards = query.all()
-    return jsonify([serialize_card(c) for c in cards])
+    # ----- pagination -----
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=20, type=int)
+
+    # safety limits
+    if page < 1:
+        page = 1
+    if per_page < 1:
+        per_page = 1
+    if per_page > 100:
+        per_page = 100
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    items = [serialize_card(c) for c in pagination.items]
+
+    return jsonify(
+        {
+            "items": items,
+            "page": page,
+            "per_page": per_page,
+            "total": pagination.total,
+            "pages": pagination.pages,
+        }
+    )
 
 
 @cards_bp.post("/sample")
