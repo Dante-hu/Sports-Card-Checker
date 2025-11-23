@@ -1,7 +1,8 @@
 from datetime import date
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from ..extensions import db
-from ..models import OwnedCard, User, Card
+from ..models import OwnedCard, Card
+from .auth import login_required
 
 owned_cards_bp = Blueprint(
     "owned_cards",
@@ -45,57 +46,54 @@ def owned_card_to_dict(owned: OwnedCard) -> dict:
 
 
 @owned_cards_bp.get("/")
+@login_required
 def list_owned_cards():
     """
-    List owned cards.
-
-    Optional query params:
-      ?owner_id=1  -> only that user's cards
+    List owned cards for the logged-in user only.
     """
-    owner_id = request.args.get("owner_id", type=int)
-
-    query = OwnedCard.query
-    if owner_id is not None:
-        query = query.filter_by(owner_id=owner_id)
-
-    owned_cards = query.all()
+    user = g.current_user
+    owned_cards = OwnedCard.query.filter_by(owner_id=user.id).all()
     return jsonify([owned_card_to_dict(o) for o in owned_cards]), 200
 
 
 @owned_cards_bp.get("/<int:owned_id>")
+@login_required
 def get_owned_card(owned_id: int):
     """
-    Get a single owned card by its id.
+    Get a single owned card by its id, only if it belongs to the logged-in user.
     """
+    user = g.current_user
     owned = OwnedCard.query.get_or_404(owned_id)
+
+    if owned.owner_id != user.id:
+        # pretend it doesn't exist if it's someone else's
+        return jsonify({"error": "owned card not found"}), 404
+
     return jsonify(owned_card_to_dict(owned)), 200
 
 
 @owned_cards_bp.post("/")
+@login_required
 def create_owned_card():
     """
-    Create or update an owned card.
+    Create or update an owned card for the logged-in user.
 
     Behaviour:
-    - If no row exists for (owner_id, card_id) -> create new row.
+    - If no row exists for (owner_id = current user, card_id) -> create new row.
     - If rows already exist:
         * Merge ALL duplicates into the first row
         * Add the new quantity onto that row
         * Delete the extra duplicate rows
     """
+    user = g.current_user
     data = request.get_json() or {}
 
-    owner_id = data.get("owner_id")
     card_id = data.get("card_id")
 
-    if not owner_id or not card_id:
-        return jsonify({"error": "owner_id and card_id are required"}), 400
+    if not card_id:
+        return jsonify({"error": "card_id is required"}), 400
 
-    owner = User.query.get(owner_id)
     card = Card.query.get(card_id)
-
-    if owner is None:
-        return jsonify({"error": f"owner_id {owner_id} not found"}), 404
     if card is None:
         return jsonify({"error": f"card_id {card_id} not found"}), 404
 
@@ -104,9 +102,17 @@ def create_owned_card():
     if quantity is None:
         quantity = 1
 
-    # 🔍 Get ALL existing owned cards for this owner + card
+    try:
+        quantity = int(quantity)
+    except (TypeError, ValueError):
+        return jsonify({"error": "quantity must be an integer"}), 400
+
+    if quantity <= 0:
+        return jsonify({"error": "quantity must be positive"}), 400
+
+    # 🔍 Get ALL existing owned cards for this user + card
     existing_rows = (
-        OwnedCard.query.filter_by(owner_id=owner_id, card_id=card_id)
+        OwnedCard.query.filter_by(owner_id=user.id, card_id=card_id)
         .order_by(OwnedCard.id)
         .all()
     )
@@ -124,7 +130,6 @@ def create_owned_card():
         base.quantity += quantity
 
         # Optional: update some fields from the incoming data
-        # e.g., if you want the latest condition/notes to be saved:
         if "condition" in data:
             base.condition = data["condition"]
         if "grade" in data:
@@ -162,7 +167,7 @@ def create_owned_card():
             return jsonify({"error": "acquired_date must be YYYY-MM-DD"}), 400
 
     owned = OwnedCard(
-        owner_id=owner_id,
+        owner_id=user.id,
         card_id=card_id,
         quantity=quantity,
         condition=condition,
@@ -180,34 +185,92 @@ def create_owned_card():
 
 
 @owned_cards_bp.delete("/<int:owned_id>")
+@login_required
 def delete_owned_card(owned_id: int):
+    user = g.current_user
+
     owned = OwnedCard.query.get_or_404(owned_id)
+    if owned.owner_id != user.id:
+        return jsonify({"error": "owned card not found"}), 404
 
     owner_id = owned.owner_id
     card_id = owned.card_id
 
-    # Get ALL rows for this owner + card, ordered by id
     rows = (
         OwnedCard.query.filter_by(owner_id=owner_id, card_id=card_id)
         .order_by(OwnedCard.id)
         .all()
     )
 
-    # Use the first row as the main one
+    if not rows:
+        return jsonify({"error": "owned card not found"}), 404
+
     base = rows[0]
 
-    # Merge duplicates into base
     for dup in rows[1:]:
         base.quantity += dup.quantity
         db.session.delete(dup)
 
-    # Now remove ONE copy
     base.quantity -= 1
 
     if base.quantity <= 0:
-        # No copies left → delete completely
         db.session.delete(base)
 
     db.session.commit()
 
     return jsonify({"message": "One copy removed."}), 200
+
+
+@owned_cards_bp.post("/by-name")
+@login_required
+def add_owned_card_by_name():
+    user = g.current_user
+    data = request.get_json() or {}
+
+    player_name = data.get("player_name")
+    year = data.get("year")
+    brand = data.get("brand")
+
+    if not player_name or not year or not brand:
+        return jsonify({
+            "error": "player_name, year, and brand are required"
+        }), 400
+
+    # Find the exact card
+    card = Card.query.filter_by(
+        player_name=player_name,
+        year=year,
+        brand=brand
+    ).first()
+
+    if not card:
+        return jsonify({
+            "error": f"No card found for {year} {brand} {player_name}"
+        }), 404
+
+    quantity = int(data.get("quantity", 1))
+    condition = data.get("condition", "Mint")
+
+    # Check if user already owns it
+    existing = OwnedCard.query.filter_by(
+        owner_id=user.id,
+        card_id=card.id,
+        condition=condition
+    ).first()
+
+    if existing:
+        existing.quantity += quantity
+        db.session.commit()
+        return jsonify(owned_card_to_dict(existing)), 200
+
+    # Otherwise create new entry
+    owned = OwnedCard(
+        owner_id=user.id,
+        card_id=card.id,
+        quantity=quantity,
+        condition=condition
+    )
+
+    db.session.add(owned)
+    db.session.commit()
+    return jsonify(owned_card_to_dict(owned)), 201
