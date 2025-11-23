@@ -36,6 +36,7 @@ class WantedCard(db.Model):
             "id": self.id,
             "user_id": self.user_id,
             "card_id": self.card_id,
+            "player_name": self.card.player_name if self.card else None,
             "notes": self.notes,
             "date_added": self.date_added.isoformat() if self.date_added else None,
         }
