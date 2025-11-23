@@ -102,3 +102,27 @@ def delete_card(card_id):
     db.session.delete(card)
     db.session.commit()
     return jsonify({"message": "Card deleted", "id": card_id})
+
+
+@cards_bp.get("/<int:card_id>")
+def get_card(card_id):
+    """Return details for a single card by its ID."""
+    from app.models.card import Card  # remove this line if Card is already imported at the top
+
+    card = Card.query.get(card_id)
+    if not card:
+        return jsonify({"error": f"Card with id {card_id} not found"}), 404
+
+    return jsonify(
+        {
+            "id": card.id,
+            "sport": card.sport,
+            "year": card.year,
+            "brand": card.brand,
+            "set_name": card.set_name,
+            "card_number": card.card_number,
+            "player_name": card.player_name,
+            "team": card.team,
+            "image_url": card.image_url,
+        }
+    ), 200
