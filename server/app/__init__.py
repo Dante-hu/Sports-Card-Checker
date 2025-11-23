@@ -8,7 +8,6 @@ from .api.wanted_cards import wanted_cards_bp
 from .api.owned_cards import owned_cards_bp
 
 
-
 def create_app():
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -21,7 +20,6 @@ def create_app():
     app.register_blueprint(sets_bp)
     app.register_blueprint(wanted_cards_bp)
     app.register_blueprint(owned_cards_bp)
-
 
     with app.app_context():
         db.create_all()
