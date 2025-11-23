@@ -22,13 +22,19 @@ class Card(db.Model):
 
     # relationships
     owned_instances = db.relationship(
-        "OwnedCard", back_populates="card", cascade="all, delete-orphan"
+        "OwnedCard",
+        back_populates="card",
+        cascade="all, delete-orphan",
     )
     wanted_entries = db.relationship(
-        "WantedCard", back_populates="card", cascade="all, delete-orphan"
+        "WantedCard",
+        back_populates="card",
+        cascade="all, delete-orphan",
     )
     price_history = db.relationship(
-        "PriceSnapshot", back_populates="card", cascade="all, delete-orphan"
+        "PriceSnapshot",
+        back_populates="card",
+        cascade="all, delete-orphan",
     )
 
     def __repr__(self):

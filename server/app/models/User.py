@@ -12,18 +12,26 @@ class User(db.Model):
     username = Column(String(80), unique=True, nullable=True)
     password_hash = Column(String(128), nullable=False)
     created_at = Column(
-        DateTime, default=datetime.datetime.now(datetime.timezone.utc), nullable=False
+        DateTime,
+        default=datetime.datetime.now(datetime.timezone.utc),
+        nullable=False,
     )
 
     # relationships
     owned_cards = db.relationship(
-        "OwnedCard", back_populates="owner", cascade="all, delete-orphan"
+        "OwnedCard",
+        back_populates="owner",
+        cascade="all, delete-orphan",
     )
     wanted_cards = db.relationship(
-        "WantedCard", back_populates="user", cascade="all, delete-orphan"
+        "WantedCard",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
     price_snapshots = db.relationship(
-        "PriceSnapshot", back_populates="source_user", cascade="all, delete-orphan"
+        "PriceSnapshot",
+        back_populates="source_user",
+        cascade="all, delete-orphan",
     )
 
     # helper functions
@@ -33,5 +41,5 @@ class User(db.Model):
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<User {self.email}>"
