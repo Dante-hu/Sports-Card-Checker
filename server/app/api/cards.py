@@ -8,10 +8,17 @@ cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 def serialize_card(card: Card) -> dict:
     """Helper to keep JSON output consistent."""
+    raw_year = card.year
+    # If year is a string of digits like "2023", return it as int 2023
+    if isinstance(raw_year, str) and raw_year.isdigit():
+        year_value = int(raw_year)
+    else:
+        # For things like "2024-25" or None, just return as-is
+        year_value = raw_year
     return {
         "id": card.id,
         "sport": card.sport,
-        "year": card.year,
+        "year": year_value,
         "brand": card.brand,
         "set_name": card.set_name,
         "card_number": card.card_number,

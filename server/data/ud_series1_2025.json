@@ -1,0 +1,1982 @@
+[
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 1,
+    "player_name": "Mason McTavish",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 2,
+    "player_name": "Leo Carlsson",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 3,
+    "player_name": "Pavel Mintyukov",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 4,
+    "player_name": "Radko Gudas",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 5,
+    "player_name": "John Gibson",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 6,
+    "player_name": "Jacob Trouba",
+    "team": "Anaheim Ducks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 7,
+    "player_name": "David Pastrnak",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 8,
+    "player_name": "Elias Lindholm",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 9,
+    "player_name": "Joonas Korpisalo",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 10,
+    "player_name": "John Beecher",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 11,
+    "player_name": "Mark Kastelic",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 12,
+    "player_name": "Nikita Zadorov",
+    "team": "Boston Bruins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 13,
+    "player_name": "JJ Peterka",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 14,
+    "player_name": "Rasmus Dahlin",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 15,
+    "player_name": "Mattias Samuelsson",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 16,
+    "player_name": "Sam Lafferty",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 17,
+    "player_name": "Peyton Krebs",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 18,
+    "player_name": "Jiri Kulich",
+    "team": "Buffalo Sabres",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 19,
+    "player_name": "Nazem Kadri",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 20,
+    "player_name": "Martin Pospisil",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 21,
+    "player_name": "Matt Coronato",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 22,
+    "player_name": "Mikael Backlund",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 23,
+    "player_name": "Rasmus Andersson",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 24,
+    "player_name": "Daniil Miromanov",
+    "team": "Calgary Flames",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 25,
+    "player_name": "Jackson Blake",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 26,
+    "player_name": "Shayne Gostisbehere",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 27,
+    "player_name": "Jesperi Kotkaniemi",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 28,
+    "player_name": "Jordan Staal",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 29,
+    "player_name": "Jalen Chatfield",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 30,
+    "player_name": "Seth Jarvis",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 31,
+    "player_name": "Pyotr Kochetkov",
+    "team": "Carolina Hurricanes",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 32,
+    "player_name": "Tyler Bertuzzi",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 33,
+    "player_name": "Jason Dickinson",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 34,
+    "player_name": "Lukas Reichel",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 35,
+    "player_name": "Frank Nazar",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 36,
+    "player_name": "Connor Murphy",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 37,
+    "player_name": "Ilya Mikheyev",
+    "team": "Chicago Blackhawks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 38,
+    "player_name": "Devon Toews",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 39,
+    "player_name": "Mackenzie Blackwood",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 40,
+    "player_name": "Logan O\u2019Connor",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 41,
+    "player_name": "Parker Kelly",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 42,
+    "player_name": "Nathan MacKinnon",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 43,
+    "player_name": "Josh Manson",
+    "team": "Colorado Avalanche",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 44,
+    "player_name": "Zach Werenski",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 45,
+    "player_name": "Sean Monahan",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 46,
+    "player_name": "Erik Gudbranson",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 47,
+    "player_name": "Cole Sillinger",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 48,
+    "player_name": "Kent Johnson",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 49,
+    "player_name": "Yegor Chinakhov",
+    "team": "Columbus Blue Jackets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 50,
+    "player_name": "Matt Dumba",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 51,
+    "player_name": "Tyler Seguin",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 52,
+    "player_name": "Ilya Lyubushkin",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 53,
+    "player_name": "Jason Robertson",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 54,
+    "player_name": "Roope Hintz",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 55,
+    "player_name": "Miro Heiskanen",
+    "team": "Dallas Stars",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 56,
+    "player_name": "Moritz Seider",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 57,
+    "player_name": "Cam Talbot",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 58,
+    "player_name": "Ben Chiarot",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 59,
+    "player_name": "Michael Rasmussen",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 60,
+    "player_name": "Vladimir Tarasenko",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 61,
+    "player_name": "Andrew Copp",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 62,
+    "player_name": "Dylan Larkin",
+    "team": "Detroit Red Wings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 63,
+    "player_name": "Connor McDavid",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 64,
+    "player_name": "Darnell Nurse",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 65,
+    "player_name": "Adam Henrique",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 66,
+    "player_name": "Zach Hyman",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 67,
+    "player_name": "Stuart Skinner",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 68,
+    "player_name": "Mattias Ekholm",
+    "team": "Edmonton Oilers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 69,
+    "player_name": "Evan Rodrigues",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 70,
+    "player_name": "Eetu Luostarinen",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 71,
+    "player_name": "Gustav Forsling",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 72,
+    "player_name": "Matthew Tkachuk",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 73,
+    "player_name": "Dmitry Kulikov",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 74,
+    "player_name": "Sergei Bobrovsky",
+    "team": "Florida Panthers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 75,
+    "player_name": "Joel Edmundson",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 76,
+    "player_name": "Alex Turcotte",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 77,
+    "player_name": "Anze Kopitar",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 78,
+    "player_name": "Quinton Byfield",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 79,
+    "player_name": "Darcy Kuemper",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 80,
+    "player_name": "Mikey Anderson",
+    "team": "Los Angeles Kings",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 81,
+    "player_name": "Matt Boldy",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 82,
+    "player_name": "Jacob Middleton",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 83,
+    "player_name": "Jared Spurgeon",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 84,
+    "player_name": "Marcus Foligno",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 85,
+    "player_name": "Yakov Trenin",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 86,
+    "player_name": "Mats Zuccarello",
+    "team": "Minnesota Wild",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 87,
+    "player_name": "Patrik Laine",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 88,
+    "player_name": "Mike Matheson",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 89,
+    "player_name": "Brendan Gallagher",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 90,
+    "player_name": "Nick Suzuki",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 91,
+    "player_name": "Alexandre Carrier",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 92,
+    "player_name": "Josh Anderson",
+    "team": "Montreal Canadiens",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 93,
+    "player_name": "Jeremy Lauzon",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 94,
+    "player_name": "Colton Sissons",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 95,
+    "player_name": "Steven Stamkos",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 96,
+    "player_name": "Filip Forsberg",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 97,
+    "player_name": "Michael McCaron",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 98,
+    "player_name": "Brady Skjei",
+    "team": "Nashville Predators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 99,
+    "player_name": "Stefan Noesen",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 100,
+    "player_name": "Brenden Dillon",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 101,
+    "player_name": "Jacob Markstrom",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 102,
+    "player_name": "Paul Cotter",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 103,
+    "player_name": "Dawson Mercer",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 104,
+    "player_name": "Nico Hischier",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 105,
+    "player_name": "Brett Pesce",
+    "team": "New Jersey Devils",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 106,
+    "player_name": "Jean-Gabriel Pageau",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 107,
+    "player_name": "Casey Cizikas",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 108,
+    "player_name": "Semyon Varlamov",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 109,
+    "player_name": "Bo Horvat",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 110,
+    "player_name": "Adam Pelech",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 111,
+    "player_name": "Pierre Engvall",
+    "team": "New York Islanders",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 112,
+    "player_name": "Artemi Panarin",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 113,
+    "player_name": "Sam Carrick",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 114,
+    "player_name": "Jonny Brodzinski",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 115,
+    "player_name": "Adam Fox",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 116,
+    "player_name": "Braden Schneider",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 117,
+    "player_name": "Vincent Trocheck",
+    "team": "New York Rangers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 118,
+    "player_name": "Linus Ullmark",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 119,
+    "player_name": "Thomas Chabot",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 120,
+    "player_name": "Artem Zub",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 121,
+    "player_name": "Brady Tkachuk",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 122,
+    "player_name": "Nick Jensen",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 123,
+    "player_name": "Michael Amadio",
+    "team": "Ottawa Senators",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 124,
+    "player_name": "Jamie Drysdale",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 125,
+    "player_name": "Ryan Poehling",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 126,
+    "player_name": "Sean Couturier",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 127,
+    "player_name": "Travis Konecny",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 128,
+    "player_name": "Matvei Michkov",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 129,
+    "player_name": "Bobby Brink",
+    "team": "Philadelphia Flyers",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 130,
+    "player_name": "Blake Lizotte",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 131,
+    "player_name": "Evgeni Malkin",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 132,
+    "player_name": "Bryan Rust",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 133,
+    "player_name": "Alex Nedeljkovic",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 134,
+    "player_name": "Kris Letang",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 135,
+    "player_name": "Rickard Rakell",
+    "team": "Pittsburgh Penguins",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 136,
+    "player_name": "Macklin Celebrini",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 137,
+    "player_name": "Yaroslav Askarov",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 138,
+    "player_name": "Barclay Goodrow",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 139,
+    "player_name": "Henry Thrun",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 140,
+    "player_name": "Tyler Toffoli",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 141,
+    "player_name": "Alexander Wennberg",
+    "team": "San Jose Sharks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 142,
+    "player_name": "Jamie Oleksiak",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 143,
+    "player_name": "Andre Burakovsky",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 144,
+    "player_name": "Shane Wright",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 145,
+    "player_name": "Matty Beniers",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 146,
+    "player_name": "Chandler Stephenson",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 147,
+    "player_name": "Adam Larsson",
+    "team": "Seattle Kraken",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 148,
+    "player_name": "Robert Thomas",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 149,
+    "player_name": "Justin Faulk",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 150,
+    "player_name": "Dylan Holloway",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 151,
+    "player_name": "Pavel Buchnevich",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 152,
+    "player_name": "Cam Fowler",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 153,
+    "player_name": "Oskar Sundqvist",
+    "team": "St. Louis Blues",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 154,
+    "player_name": "Brayden Point",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 155,
+    "player_name": "Conor Geekie",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 156,
+    "player_name": "Darren Raddysh",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 157,
+    "player_name": "Andrei Vasilevskiy",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 158,
+    "player_name": "J.J. Moser",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 159,
+    "player_name": "Ryan McDonagh",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 160,
+    "player_name": "Jake Guentzel",
+    "team": "Tampa Bay Lightning",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 161,
+    "player_name": "Auston Matthews",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 162,
+    "player_name": "Bobby McMann",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 163,
+    "player_name": "Anthony Stolarz",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 164,
+    "player_name": "Morgan Rielly",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 165,
+    "player_name": "Christopher Tanev",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 166,
+    "player_name": "Jake McCabe",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 167,
+    "player_name": "Max Domi",
+    "team": "Toronto Maple Leafs",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 168,
+    "player_name": "Dylan Guenther",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 169,
+    "player_name": "Nick Schmaltz",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 170,
+    "player_name": "Connor Ingram",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 171,
+    "player_name": "Mikhail Sergachev",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 172,
+    "player_name": "Michael Kesselring",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 173,
+    "player_name": "Matias Maccelli",
+    "team": "Utah Mammoth",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 174,
+    "player_name": "Kiefer Sherwood",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 175,
+    "player_name": "Filip Hronek",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 176,
+    "player_name": "Elias Pettersson",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 177,
+    "player_name": "Quinn Hughes",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 178,
+    "player_name": "Nils Hoglander",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 179,
+    "player_name": "Jake DeBrusk",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 180,
+    "player_name": "Tyler Myers",
+    "team": "Vancouver Canucks",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 181,
+    "player_name": "Tomas Hertl",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 182,
+    "player_name": "Nicolas Roy",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 183,
+    "player_name": "Pavel Dorofeyev",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 184,
+    "player_name": "Noah Hanifin",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 185,
+    "player_name": "Brayden McNabb",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 186,
+    "player_name": "Mark Stone",
+    "team": "Vegas Golden Knights",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 187,
+    "player_name": "Brandon Duhaime",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 188,
+    "player_name": "Aliaksei Protas",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 189,
+    "player_name": "Pierre-Luc Dubois",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 190,
+    "player_name": "Dylan Strome",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 191,
+    "player_name": "Tom Wilson",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 192,
+    "player_name": "Rasmus Sandin",
+    "team": "Washington Capitals",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 193,
+    "player_name": "Dylan DeMelo",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 194,
+    "player_name": "Connor Hellebuyck",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 195,
+    "player_name": "Mark Scheifele",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 196,
+    "player_name": "Logan Stanley",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 197,
+    "player_name": "David Gustafsson",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  },
+  {
+    "sport": "Hockey",
+    "year": "2025-26",
+    "brand": "Upper Deck",
+    "set_name": "Series 1",
+    "card_number": 198,
+    "player_name": "Morgan Barron",
+    "team": "Winnipeg Jets",
+    "image_url": null
+  }
+]
