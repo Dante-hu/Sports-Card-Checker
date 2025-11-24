@@ -1,7 +1,3 @@
-import requests
-from .settings import BASE_URL
-
-
 def test_sign_up_and_login_flow(client):
     email = "selenium_test@example.com"
     password = "S3lenium!"
