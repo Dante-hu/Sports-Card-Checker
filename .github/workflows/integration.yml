@@ -1,6 +1,8 @@
 name: Integration Tests
 
 on:
+  push:
+    branches: ["**"]
   pull_request:
     branches: [main]
 
@@ -8,8 +10,8 @@ jobs:
   integration:
     runs-on: ubuntu-latest
     strategy:
-    matrix:
-      python-version: ["3.10", "3.11", "3.12"]
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
@@ -17,4 +19,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - run: pip install -r requirements.txt pytest
-      - run: cd server && pytest tests/ -v
+      - run: cd server && pytest app/test -v
