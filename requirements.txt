@@ -20,3 +20,5 @@ Werkzeug
 SQLAlchemy
 flask_jwt_extended
 black==25.11.0
+selenium
+requests

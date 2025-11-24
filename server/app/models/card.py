@@ -7,7 +7,7 @@ class Card(db.Model):
     __table_args__ = (
         UniqueConstraint(
             "sport", "year", "brand", "set_name", "card_number", name="uq_card_catalog"
-        ),
+        ),  # ensure no duplicate cards in catalog
     )
 
     id = Column(Integer, primary_key=True)
