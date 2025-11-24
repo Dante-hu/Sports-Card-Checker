@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
-
+from ..models.set import Set
 cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 
@@ -111,42 +111,67 @@ def create_sample_card():
 
 @cards_bp.post("/")
 def create_card():
-    """Create a new card from JSON body."""
     data = request.get_json() or {}
 
-    required_fields = [
-        "sport",
-        "year",
-        "brand",
-        "set_name",
-        "card_number",
-        "player_name",
-        "team",
+    sport = data.get("sport")
+    year = data.get("year")
+    brand = data.get("brand")
+    set_name = data.get("set_name")
+    card_number = data.get("card_number")
+    player_name = data.get("player_name")
+    team = data.get("team")
+    image_url = data.get("image_url")
+
+    # Validate required fields
+    missing = [
+        field
+        for field, value in {
+            "sport": sport,
+            "year": year,
+            "brand": brand,
+            "set_name": set_name,
+            "card_number": card_number,
+            "player_name": player_name,
+            "team": team,
+        }.items()
+        if value in (None, "", [])
     ]
-    missing = [f for f in required_fields if f not in data]
     if missing:
-        return (
-            jsonify({"error": f"Missing fields: {', '.join(missing)}"}),
-            400,
-        )
+        return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
-    try:
-        year = int(data["year"])
-    except (TypeError, ValueError):
-        return jsonify({"error": "year must be an integer"}), 400
-
-    card = Card(
-        sport=data["sport"],
+    # 🔹 AUTO-CREATE OR FETCH EXISTING SET
+    set_obj = Set.query.filter_by(
+        sport=sport,
         year=year,
-        brand=data["brand"],
-        set_name=data["set_name"],
-        card_number=data["card_number"],
-        player_name=data["player_name"],
-        team=data["team"],
-        image_url=data.get("image_url"),
+        brand=brand,
+        set_name=set_name,
+    ).first()
+
+    if not set_obj:
+        set_obj = Set(
+            sport=sport,
+            year=year,
+            brand=brand,
+            set_name=set_name,
+        )
+        db.session.add(set_obj)
+        # will commit later together
+
+    # 🔹 CREATE THE CARD
+    card = Card(
+        sport=sport,
+        year=year,
+        brand=brand,
+        set_name=set_name,
+        card_number=card_number,
+        player_name=player_name,
+        team=team,
+        image_url=image_url,
     )
+
     db.session.add(card)
     db.session.commit()
+
     return jsonify(serialize_card(card)), 201
 
 

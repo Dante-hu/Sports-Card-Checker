@@ -4,6 +4,7 @@ import os
 from app import create_app
 from app.extensions import db
 from app.models.card import Card
+from app.models.set import Set  # ✅ import Set
 
 
 def load_set(filepath):
@@ -20,12 +21,25 @@ def import_set(filepath):
     skipped = 0
 
     for item in data:
+        sport = item["sport"]
+        year = item["year"]
+        brand = item["brand"]
+        set_name = item["set_name"]
+
+        # ✅ make sure the Set exists (auto-create if needed)
+        Set.get_or_create(
+            sport=sport,
+            year=year,
+            brand=brand,
+            set_name=set_name,
+        )
+
         # Check if this card already exists (avoid duplicates)
         exists = Card.query.filter_by(
-            sport=item["sport"],
-            year=item["year"],
-            brand=item["brand"],
-            set_name=item["set_name"],
+            sport=sport,
+            year=year,
+            brand=brand,
+            set_name=set_name,
             card_number=item["card_number"],
         ).first()
 
@@ -34,10 +48,10 @@ def import_set(filepath):
             continue
 
         card = Card(
-            sport=item["sport"],
-            year=item["year"],
-            brand=item["brand"],
-            set_name=item["set_name"],
+            sport=sport,
+            year=year,
+            brand=brand,
+            set_name=set_name,
             card_number=item["card_number"],
             player_name=item["player_name"],
             team=item["team"],
