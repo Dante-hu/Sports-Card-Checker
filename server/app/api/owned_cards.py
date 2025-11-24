@@ -19,29 +19,31 @@ def owned_card_to_dict(owned: OwnedCard) -> dict:
         "quantity": owned.quantity,
         "condition": owned.condition,
         "grade": float(owned.grade) if owned.grade is not None else None,
-        "acquired_price": float(owned.acquired_price)
-        if owned.acquired_price is not None
-        else None,
-        "acquired_date": owned.acquired_date.isoformat()
-        if owned.acquired_date is not None
-        else None,
+        "acquired_price": (
+            float(owned.acquired_price) if owned.acquired_price is not None else None
+        ),
+        "acquired_date": (
+            owned.acquired_date.isoformat() if owned.acquired_date is not None else None
+        ),
         "is_for_trade": owned.is_for_trade,
         "notes": owned.notes,
-        "created_at": owned.created_at.isoformat()
-        if owned.created_at is not None
-        else None,
-        "card": {
-            "id": owned.card.id,
-            "sport": owned.card.sport,
-            "year": owned.card.year,
-            "brand": owned.card.brand,
-            "set_name": owned.card.set_name,
-            "card_number": owned.card.card_number,
-            "player_name": owned.card.player_name,
-            "team": owned.card.team,
-        }
-        if owned.card is not None
-        else None,
+        "created_at": (
+            owned.created_at.isoformat() if owned.created_at is not None else None
+        ),
+        "card": (
+            {
+                "id": owned.card.id,
+                "sport": owned.card.sport,
+                "year": owned.card.year,
+                "brand": owned.card.brand,
+                "set_name": owned.card.set_name,
+                "card_number": owned.card.card_number,
+                "player_name": owned.card.player_name,
+                "team": owned.card.team,
+            }
+            if owned.card is not None
+            else None
+        ),
     }
 
 
@@ -232,30 +234,23 @@ def add_owned_card_by_name():
     brand = data.get("brand")
 
     if not player_name or not year or not brand:
-        return jsonify({
-            "error": "player_name, year, and brand are required"
-        }), 400
+        return jsonify({"error": "player_name, year, and brand are required"}), 400
 
     # Find the exact card
-    card = Card.query.filter_by(
-        player_name=player_name,
-        year=year,
-        brand=brand
-    ).first()
+    card = Card.query.filter_by(player_name=player_name, year=year, brand=brand).first()
 
     if not card:
-        return jsonify({
-            "error": f"No card found for {year} {brand} {player_name}"
-        }), 404
+        return (
+            jsonify({"error": f"No card found for {year} {brand} {player_name}"}),
+            404,
+        )
 
     quantity = int(data.get("quantity", 1))
     condition = data.get("condition", "Mint")
 
     # Check if user already owns it
     existing = OwnedCard.query.filter_by(
-        owner_id=user.id,
-        card_id=card.id,
-        condition=condition
+        owner_id=user.id, card_id=card.id, condition=condition
     ).first()
 
     if existing:
@@ -265,10 +260,7 @@ def add_owned_card_by_name():
 
     # Otherwise create new entry
     owned = OwnedCard(
-        owner_id=user.id,
-        card_id=card.id,
-        quantity=quantity,
-        condition=condition
+        owner_id=user.id, card_id=card.id, quantity=quantity, condition=condition
     )
 
     db.session.add(owned)

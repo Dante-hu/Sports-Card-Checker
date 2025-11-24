@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, g
-from app.extensions import db
-from app.models.wanted_card import WantedCard
-from app.models.card import Card
+from ..extensions import db
+from ..models.wanted_card import WantedCard
+from ..models.card import Card
 from .auth import login_required  # use the login_required we made earlier
 
 wanted_cards_bp = Blueprint("wanted_cards", __name__, url_prefix="/api/wanted")
@@ -13,22 +13,26 @@ def wanted_to_dict(item: WantedCard) -> dict:
         "user_id": item.user_id,
         "card_id": item.card_id,
         "notes": item.notes,
-        "created_at": item.created_at.isoformat()
-        if getattr(item, "created_at", None) is not None
-        else None,
-        "card": {
-            "id": item.card.id,
-            "sport": item.card.sport,
-            "year": item.card.year,
-            "brand": item.card.brand,
-            "set_name": item.card.set_name,
-            "card_number": item.card.card_number,
-            "player_name": item.card.player_name,
-            "team": item.card.team,
-            "image_url": item.card.image_url,
-        }
-        if item.card is not None
-        else None,
+        "created_at": (
+            item.created_at.isoformat()
+            if getattr(item, "created_at", None) is not None
+            else None
+        ),
+        "card": (
+            {
+                "id": item.card.id,
+                "sport": item.card.sport,
+                "year": item.card.year,
+                "brand": item.card.brand,
+                "set_name": item.card.set_name,
+                "card_number": item.card.card_number,
+                "player_name": item.card.player_name,
+                "team": item.card.team,
+                "image_url": item.card.image_url,
+            }
+            if item.card is not None
+            else None
+        ),
     }
 
 
@@ -65,16 +69,15 @@ def add_wanted_card():
     if not card_id and player_name:
         card_obj = Card.query.filter_by(player_name=player_name).first()
         if not card_obj:
-            return jsonify(
-                {"error": f"No card found with player_name '{player_name}'"}
-            ), 404
+            return (
+                jsonify({"error": f"No card found with player_name '{player_name}'"}),
+                404,
+            )
         card_id = card_obj.id
 
     # If still no card_id, we can't proceed
     if not card_id:
-        return jsonify(
-            {"error": "Either card_id or player_name is required"}
-        ), 400
+        return jsonify({"error": "Either card_id or player_name is required"}), 400
 
     # Validate card exists (in case card_id was sent directly)
     card = Card.query.get(card_id)
@@ -82,9 +85,7 @@ def add_wanted_card():
         return jsonify({"error": f"Card with id {card_id} not found"}), 404
 
     # Prevent duplicates (same user + same card)
-    existing_item = WantedCard.query.filter_by(
-        user_id=user.id, card_id=card_id
-    ).first()
+    existing_item = WantedCard.query.filter_by(user_id=user.id, card_id=card_id).first()
     if existing_item:
         # If it's already there, optionally update notes, but don't duplicate
         if "notes" in data:
@@ -145,9 +146,7 @@ def delete_wanted_card_by_name():
     brand = request.args.get("brand", type=str)
 
     if not player_name or year is None or not brand:
-        return jsonify(
-            {"error": "player_name, year, and brand are required"}
-        ), 400
+        return jsonify({"error": "player_name, year, and brand are required"}), 400
 
     # Find the exact card
     card = Card.query.filter_by(
@@ -157,28 +156,33 @@ def delete_wanted_card_by_name():
     ).first()
 
     if not card:
-        return jsonify(
-            {"error": f"No card found for {year} {brand} {player_name}"}
-        ), 404
+        return (
+            jsonify({"error": f"No card found for {year} {brand} {player_name}"}),
+            404,
+        )
 
     # Find the wanted card entry for this user + card
     item = WantedCard.query.filter_by(user_id=user.id, card_id=card.id).first()
     if not item:
-        return jsonify(
-            {
-                "error": "No wanted card found for this user and that card",
-                "player_name": player_name,
-                "year": year,
-                "brand": brand,
-            }
-        ), 404
+        return (
+            jsonify(
+                {
+                    "error": "No wanted card found for this user and that card",
+                    "player_name": player_name,
+                    "year": year,
+                    "brand": brand,
+                }
+            ),
+            404,
+        )
 
     db.session.delete(item)
     db.session.commit()
 
-    return jsonify(
-        {"message": "Deleted wanted card for this user and player/year/brand"}
-    ), 200
+    return (
+        jsonify({"message": "Deleted wanted card for this user and player/year/brand"}),
+        200,
+    )
 
 
 @wanted_cards_bp.post("/by_name")
@@ -204,9 +208,7 @@ def add_wanted_card_by_name():
     notes = data.get("notes")
 
     if not player_name or year is None or not brand:
-        return jsonify(
-            {"error": "player_name, year, and brand are required"}
-        ), 400
+        return jsonify({"error": "player_name, year, and brand are required"}), 400
 
     # make sure year is an integer
     try:
@@ -222,14 +224,13 @@ def add_wanted_card_by_name():
     ).first()
 
     if not card:
-        return jsonify(
-            {"error": f"No card found for {year} {brand} {player_name}"}
-        ), 404
+        return (
+            jsonify({"error": f"No card found for {year} {brand} {player_name}"}),
+            404,
+        )
 
     # Prevent duplicates (same user + same card)
-    existing_item = WantedCard.query.filter_by(
-        user_id=user.id, card_id=card.id
-    ).first()
+    existing_item = WantedCard.query.filter_by(user_id=user.id, card_id=card.id).first()
     if existing_item:
         # optionally update notes if provided
         if notes is not None:

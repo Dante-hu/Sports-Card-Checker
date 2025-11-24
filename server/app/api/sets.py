@@ -9,16 +9,18 @@ sets_bp = Blueprint("sets", __name__, url_prefix="/api/sets")
 @sets_bp.get("/")
 def list_sets():
     sets = Set.query.all()
-    return jsonify([
-        {
-            "id": s.id,
-            "sport": s.sport,
-            "year": s.year,
-            "brand": s.brand,
-            "set_name": s.set_name,
-        }
-        for s in sets
-    ])
+    return jsonify(
+        [
+            {
+                "id": s.id,
+                "sport": s.sport,
+                "year": s.year,
+                "brand": s.brand,
+                "set_name": s.set_name,
+            }
+            for s in sets
+        ]
+    )
 
 
 @sets_bp.get("/<int:set_id>/cards")
@@ -69,12 +71,15 @@ def get_set(set_id):
     if not s:
         return jsonify({"error": f"Set with id {set_id} not found"}), 404
 
-    return jsonify(
-        {
-            "id": s.id,
-            "sport": s.sport,
-            "year": s.year,
-            "brand": s.brand,
-            "set_name": s.set_name,
-        }
-    ), 200
+    return (
+        jsonify(
+            {
+                "id": s.id,
+                "sport": s.sport,
+                "year": s.year,
+                "brand": s.brand,
+                "set_name": s.set_name,
+            }
+        ),
+        200,
+    )

@@ -79,9 +79,7 @@ def login():
     session["user_id"] = user.id
 
     return (
-        jsonify(
-            {"message": "Login successful", "id": user.id, "email": user.email}
-        ),
+        jsonify({"message": "Login successful", "id": user.id, "email": user.email}),
         200,
     )
 
@@ -135,14 +133,12 @@ def me_summary():
 
         if set_label not in sets_summary:
             # how many cards exist in this set in the cards table?
-            total_in_set = (
-                Card.query.filter_by(
-                    sport=card.sport,
-                    year=card.year,
-                    brand=card.brand,
-                    set_name=card.set_name,
-                ).count()
-            )
+            total_in_set = Card.query.filter_by(
+                sport=card.sport,
+                year=card.year,
+                brand=card.brand,
+                set_name=card.set_name,
+            ).count()
 
             sets_summary[set_label] = {
                 "set_label": set_label,
