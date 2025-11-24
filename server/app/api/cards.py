@@ -2,8 +2,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
-from ..models.set import Set 
-
+from ..models.set import Set
 cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 
@@ -174,7 +173,6 @@ def create_card():
     db.session.commit()
 
     return jsonify(serialize_card(card)), 201
-
 
 
 @cards_bp.route("/<int:card_id>", methods=["PATCH", "PUT"])

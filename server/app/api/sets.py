@@ -99,7 +99,6 @@ def get_cards_for_set(set_id):
     ), 200
 
 
-
 @sets_bp.post("/")
 def create_set():
     """
