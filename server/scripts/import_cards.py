@@ -1,19 +1,20 @@
+# server/scripts/import_cards.py
 import json
 import os
+from pathlib import Path
 
-from app import create_app
 from app.extensions import db
 from app.models.card import Card
 from app.models.set import Set  # ✅ import Set
 
 
-def load_set(filepath):
+def load_set(filepath: Path):
     """Load one JSON file and return the list of cards."""
     with open(filepath, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def import_set(filepath):
+def import_set(filepath: Path):
     """Import all cards from one JSON file into the database."""
     data = load_set(filepath)
 
@@ -64,19 +65,32 @@ def import_set(filepath):
     print(f"{os.path.basename(filepath)} → Imported {created} cards, skipped {skipped} duplicates")
 
 
+def seed_all_sets():
+    """
+    Look in the /data folder and import every .json file.
+    Can be safely called multiple times because import_set skips duplicates.
+    """
+    # Find the /data folder relative to this file
+    base_dir = Path(__file__).resolve().parents[1]  # go up from /scripts to /server
+    data_dir = base_dir / "data"
+
+    print(f"Looking for JSON files in: {data_dir}")
+
+    if not data_dir.exists():
+        print("⚠️  Data directory does not exist, skipping seeding.")
+        return
+
+    for filename in os.listdir(data_dir):
+        if filename.endswith(".json"):
+            full_path = data_dir / filename
+            print(f"Importing {full_path} ...")
+            import_set(full_path)
+
+
 if __name__ == "__main__":
-    # Create app + push app context so we can use the database
+    # Optional CLI usage:
+    from app import create_app
+
     app = create_app()
     with app.app_context():
-        # Find the /data folder relative to this file
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # .. from /scripts
-        data_dir = os.path.join(base_dir, "data")
-
-        print(f"Looking for JSON files in: {data_dir}")
-
-        # Loop over every .json file in /data and import it
-        for filename in os.listdir(data_dir):
-            if filename.endswith(".json"):
-                full_path = os.path.join(data_dir, filename)
-                print(f"Importing {full_path} ...")
-                import_set(full_path)
+        seed_all_sets()

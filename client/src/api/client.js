@@ -1,5 +1,8 @@
 // client/src/api/client.js
-export const API_BASE_URL = "http://127.0.0.1:5000";
+
+// We now let Vite proxy /api calls to the backend,
+// so we don't hardcode http://127.0.0.1:5000 here.
+export const API_BASE_URL = "";
 
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
