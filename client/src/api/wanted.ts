@@ -14,6 +14,7 @@ export interface Card {
   player_name?: string;
   card_number?: string | number;
   team?: string | null;
+  image_url?: string | null;
 }
 
 export interface WantedItem {
@@ -41,3 +42,15 @@ export async function fetchWanted(
 
   return api.get(path);
 }
+
+export async function addWantedCard(cardId: number, notes: string | null = null) {
+  return api.post("/api/wanted/", {
+    card_id: cardId,
+    notes,
+  });
+}
+
+export async function deleteWantedItem(wantedId: number) {
+  return api.del(`/api/wanted/${wantedId}`);
+}
+

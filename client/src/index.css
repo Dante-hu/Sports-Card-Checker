@@ -358,3 +358,110 @@ button:focus-visible {
   color: #4b5563;
 }
 
+/* Make card tiles feel clickable */
+.card-tile--clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-tile--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+}
+
+/* Full-screen dark overlay */
+.card-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85); /* dark/slate */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Inner enlarged card */
+.card-overlay-inner {
+  position: relative;
+  width: 90%;
+  max-width: 480px;
+  background: #020617; /* very dark */
+  border-radius: 1rem;
+  padding: 1.5rem 1.75rem 1.25rem;
+  border: 1px solid #1f2937;
+  color: #e5e7eb;
+}
+
+/* Close button (top-right X) */
+.card-overlay-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.9rem;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.card-overlay-close:hover {
+  color: #e5e7eb;
+}
+
+/* Text */
+.card-overlay-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.card-overlay-subtitle {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-bottom: 0.75rem;
+}
+
+/* Image area */
+.card-overlay-image {
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  border: 1px solid #1f2937;
+  background: #020617;
+  margin-bottom: 0.9rem;
+}
+
+.card-overlay-image-placeholder {
+  height: 220px;
+  border-radius: 0.75rem;
+  border: 1px dashed #4b5563;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 0.9rem;
+}
+
+/* Buttons row */
+.card-overlay-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.card-overlay-button {
+  border-radius: 999px;
+  border: 1px solid #10b981;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  background: #022c22;
+  color: #a7f3d0;
+  cursor: pointer;
+}
+
+.card-overlay-button:hover {
+  background: #10b981;
+  color: #022c22;
+}
