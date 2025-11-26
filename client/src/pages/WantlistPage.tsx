@@ -1,4 +1,3 @@
-// client/src/pages/WantlistPage.tsx
 import { useEffect, useState } from "react";
 import { fetchWanted } from "../api/wanted";
 
@@ -35,7 +34,6 @@ export default function WantlistPage() {
         console.log("wantlist response:", data);
 
         if (Array.isArray(data)) {
-          // fallback if backend ever returns plain array
           setItems(data);
           setPage(1);
           setPages(1);
@@ -72,80 +70,77 @@ export default function WantlistPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">My Wantlist</h1>
+    <div className="cards-page">
+      {/* Header that matches CardsPage */}
+      <div className="cards-header">
+        <div>
+          <h1 className="cards-title">My Wantlist</h1>
+        </div>
+      </div>
 
-      {loading && <p className="text-sm text-slate-400">Loading…</p>}
+      {/* Status messages */}
+      {loading && <p className="cards-status">Loading…</p>}
 
       {!loading && error && (
-        <p className="text-sm text-red-400">Error: {error}</p>
+        <p className="cards-status cards-status-error">Error: {error}</p>
       )}
 
       {!loading && !error && items.length === 0 && (
-        <p className="text-sm text-slate-400">
+        <p className="cards-status">
           Your wantlist is currently empty.
         </p>
       )}
 
       {!loading && !error && items.length > 0 && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="cards-grid">
             {items.map((wanted) => {
               const card: Card = wanted.card || {};
 
               return (
-                <div
-                  key={wanted.id}
-                  className="rounded-2xl bg-slate-900 p-3 flex flex-col gap-2 border border-slate-800"
-                >
-                  <div className="text-xs text-slate-400">
-                    {card.year} • {card.brand} • {card.set_name}
+                <div key={wanted.id} className="card-tile">
+                  <div className="card-content">
+                    <p className="card-player">{card.player_name}</p>
+
+                    <p className="card-meta-line">
+                      #{card.card_number}
+                      {card.team ? ` • ${card.team}` : ""}
+                    </p>
+
+                    <p className="card-set">
+                      {card.year} • {card.brand} • {card.set_name}
+                    </p>
+
+                    {wanted.notes && (
+                      <p className="card-meta-line">
+                        Notes: {wanted.notes}
+                      </p>
+                    )}
                   </div>
-
-                  <div className="font-semibold text-sm">
-                    {card.player_name}
-                  </div>
-
-                  <div className="text-xs text-slate-400">
-                    #{card.card_number}{" "}
-                    {card.team && <>• {card.team}</>}
-                  </div>
-
-                  {wanted.notes && (
-                    <div className="text-xs text-slate-300">
-                      Notes: {wanted.notes}
-                    </div>
-                  )}
-
-                  {/* Later: remove / move to owned buttons */}
                 </div>
               );
             })}
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-4 mt-4">
+          <div className="cards-pagination">
             <button
               onClick={goToPrev}
               disabled={page <= 1}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              className="cards-page-button"
             >
               ◀ Prev
             </button>
 
-            <span className="text-xs text-slate-400">
-              Page{" "}
-              <span className="font-semibold text-slate-100">{page}</span>{" "}
-              of{" "}
-              <span className="font-semibold text-slate-100">
-                {pages || 1}
-              </span>
+            <span className="cards-page-info">
+              Page <strong>{page}</strong> of{" "}
+              <strong>{pages || 1}</strong>
             </span>
 
             <button
               onClick={goToNext}
               disabled={page >= pages}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              className="cards-page-button"
             >
               Next ▶
             </button>

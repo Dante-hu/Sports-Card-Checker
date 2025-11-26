@@ -88,6 +88,8 @@ export default function CardsPage() {
   }
 
   return (
+
+    
     <div className="cards-page">
       {/* Header + search bar */}
       <div className="cards-header">
