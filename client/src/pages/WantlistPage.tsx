@@ -1,22 +1,11 @@
 // client/src/pages/WantlistPage.tsx
 import { useEffect, useState } from "react";
-import { fetchWanted } from "../api/wanted";
-
-interface Card {
-  id?: number;
-  year?: number;
-  brand?: string;
-  set_name?: string;
-  player_name?: string;
-  card_number?: string | number;
-  team?: string | null;
-}
-
-interface WantedItem {
-  id: number;
-  notes?: string | null;
-  card?: Card | null;
-}
+import {
+  fetchWanted,
+  type WantedItem,
+  type Card as WantedCard,
+  deleteWantedItem,
+} from "../api/wanted";
 
 export default function WantlistPage() {
   const [items, setItems] = useState<WantedItem[]>([]);
@@ -25,6 +14,19 @@ export default function WantlistPage() {
 
   const [page, setPage] = useState<number>(1);
   const [pages, setPages] = useState<number>(1);
+  const [hasNext, setHasNext] = useState<boolean>(false);
+  const [hasPrev, setHasPrev] = useState<boolean>(false);
+
+  const [toast, setToast] = useState<string | null>(null);
+  const [selectedWanted, setSelectedWanted] = useState<WantedItem | null>(null);
+
+  // NEW: confirm dialog for remove
+  const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -35,15 +37,16 @@ export default function WantlistPage() {
         console.log("wantlist response:", data);
 
         if (Array.isArray(data)) {
-          // fallback if backend ever returns plain array
           setItems(data);
-          setPage(1);
           setPages(1);
+          setPage(1);
+          setHasPrev(false);
+          setHasNext(false);
           return;
         }
 
-        const resultItems = Array.isArray(data.items) ? data.items : [];
-        setItems(resultItems);
+        const arr = Array.isArray(data.items) ? data.items : [];
+        setItems(arr);
 
         const currentPage =
           typeof data.page === "number" ? data.page : page;
@@ -52,105 +55,263 @@ export default function WantlistPage() {
 
         setPage(currentPage);
         setPages(totalPages);
+        setHasPrev(currentPage > 1);
+        setHasNext(currentPage < totalPages);
       })
       .catch((err: any) => {
         console.error("Error fetching wantlist:", err);
         setError(err?.message || "Failed to load wantlist");
         setItems([]);
-        setPage(1);
+
         setPages(1);
+        setPage(1);
+        setHasPrev(false);
+        setHasNext(false);
       })
       .finally(() => setLoading(false));
   }, [page]);
 
-  function goToPrev() {
-    if (page > 1) setPage((p) => p - 1);
+  function goToPrev(): void {
+    if (page > 1 && hasPrev) setPage((p) => p - 1);
   }
 
-  function goToNext() {
-    if (page < pages) setPage((p) => p + 1);
+  function goToNext(): void {
+    if (hasNext) setPage((p) => p + 1);
+  }
+
+  function handleWantedClick(item: WantedItem): void {
+    setSelectedWanted(item);
+    setShowRemoveDialog(false);
+  }
+
+  function closeSelected(): void {
+    setSelectedWanted(null);
+    setShowRemoveDialog(false);
+  }
+
+  // When they click "Remove from Wantlist" in the main overlay
+  function handleRemoveClicked(): void {
+    if (!selectedWanted) return;
+    setShowRemoveDialog(true);
+  }
+
+  // Actually delete on confirm
+  async function confirmRemove(): Promise<void> {
+    if (!selectedWanted) return;
+
+    try {
+      await deleteWantedItem(selectedWanted.id);
+
+      setItems((prev) => prev.filter((i) => i.id !== selectedWanted.id));
+      showToast("Removed from Wantlist");
+      closeSelected();
+    } catch (err: any) {
+      console.error("Failed to remove from wantlist:", err);
+      showToast(err?.message || "Failed to remove from Wantlist");
+    }
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">My Wantlist</h1>
+    <div className="wantlist-page">
+      {/* toast bottom-right (reuse same style as cards / owned) */}
+      {toast && <div className="cards-toast">{toast}</div>}
 
-      {loading && <p className="text-sm text-slate-400">Loading…</p>}
+      {/* simple header */}
+      <div className="cards-header">
+        <div>
+          <h1 className="cards-title">Wantlist</h1>
+        </div>
+      </div>
 
+      {loading && <p className="cards-status">Loading wantlist…</p>}
       {!loading && error && (
-        <p className="text-sm text-red-400">Error: {error}</p>
+        <p className="cards-status cards-status-error">Error: {error}</p>
       )}
-
       {!loading && !error && items.length === 0 && (
-        <p className="text-sm text-slate-400">
-          Your wantlist is currently empty.
+        <p className="cards-status">
+          Your wantlist is empty. Browse cards and add some!
         </p>
       )}
 
       {!loading && !error && items.length > 0 && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((wanted) => {
-              const card: Card = wanted.card || {};
+          <div className="cards-grid">
+            {items.map((item) => {
+              const card = (item.card || {}) as WantedCard;
+
+              const raw = (card.image_url as any) ?? "";
+              const trimmed = raw ? raw.toString().trim() : "";
+              const hasImage =
+                trimmed !== "" &&
+                trimmed.toLowerCase() !== "null" &&
+                trimmed.toLowerCase() !== "none";
 
               return (
                 <div
-                  key={wanted.id}
-                  className="rounded-2xl bg-slate-900 p-3 flex flex-col gap-2 border border-slate-800"
+                  key={item.id}
+                  className="card-tile card-tile--clickable"
+                  onClick={() => handleWantedClick(item)}
                 >
-                  <div className="text-xs text-slate-400">
-                    {card.year} • {card.brand} • {card.set_name}
+                  <div
+                    className={
+                      hasImage
+                        ? "card-image-wrapper"
+                        : "card-image-wrapper card-image-wrapper--empty"
+                    }
+                  >
+                    {hasImage ? (
+                      <img
+                        src={trimmed}
+                        alt={card.player_name || "Card"}
+                        className="card-image"
+                      />
+                    ) : (
+                      <div className="card-image-placeholder">
+                        No image yet
+                      </div>
+                    )}
                   </div>
 
-                  <div className="font-semibold text-sm">
-                    {card.player_name}
+                  <div className="card-content">
+                    <p className="card-player">
+                      {card.player_name || "Unknown player"}
+                    </p>
+                    <p className="card-meta-line">
+                      #{card.card_number}
+                      {card.team ? ` • ${card.team}` : ""}
+                    </p>
+                    <p className="card-set">
+                      {card.year} • {card.brand} • {card.set_name}
+                    </p>
+                    {item.notes && (
+                      <p className="cards-note">Notes: {item.notes}</p>
+                    )}
                   </div>
-
-                  <div className="text-xs text-slate-400">
-                    #{card.card_number}{" "}
-                    {card.team && <>• {card.team}</>}
-                  </div>
-
-                  {wanted.notes && (
-                    <div className="text-xs text-slate-300">
-                      Notes: {wanted.notes}
-                    </div>
-                  )}
-
-                  {/* Later: remove / move to owned buttons */}
                 </div>
               );
             })}
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-4 mt-4">
+          <div className="cards-pagination">
             <button
               onClick={goToPrev}
-              disabled={page <= 1}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              disabled={!hasPrev}
+              className="cards-page-button"
             >
               ◀ Prev
             </button>
-
-            <span className="text-xs text-slate-400">
-              Page{" "}
-              <span className="font-semibold text-slate-100">{page}</span>{" "}
-              of{" "}
-              <span className="font-semibold text-slate-100">
-                {pages || 1}
-              </span>
+            <span className="cards-page-info">
+              Page <strong>{page}</strong> of{" "}
+              <strong>{pages || 1}</strong>
             </span>
-
             <button
               onClick={goToNext}
-              disabled={page >= pages}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              disabled={!hasNext}
+              className="cards-page-button"
             >
               Next ▶
             </button>
           </div>
         </>
+      )}
+
+      {/* overlay for selected wantlist item */}
+      {selectedWanted && (
+        <div className="card-overlay" onClick={closeSelected}>
+          <div
+            className="card-overlay-inner"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="card-overlay-close"
+              onClick={closeSelected}
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            {(() => {
+              const card = (selectedWanted.card || {}) as WantedCard;
+
+              const raw = (card.image_url as any) ?? "";
+              const trimmed = raw ? raw.toString().trim() : "";
+              const hasImage =
+                trimmed !== "" &&
+                trimmed.toLowerCase() !== "null" &&
+                trimmed.toLowerCase() !== "none";
+
+              return (
+                <>
+                  <h2 className="card-overlay-title">
+                    {card.year} {card.brand}
+                  </h2>
+                  <p className="card-overlay-subtitle">
+                    {card.player_name} • #{card.card_number}
+                    {card.team ? ` • ${card.team}` : ""} • {card.set_name}
+                  </p>
+
+                  {hasImage ? (
+                    <img
+                      src={trimmed}
+                      alt={card.player_name || "Card"}
+                      className="card-overlay-image"
+                    />
+                  ) : (
+                    <div className="card-overlay-image-placeholder">
+                      No image available
+                    </div>
+                  )}
+
+                  {selectedWanted.notes && (
+                    <p className="mt-3 text-sm text-slate-200">
+                      Notes: {selectedWanted.notes}
+                    </p>
+                  )}
+                </>
+              );
+            })()}
+
+            <div className="card-overlay-actions">
+              <button
+                className="card-overlay-button"
+                onClick={handleRemoveClicked}
+              >
+                Remove from Wantlist
+              </button>
+            </div>
+
+            {/* Confirm remove popup */}
+            {showRemoveDialog && (
+              <div className="card-overlay mt-4">
+                <div
+                  className="card-overlay-inner max-w-sm mx-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="card-overlay-title text-lg mb-2">
+                    Remove from Wantlist?
+                  </h3>
+                  <p className="text-sm text-slate-200 mb-3">
+                    This will remove this card from your wantlist.
+                  </p>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
+                      onClick={confirmRemove}
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
+                      onClick={() => setShowRemoveDialog(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

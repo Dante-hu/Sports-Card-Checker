@@ -40,3 +40,35 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Toast in bottom-right */
+.cards-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: #022c22;           /* dark green-ish background */
+  color: #e5fdf4;                /* light text */
+  padding: 0.75rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #10b981;     /* emerald border */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  z-index: 2000;
+  max-width: 260px;
+}
+
+/* Optional: little fade/slide animation */
+@keyframes cards-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cards-toast {
+  animation: cards-toast-in 0.25s ease-out;
+}

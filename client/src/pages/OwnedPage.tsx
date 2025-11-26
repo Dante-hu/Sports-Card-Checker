@@ -1,6 +1,10 @@
 // client/src/pages/OwnedPage.tsx
 import { useEffect, useState } from "react";
-import { fetchOwned } from "../api/owned";
+import {
+  fetchOwned,
+  deleteOwnedCard,
+  type OwnedCard,
+} from "../api/owned";
 
 interface Card {
   id?: number;
@@ -10,21 +14,30 @@ interface Card {
   player_name?: string;
   card_number?: string | number;
   team?: string | null;
-}
-
-interface OwnedItem {
-  id: number;
-  quantity?: number;
-  card?: Card | null;
+  image_url?: string | null;
 }
 
 export default function OwnedPage() {
-  const [items, setItems] = useState<OwnedItem[]>([]);
+  const [items, setItems] = useState<OwnedCard[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const [page, setPage] = useState<number>(1);
   const [pages, setPages] = useState<number>(1);
+  const [hasNext, setHasNext] = useState<boolean>(false);
+  const [hasPrev, setHasPrev] = useState<boolean>(false);
+
+  const [toast, setToast] = useState<string | null>(null);
+  const [selectedOwned, setSelectedOwned] = useState<OwnedCard | null>(null);
+
+  // Popup for confirm remove
+  const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
+  const [removeCount, setRemoveCount] = useState<number>(1);
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -32,20 +45,17 @@ export default function OwnedPage() {
 
     fetchOwned({ page })
       .then((data: any) => {
-        console.log("owned response:", data);
-
         if (Array.isArray(data)) {
-          // fallback if backend returned a simple array
           setItems(data);
-          setPage(1);
           setPages(1);
+          setPage(1);
+          setHasPrev(false);
+          setHasNext(false);
           return;
         }
 
-        const resultItems = Array.isArray(data.items)
-          ? data.items
-          : [];
-        setItems(resultItems);
+        const arr = Array.isArray(data.items) ? data.items : [];
+        setItems(arr);
 
         const currentPage =
           typeof data.page === "number" ? data.page : page;
@@ -54,105 +64,333 @@ export default function OwnedPage() {
 
         setPage(currentPage);
         setPages(totalPages);
+        setHasPrev(currentPage > 1);
+        setHasNext(currentPage < totalPages);
       })
       .catch((err: any) => {
-        console.error("Error fetching owned cards:", err);
+        console.error("Error fetching owned:", err);
         setError(err?.message || "Failed to load owned cards");
         setItems([]);
-        setPage(1);
         setPages(1);
+        setPage(1);
+        setHasPrev(false);
+        setHasNext(false);
       })
       .finally(() => setLoading(false));
   }, [page]);
 
-  function goToPrev() {
-    if (page > 1) setPage((p) => p - 1);
+  function goToPrev(): void {
+    if (page > 1 && hasPrev) setPage((p) => p - 1);
   }
 
-  function goToNext() {
-    if (page < pages) setPage((p) => p + 1);
+  function goToNext(): void {
+    if (hasNext) setPage((p) => p + 1);
+  }
+
+  function handleOwnedClick(item: OwnedCard): void {
+    setSelectedOwned(item);
+    setShowRemoveDialog(false);
+    setRemoveCount(1);
+  }
+
+  function closeSelected(): void {
+    setSelectedOwned(null);
+    setShowRemoveDialog(false);
+    setRemoveCount(1);
+  }
+
+  // Clicked "Remove from Owned" in main overlay
+  function handleRemoveClicked(): void {
+    if (!selectedOwned) return;
+    const qty = selectedOwned.quantity ?? 1;
+
+    setRemoveCount(1);      // default
+    setShowRemoveDialog(true); // always show popup now
+  }
+
+  // Actually call API and update state
+  async function confirmAndRemove(count: number): Promise<void> {
+    if (!selectedOwned) return;
+
+    const currentQty = selectedOwned.quantity ?? 1;
+    const safeCount = Math.min(Math.max(count, 1), currentQty);
+
+    try {
+      const res = await deleteOwnedCard(selectedOwned.id, safeCount);
+
+      if (res && res.deleted) {
+        // All copies removed -> remove from list
+        setItems((prev) =>
+          prev.filter((i) => i.id !== selectedOwned.id)
+        );
+      } else if (res && res.owned) {
+        // Some remain -> update that item
+        const updated = res.owned;
+        setItems((prev) =>
+          prev.map((i) =>
+            i.id === selectedOwned.id ? { ...i, ...updated } : i
+          )
+        );
+      } else {
+        // Fallback: if API didn't send structured info
+        setItems((prev) =>
+          safeCount >= currentQty
+            ? prev.filter((i) => i.id !== selectedOwned.id)
+            : prev
+        );
+      }
+
+      showToast(
+        safeCount > 1
+          ? `Removed ${safeCount} copies from Owned`
+          : "Removed 1 copy from Owned"
+      );
+      closeSelected();
+    } catch (err: any) {
+      console.error("Failed to remove owned:", err);
+      showToast(err?.message || "Failed to remove from Owned");
+    }
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-4">My Owned Cards</h1>
+    <div className="owned-page">
+      {/* toast bottom-right */}
+      {toast && <div className="cards-toast">{toast}</div>}
 
-      {loading && <p className="text-sm text-slate-400">Loading…</p>}
+      {/* header */}
+      <div className="cards-header">
+        <div>
+          <h1 className="cards-title">Owned Cards</h1>
+        </div>
+      </div>
 
+      {loading && <p className="cards-status">Loading owned cards…</p>}
       {!loading && error && (
-        <p className="text-sm text-red-400">Error: {error}</p>
+        <p className="cards-status cards-status-error">Error: {error}</p>
       )}
-
       {!loading && !error && items.length === 0 && (
-        <p className="text-sm text-slate-400">
-          You don&apos;t have any owned cards yet.
-        </p>
+        <p className="cards-status">You don&apos;t own any cards yet.</p>
       )}
 
       {!loading && !error && items.length > 0 && (
         <>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="cards-grid">
             {items.map((owned) => {
-              const card: Card = owned.card || {};
+              const card = (owned.card || {}) as Card;
+
+              const raw = card.image_url ?? "";
+              const trimmed = raw ? raw.toString().trim() : "";
+              const hasImage =
+                trimmed !== "" &&
+                trimmed.toLowerCase() !== "null" &&
+                trimmed.toLowerCase() !== "none";
 
               return (
                 <div
                   key={owned.id}
-                  className="rounded-2xl bg-slate-900 p-3 flex flex-col gap-2 border border-slate-800"
+                  className="card-tile card-tile--clickable"
+                  onClick={() => handleOwnedClick(owned)}
                 >
-                  <div className="text-xs text-slate-400">
-                    {card.year} • {card.brand} • {card.set_name}
+                  <div
+                    className={
+                      hasImage
+                        ? "card-image-wrapper"
+                        : "card-image-wrapper card-image-wrapper--empty"
+                    }
+                  >
+                    {hasImage ? (
+                      <img
+                        src={trimmed}
+                        alt={card.player_name || "Card"}
+                        className="card-image"
+                      />
+                    ) : (
+                      <div className="card-image-placeholder">
+                        No image yet
+                      </div>
+                    )}
                   </div>
 
-                  <div className="font-semibold text-sm">
-                    {card.player_name}
+                  <div className="card-content">
+                    <p className="card-player">
+                      {card.player_name || "Unknown player"}
+                    </p>
+                    <p className="card-meta-line">
+                      #{card.card_number}
+                      {card.team ? ` • ${card.team}` : ""}
+                      {owned.quantity ? ` • x${owned.quantity}` : ""}
+                    </p>
+                    <p className="card-set">
+                      {card.year} • {card.brand} • {card.set_name}
+                    </p>
                   </div>
-
-                  <div className="text-xs text-slate-400">
-                    #{card.card_number}{" "}
-                    {card.team && <>• {card.team}</>}
-                  </div>
-
-                  {typeof owned.quantity === "number" && (
-                    <div className="text-xs text-emerald-400">
-                      Quantity: {owned.quantity}
-                    </div>
-                  )}
-
-                  {/* future: remove / adjust quantity buttons */}
                 </div>
               );
             })}
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-4 mt-4">
+          <div className="cards-pagination">
             <button
               onClick={goToPrev}
-              disabled={page <= 1}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              disabled={!hasPrev}
+              className="cards-page-button"
             >
               ◀ Prev
             </button>
-
-            <span className="text-xs text-slate-400">
-              Page{" "}
-              <span className="font-semibold text-slate-100">{page}</span>{" "}
-              of{" "}
-              <span className="font-semibold text-slate-100">
-                {pages || 1}
-              </span>
+            <span className="cards-page-info">
+              Page <strong>{page}</strong> of{" "}
+              <strong>{pages || 1}</strong>
             </span>
-
             <button
               onClick={goToNext}
-              disabled={page >= pages}
-              className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
+              disabled={!hasNext}
+              className="cards-page-button"
             >
               Next ▶
             </button>
           </div>
         </>
+      )}
+
+      {/* main overlay for card details */}
+      {selectedOwned && (
+        <div className="card-overlay" onClick={closeSelected}>
+          <div
+            className="card-overlay-inner"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="card-overlay-close"
+              onClick={closeSelected}
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            {(() => {
+              const card = (selectedOwned.card || {}) as Card;
+
+              const raw = card.image_url ?? "";
+              const trimmed = raw ? raw.toString().trim() : "";
+              const hasImage =
+                trimmed !== "" &&
+                trimmed.toLowerCase() !== "null" &&
+                trimmed.toLowerCase() !== "none";
+
+              const qty = selectedOwned.quantity ?? 1;
+
+              return (
+                <>
+                  <h2 className="card-overlay-title">
+                    {card.year} {card.brand}
+                  </h2>
+                  <p className="card-overlay-subtitle">
+                    {card.player_name} • #{card.card_number}
+                    {card.team ? ` • ${card.team}` : ""} • {card.set_name}
+                    {qty ? ` • Quantity: ${qty}` : ""}
+                  </p>
+
+                  {hasImage ? (
+                    <img
+                      src={trimmed}
+                      alt={card.player_name || "Card"}
+                      className="card-overlay-image"
+                    />
+                  ) : (
+                    <div className="card-overlay-image-placeholder">
+                      No image available
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+
+            <div className="card-overlay-actions">
+              <button
+                className="card-overlay-button"
+                onClick={handleRemoveClicked}
+              >
+                Remove from Owned
+              </button>
+            </div>
+
+            {/* SECOND POPUP: confirm (and maybe how many) */}
+            {showRemoveDialog && selectedOwned && (
+              <div className="card-overlay mt-4">
+                <div
+                  className="card-overlay-inner max-w-sm mx-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {(() => {
+                    const qty = selectedOwned.quantity ?? 1;
+
+                    return (
+                      <>
+                        <h3 className="card-overlay-title text-lg mb-2">
+                          {qty > 1
+                            ? "How many copies do you want to remove?"
+                            : "Remove this card from Owned?"}
+                        </h3>
+                        <p className="text-sm text-slate-200 mb-3">
+                          You currently own{" "}
+                          <strong>{qty}</strong> copy
+                          {qty > 1 ? "ies" : ""} of this card.
+                        </p>
+
+                        {qty > 1 && (
+                          <div className="flex items-center gap-2 mb-4">
+                            <label className="text-sm text-slate-200">
+                              Quantity to remove:
+                            </label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={qty}
+                              value={removeCount}
+                              onChange={(e) => {
+                                const val = Number(e.target.value) || 1;
+                                const clamped = Math.min(
+                                  Math.max(val, 1),
+                                  qty
+                                );
+                                setRemoveCount(clamped);
+                              }}
+                              className="w-20 rounded-md border border-slate-600 bg-slate-900 px-2 py-1 text-sm"
+                            />
+                          </div>
+                        )}
+
+                        <div className="flex justify-end gap-2">
+                          <button
+                            className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
+                            onClick={() =>
+                              confirmAndRemove(
+                                selectedOwned.quantity && selectedOwned.quantity > 1
+                                  ? removeCount
+                                  : 1
+                              )
+                            }
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
+                            onClick={() => {
+                              setShowRemoveDialog(false);
+                              setRemoveCount(1);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

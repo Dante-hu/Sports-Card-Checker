@@ -1,3 +1,4 @@
+# app/models/owned_card.py
 from sqlalchemy import (
     Column,
     Date,
@@ -21,8 +22,8 @@ class OwnedCard(db.Model):
     card_id = Column(Integer, ForeignKey("cards.id"), nullable=False, index=True)
 
     quantity = Column(Integer, default=1, nullable=False)
-    condition = Column(String(30), nullable=False)  # "Mint"
-    grade = Column(Numeric(3, 1), nullable=True)  # PSA 9.5
+    condition = Column(String(30), nullable=False)  # e.g. "Mint"
+    grade = Column(Numeric(3, 1), nullable=True)  # e.g. PSA 9.5
     acquired_price = Column(Numeric(10, 2), nullable=True)
     acquired_date = Column(Date, nullable=True)
     is_for_trade = Column(Boolean, default=False, nullable=False)
@@ -33,5 +34,5 @@ class OwnedCard(db.Model):
     owner = relationship("User", back_populates="owned_cards")
     card = relationship("Card", back_populates="owned_instances")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<OwnedCard {self.card} x{self.quantity} by {self.owner.email}>"

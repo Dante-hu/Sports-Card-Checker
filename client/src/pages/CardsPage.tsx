@@ -1,6 +1,8 @@
 // client/src/pages/CardsPage.tsx
 import { useEffect, useState, type FormEvent } from "react";
 import { fetchCards } from "../api/cards";
+import { addOwnedCard } from "../api/owned";
+import { addWantedCard } from "../api/wanted";
 
 interface Card {
   id: number;
@@ -25,6 +27,17 @@ export default function CardsPage() {
   const [pages, setPages] = useState<number>(1);
   const [hasNext, setHasNext] = useState<boolean>(false);
   const [hasPrev, setHasPrev] = useState<boolean>(false);
+
+  // Expanded card
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+
+  // Notification toast
+  const [toast, setToast] = useState<string | null>(null);
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -87,8 +100,49 @@ export default function CardsPage() {
     }
   }
 
+  // Click card
+  function handleCardClick(card: Card): void {
+    setSelectedCard(card);
+  }
+
+  // Close overlay
+  function closeSelected(): void {
+    setSelectedCard(null);
+  }
+
+  // Add to Owned
+  async function handleAddOwned(): Promise<void> {
+    if (!selectedCard) return;
+
+    try {
+      await addOwnedCard(selectedCard.id, 1);
+      showToast("Added to Owned");
+      closeSelected();
+    } catch (err: any) {
+      console.error("Failed to add to Owned:", err);
+      showToast(err?.message || "Failed to add card to Owned");
+    }
+  }
+
+  // Add to Wantlist
+  async function handleAddWanted(): Promise<void> {
+    if (!selectedCard) return;
+
+    try {
+      await addWantedCard(selectedCard.id, null);
+      showToast("Added to Wantlist");
+      closeSelected();
+    } catch (err: any) {
+      console.error("Failed to add to Wantlist:", err);
+      showToast(err?.message || "Failed to add card to Wantlist");
+    }
+  }
+
   return (
     <div className="cards-page">
+      {/* Bottom-right toast */}
+      {toast && <div className="cards-toast">{toast}</div>}
+
       {/* Header + search bar */}
       <div className="cards-header">
         <div>
@@ -134,7 +188,11 @@ export default function CardsPage() {
                 trimmed.toLowerCase() !== "none";
 
               return (
-                <div key={card.id} className="card-tile">
+                <div
+                  key={card.id}
+                  className="card-tile card-tile--clickable"
+                  onClick={() => handleCardClick(card)}
+                >
                   {/* IMAGE AREA */}
                   <div
                     className={
@@ -158,20 +216,16 @@ export default function CardsPage() {
 
                   {/* TEXT AREA */}
                   <div className="card-content">
-                    {/* Player name */}
                     <p className="card-player">{card.player_name}</p>
 
-                    {/* Number + Team */}
                     <p className="card-meta-line">
                       #{card.card_number}
                       {card.team ? ` • ${card.team}` : ""}
                     </p>
 
-                    {/* Year / Brand / Set */}
                     <p className="card-set">
                       {card.year} • {card.brand} • {card.set_name}
                     </p>
-
                   </div>
                 </div>
               );
@@ -202,6 +256,73 @@ export default function CardsPage() {
             </button>
           </div>
         </>
+      )}
+
+      {/* Enlarged card overlay */}
+      {selectedCard && (
+        <div className="card-overlay" onClick={closeSelected}>
+          <div
+            className="card-overlay-inner"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="card-overlay-close"
+              onClick={closeSelected}
+              aria-label="Close"
+            >
+              ×
+            </button>
+
+            <h2 className="card-overlay-title">
+              {selectedCard.year} {selectedCard.brand}
+            </h2>
+            <p className="card-overlay-subtitle">
+              {selectedCard.player_name} • #{selectedCard.card_number}
+              {selectedCard.team ? ` • ${selectedCard.team}` : ""} •{" "}
+              {selectedCard.set_name}
+            </p>
+
+            {(() => {
+              const raw = selectedCard.image_url ?? "";
+              const trimmed = raw.toString().trim();
+              const hasImage =
+                trimmed !== "" &&
+                trimmed.toLowerCase() !== "null" &&
+                trimmed.toLowerCase() !== "none";
+
+              if (!hasImage) {
+                return (
+                  <div className="card-overlay-image-placeholder">
+                    No image available
+                  </div>
+                );
+              }
+
+              return (
+                <img
+                  src={trimmed}
+                  alt={selectedCard.player_name}
+                  className="card-overlay-image"
+                />
+              );
+            })()}
+
+            <div className="card-overlay-actions">
+              <button
+                className="card-overlay-button"
+                onClick={handleAddOwned}
+              >
+                Add to Owned
+              </button>
+              <button
+                className="card-overlay-button"
+                onClick={handleAddWanted}
+              >
+                Add to Wantlist
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

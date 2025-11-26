@@ -40,6 +40,8 @@ def owned_card_to_dict(owned: OwnedCard) -> dict:
                 "card_number": owned.card.card_number,
                 "player_name": owned.card.player_name,
                 "team": owned.card.team,
+                # 👇👇👇 THIS LINE IS THE FIX
+                "image_url": owned.card.image_url,
             }
             if owned.card is not None
             else None
@@ -198,6 +200,7 @@ def delete_owned_card(owned_id: int):
     owner_id = owned.owner_id
     card_id = owned.card_id
 
+    # Merge duplicates for this user + card into one row
     rows = (
         OwnedCard.query.filter_by(owner_id=owner_id, card_id=card_id)
         .order_by(OwnedCard.id)
@@ -213,14 +216,28 @@ def delete_owned_card(owned_id: int):
         base.quantity += dup.quantity
         db.session.delete(dup)
 
-    base.quantity -= 1
+    # NEW: how many copies to remove
+    count = request.args.get("count", 1, type=int)
+    if count < 1:
+        count = 1
+    if count > base.quantity:
+        count = base.quantity
+
+    base.quantity -= count
 
     if base.quantity <= 0:
         db.session.delete(base)
+        db.session.commit()
+        return jsonify({"deleted": True, "remaining": 0}), 200
 
     db.session.commit()
-
-    return jsonify({"message": "One copy removed."}), 200
+    return jsonify(
+        {
+            "deleted": False,
+            "remaining": base.quantity,
+            "owned": owned_card_to_dict(base),
+        }
+    ), 200
 
 
 @owned_cards_bp.post("/by-name")
