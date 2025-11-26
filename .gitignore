@@ -17,3 +17,4 @@ dist/
 # Docker / Redis
 
 # Database
+instance/
