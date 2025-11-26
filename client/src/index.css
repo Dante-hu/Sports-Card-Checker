@@ -70,3 +70,227 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ----- Cards page layout ----- */
+
+.cards-page {
+  width: 100%;
+  max-width: 1400px;              /* how wide the whole cards area is */
+  margin: 0 auto;                 /* center on the screen */
+  padding: 1.5rem 1rem 3rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.cards-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.cards-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cards-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.cards-subtitle-term {
+  font-style: italic;
+}
+
+/* Search bar */
+
+.cards-search-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cards-search-input {
+  min-width: 230px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.cards-search-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.cards-search-button {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: none;
+  background: #10b981;
+  color: #021016;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cards-search-button:hover {
+  background: #0ea271;
+}
+
+/* Status text */
+
+.cards-status {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.cards-status-error {
+  color: #dc2626;
+}
+
+/* ----- GRID of cards ----- */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;       /* mobile: 1 column */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Small / tablet: 2 columns */
+@media (min-width: 640px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 5 columns */
+@media (min-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Each card tile */
+
+.card-tile {
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  transition: background 0.15s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-tile:hover {
+  background: #eef2ff;
+}
+
+.card-image-wrapper {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.6rem;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.card-image-placeholder {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+/* Text content */
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-row-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.card-player {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+.card-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.card-set {
+  margin-top: auto;       /* pins this to the bottom of the tile */
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Pagination */
+
+.cards-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cards-page-button {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.cards-page-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cards-page-info {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Cards that don't have an image yet */
+.card-image-wrapper--empty {
+  background: #f3f4f6;
+  border: 1px dashed #d1d5db;
+}
+
+.card-meta-line {
+  margin: 0.15rem 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
