@@ -12,41 +12,40 @@ import os
 
 
 def create_app():
-  # 👇 this tells Flask to use the instance/ folder
-  app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True)
 
-  # --- SQLite DB in instance/project.db (what you want) ---
-  os.makedirs(app.instance_path, exist_ok=True)
-  db_path = os.path.join(app.instance_path, "project.db")
-  app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    # --- SQLite DB in instance/project.db ---
+    os.makedirs(app.instance_path, exist_ok=True)
+    db_path = os.path.join(app.instance_path, "project.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 
-  app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-  app.config["SECRET_KEY"] = "dev-secret-change-me"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.config["SECRET_KEY"] = "dev-secret-change-me"
 
-  CORS(
-      app,
-      resources={
-          r"/api/*": {
-              "origins": [
-                  "http://localhost:5173",
-                  "http://127.0.0.1:5173",
-              ]
-          }
-      },
-      supports_credentials=True,
-  )
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": [
+                    "http://localhost:5173",
+                    "http://127.0.0.1:5173",
+                ]
+            }
+        },
+        supports_credentials=True,
+    )
 
-  db.init_app(app)
+    db.init_app(app)
 
-  # register blueprints
-  app.register_blueprint(auth_bp)
-  app.register_blueprint(cards_bp)
-  app.register_blueprint(sets_bp)
-  app.register_blueprint(wanted_cards_bp)
-  app.register_blueprint(owned_cards_bp)
+    # Register blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(cards_bp)
+    app.register_blueprint(sets_bp)
+    app.register_blueprint(wanted_cards_bp)
+    app.register_blueprint(owned_cards_bp)
 
-  # make sure tables exist in instance/project.db
-  with app.app_context():
-      db.create_all()
+    # Ensure tables exist
+    with app.app_context():
+        db.create_all()
 
-  return app
+    return app
