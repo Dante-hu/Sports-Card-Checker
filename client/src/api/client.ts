@@ -1,10 +1,13 @@
-// client/src/api/client.js
+// client/src/api/client.ts
 
-// We now let Vite proxy /api calls to the backend,
-// so we don't hardcode http://127.0.0.1:5000 here.
+// Vite will proxy /api calls, so no hardcoded backend URL.
 export const API_BASE_URL = "";
 
-async function request(path, options = {}) {
+export interface RequestOptions extends RequestInit {
+  headers?: Record<string, string>;
+}
+
+async function request(path: string, options: RequestOptions = {}): Promise<any> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     credentials: "include",
     headers: {
@@ -16,6 +19,7 @@ async function request(path, options = {}) {
 
   if (!res.ok) {
     let message = `Request failed with status ${res.status}`;
+
     try {
       const data = await res.json();
       if (data && data.error) {
@@ -25,9 +29,11 @@ async function request(path, options = {}) {
       const text = await res.text();
       if (text) message = text;
     }
+
     throw new Error(message);
   }
 
+  // No content
   if (res.status === 204) {
     return null;
   }
@@ -36,11 +42,14 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  get: (path) => request(path),
-  post: (path, body) =>
+  get: (path: string): Promise<any> => request(path),
+
+  post: (path: string, body?: any): Promise<any> =>
     request(path, {
       method: "POST",
       body: body ? JSON.stringify(body) : undefined,
     }),
-  del: (path) => request(path, { method: "DELETE" }),
+
+  del: (path: string): Promise<any> =>
+    request(path, { method: "DELETE" }),
 };

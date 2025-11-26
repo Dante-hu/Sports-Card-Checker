@@ -1,25 +1,41 @@
-// client/src/pages/WantlistPage.jsx
+// client/src/pages/WantlistPage.tsx
 import { useEffect, useState } from "react";
 import { fetchWanted } from "../api/wanted";
 
-export default function WantlistPage() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+interface Card {
+  id?: number;
+  year?: number;
+  brand?: string;
+  set_name?: string;
+  player_name?: string;
+  card_number?: string | number;
+  team?: string | null;
+}
 
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+interface WantedItem {
+  id: number;
+  notes?: string | null;
+  card?: Card | null;
+}
+
+export default function WantlistPage() {
+  const [items, setItems] = useState<WantedItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState<number>(1);
+  const [pages, setPages] = useState<number>(1);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     fetchWanted({ page })
-      .then((data) => {
+      .then((data: any) => {
         console.log("wantlist response:", data);
 
         if (Array.isArray(data)) {
-          // if backend ever returns plain array
+          // fallback if backend ever returns plain array
           setItems(data);
           setPage(1);
           setPages(1);
@@ -29,15 +45,17 @@ export default function WantlistPage() {
         const resultItems = Array.isArray(data.items) ? data.items : [];
         setItems(resultItems);
 
-        const currentPage = typeof data.page === "number" ? data.page : page;
-        const totalPages = typeof data.pages === "number" ? data.pages : 1;
+        const currentPage =
+          typeof data.page === "number" ? data.page : page;
+        const totalPages =
+          typeof data.pages === "number" ? data.pages : 1;
 
         setPage(currentPage);
         setPages(totalPages);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Error fetching wantlist:", err);
-        setError(err.message || "Failed to load wantlist");
+        setError(err?.message || "Failed to load wantlist");
         setItems([]);
         setPage(1);
         setPages(1);
@@ -73,7 +91,8 @@ export default function WantlistPage() {
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((wanted) => {
-              const card = wanted.card || {};
+              const card: Card = wanted.card || {};
+
               return (
                 <div
                   key={wanted.id}
@@ -98,7 +117,7 @@ export default function WantlistPage() {
                     </div>
                   )}
 
-                  {/* later: button to remove from wantlist or add to owned */}
+                  {/* Later: remove / move to owned buttons */}
                 </div>
               );
             })}
@@ -116,7 +135,8 @@ export default function WantlistPage() {
 
             <span className="text-xs text-slate-400">
               Page{" "}
-              <span className="font-semibold text-slate-100">{page}</span> of{" "}
+              <span className="font-semibold text-slate-100">{page}</span>{" "}
+              of{" "}
               <span className="font-semibold text-slate-100">
                 {pages || 1}
               </span>

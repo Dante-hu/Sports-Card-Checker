@@ -1,26 +1,27 @@
-// client/src/pages/SignupPage.jsx
-import { useState } from "react";
-import { signup } from "../api/auth";
+// client/src/pages/LoginPage.tsx
+import { useState, type FormEvent } from "react";
+import { login } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function SignupPage() {
+export default function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     try {
-      const user = await signup(email, password);
-      console.log("Signed up:", user);
+      const user = await login(email, password);
+      console.log("Logged in:", user);
       navigate("/cards");
-    } catch (err) {
-      setError(err.message || "Sign up failed");
+    } catch (err: any) {
+      setError(err?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -32,9 +33,9 @@ export default function SignupPage() {
         onSubmit={handleSubmit}
         className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-sm space-y-4"
       >
-        <h1 className="text-2xl font-semibold text-slate-50">Sign up</h1>
+        <h1 className="text-2xl font-semibold text-slate-50">Login</h1>
         <p className="text-sm text-slate-400">
-          Create an account to track your sets and progress.
+          Log in to manage your owned cards and wantlist.
         </p>
 
         {error && (
@@ -70,13 +71,13 @@ export default function SignupPage() {
           disabled={loading}
           className="w-full rounded-lg py-2 text-sm font-medium bg-emerald-500 disabled:bg-emerald-900 text-slate-950"
         >
-          {loading ? "Creating account..." : "Sign up"}
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p className="text-xs text-slate-400 text-center">
-          Already have an account?{" "}
-          <Link className="text-emerald-400 hover:underline" to="/login">
-            Log in
+          Don&apos;t have an account?{" "}
+          <Link className="text-emerald-400 hover:underline" to="/signup">
+            Sign up
           </Link>
         </p>
       </form>
