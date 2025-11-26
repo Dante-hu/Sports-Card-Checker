@@ -1,93 +1,76 @@
-// client/src/pages/CardsPage.jsx
 import { useEffect, useState } from "react";
-import { fetchCards } from "../api/cards";
+import { fetchSets } from "../api/sets";
 
-export default function CardsPage() {
-  const [cards, setCards] = useState([]);
+export default function SetsPage() {
+  const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [q, setQ] = useState("");       // text in search box
-  const [search, setSearch] = useState(""); // actual search term used
+  const [q, setQ] = useState("");       // search box text
+  const [search, setSearch] = useState(""); // actual search term
 
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
-  const [hasNext, setHasNext] = useState(false);
-  const [hasPrev, setHasPrev] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    fetchCards({ q: search, page })
+    fetchSets({ q: search, page })
       .then((data) => {
-        console.log("cards response:", data); // TEMP: see shape in devtools
+        console.log("sets response:", data);
 
         if (Array.isArray(data)) {
-          // fallback: old behaviour (plain array, no pagination)
-          setCards(data);
+          // fallback if backend returned plain array
+          setSets(data);
           setPages(1);
           setPage(1);
-          setHasPrev(false);
-          setHasNext(false);
           return;
         }
 
         const items = Array.isArray(data.items) ? data.items : [];
-        setCards(items);
+        setSets(items);
 
-        // use backend values if present, else fall back
         const currentPage = typeof data.page === "number" ? data.page : page;
         const totalPages = typeof data.pages === "number" ? data.pages : 1;
 
         setPage(currentPage);
         setPages(totalPages);
-
-        // 🔑 compute hasPrev/hasNext from page + pages
-        setHasPrev(currentPage > 1);
-        setHasNext(currentPage < totalPages);
       })
       .catch((err) => {
-        console.error("Error fetching cards:", err);
-        setError(err.message || "Failed to load cards");
-        setCards([]);
+        console.error("Error fetching sets:", err);
+        setError(err.message || "Failed to load sets");
+        setSets([]);
         setPages(1);
         setPage(1);
-        setHasPrev(false);
-        setHasNext(false);
       })
       .finally(() => setLoading(false));
   }, [search, page]);
 
-
   function handleSubmit(e) {
     e.preventDefault();
-    setPage(1);            // reset to first page on new search
+    setPage(1);
     setSearch(q.trim());
   }
 
   function goToPrev() {
-    if (page > 1 && hasPrev) {
-      setPage((p) => p - 1);
-    }
+    if (page > 1) setPage((p) => p - 1);
   }
 
   function goToNext() {
-    if (hasNext) {
-      setPage((p) => p + 1);
-    }
+    if (page < pages) setPage((p) => p + 1);
   }
 
   return (
     <div>
       {/* Header + search bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <h1 className="text-2xl font-semibold">Cards</h1>
+        <h1 className="text-2xl font-semibold">Sets</h1>
 
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             className="rounded-xl bg-slate-900 px-3 py-2 text-sm text-slate-50 outline-none focus:ring-2 focus:ring-emerald-500/70"
-            placeholder="Search player, team, etc."
+            placeholder="Search set name, brand, year…"
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
@@ -97,52 +80,52 @@ export default function CardsPage() {
         </form>
       </div>
 
-      {/* Status messages */}
-      {loading && <p className="text-sm text-slate-400">Loading cards…</p>}
-
+      {/* Status */}
+      {loading && <p className="text-sm text-slate-400">Loading sets…</p>}
       {!loading && error && (
         <p className="text-sm text-red-400">Error: {error}</p>
       )}
-
-      {!loading && !error && cards.length === 0 && (
-        <p className="text-sm text-slate-400">No cards found.</p>
+      {!loading && !error && sets.length === 0 && (
+        <p className="text-sm text-slate-400">No sets found.</p>
       )}
 
-      {/* Actual cards grid */}
-      {!loading && !error && cards.length > 0 && (
+      {/* Grid */}
+      {!loading && !error && sets.length > 0 && (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {cards.map((card) => (
+            {sets.map((set) => (
               <div
-                key={card.id}
+                key={set.id}
                 className="rounded-2xl bg-slate-900 p-3 flex flex-col gap-2 border border-slate-800"
-            >
+              >
                 <div className="text-xs text-slate-400">
-                  {card.year} • {card.brand} • {card.set_name}
+                  {set.year} • {set.brand} • {set.sport}
                 </div>
-                <div className="font-semibold text-sm">{card.player_name}</div>
-                <div className="text-xs text-slate-400">
-                  #{card.card_number} {card.team && <>• {card.team}</>}
+                <div className="font-semibold text-sm">
+                  {set.name || set.set_name}
                 </div>
-
-                {/* later: Add to Owned / Add to Wantlist buttons */}
+                {typeof set.total_cards === "number" && (
+                  <div className="text-xs text-slate-400">
+                    {set.total_cards} cards in set
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          {/* Pagination controls */}
+          {/* Pagination */}
           <div className="flex items-center justify-center gap-4 mt-4">
             <button
               onClick={goToPrev}
-              disabled={!hasPrev}
+              disabled={page <= 1}
               className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
             >
               ◀ Prev
             </button>
 
             <span className="text-xs text-slate-400">
-              Page <span className="font-semibold text-slate-100">{page}</span>{" "}
-              of{" "}
+              Page{" "}
+              <span className="font-semibold text-slate-100">{page}</span> of{" "}
               <span className="font-semibold text-slate-100">
                 {pages || 1}
               </span>
@@ -150,7 +133,7 @@ export default function CardsPage() {
 
             <button
               onClick={goToNext}
-              disabled={!hasNext}
+              disabled={page >= pages}
               className="px-3 py-1 rounded-xl border border-slate-700 text-sm disabled:opacity-40"
             >
               Next ▶
