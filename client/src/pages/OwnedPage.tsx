@@ -1,21 +1,37 @@
-// client/src/pages/OwnedPage.jsx
+// client/src/pages/OwnedPage.tsx
 import { useEffect, useState } from "react";
 import { fetchOwned } from "../api/owned";
 
-export default function OwnedPage() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+interface Card {
+  id?: number;
+  year?: number;
+  brand?: string;
+  set_name?: string;
+  player_name?: string;
+  card_number?: string | number;
+  team?: string | null;
+}
 
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+interface OwnedItem {
+  id: number;
+  quantity?: number;
+  card?: Card | null;
+}
+
+export default function OwnedPage() {
+  const [items, setItems] = useState<OwnedItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState<number>(1);
+  const [pages, setPages] = useState<number>(1);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     fetchOwned({ page })
-      .then((data) => {
+      .then((data: any) => {
         console.log("owned response:", data);
 
         if (Array.isArray(data)) {
@@ -26,18 +42,22 @@ export default function OwnedPage() {
           return;
         }
 
-        const resultItems = Array.isArray(data.items) ? data.items : [];
+        const resultItems = Array.isArray(data.items)
+          ? data.items
+          : [];
         setItems(resultItems);
 
-        const currentPage = typeof data.page === "number" ? data.page : page;
-        const totalPages = typeof data.pages === "number" ? data.pages : 1;
+        const currentPage =
+          typeof data.page === "number" ? data.page : page;
+        const totalPages =
+          typeof data.pages === "number" ? data.pages : 1;
 
         setPage(currentPage);
         setPages(totalPages);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Error fetching owned cards:", err);
-        setError(err.message || "Failed to load owned cards");
+        setError(err?.message || "Failed to load owned cards");
         setItems([]);
         setPage(1);
         setPages(1);
@@ -73,7 +93,8 @@ export default function OwnedPage() {
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((owned) => {
-              const card = owned.card || {};
+              const card: Card = owned.card || {};
+
               return (
                 <div
                   key={owned.id}
@@ -98,7 +119,7 @@ export default function OwnedPage() {
                     </div>
                   )}
 
-                  {/* later: remove / adjust quantity buttons here */}
+                  {/* future: remove / adjust quantity buttons */}
                 </div>
               );
             })}
@@ -116,7 +137,8 @@ export default function OwnedPage() {
 
             <span className="text-xs text-slate-400">
               Page{" "}
-              <span className="font-semibold text-slate-100">{page}</span> of{" "}
+              <span className="font-semibold text-slate-100">{page}</span>{" "}
+              of{" "}
               <span className="font-semibold text-slate-100">
                 {pages || 1}
               </span>

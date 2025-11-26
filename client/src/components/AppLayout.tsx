@@ -4,7 +4,7 @@ import { logout } from "../api/auth";
 export default function AppLayout() {
   const navigate = useNavigate();
 
-  async function handleLogout() {
+  async function handleLogout(): Promise<void> {
     try {
       await logout();
     } catch (err) {
@@ -43,7 +43,7 @@ export default function AppLayout() {
           <nav className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
             <NavLink
               to="/cards"
-              className={({ isActive }) =>
+              className={({ isActive }: { isActive: boolean }) =>
                 `${linkBaseClasses} ${
                   isActive ? activeClasses : inactiveClasses
                 }`
@@ -52,10 +52,9 @@ export default function AppLayout() {
               Cards
             </NavLink>
 
-            {/* These two will be useful once you build the pages */}
             <NavLink
               to="/owned"
-              className={({ isActive }) =>
+              className={({ isActive }: { isActive: boolean }) =>
                 `${linkBaseClasses} ${
                   isActive ? activeClasses : inactiveClasses
                 }`
@@ -66,7 +65,7 @@ export default function AppLayout() {
 
             <NavLink
               to="/wantlist"
-              className={({ isActive }) =>
+              className={({ isActive }: { isActive: boolean }) =>
                 `${linkBaseClasses} ${
                   isActive ? activeClasses : inactiveClasses
                 }`

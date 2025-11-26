@@ -1,23 +1,34 @@
-import { useEffect, useState } from "react";
+// client/src/pages/SetsPage.tsx
+import { useEffect, useState, type FormEvent } from "react";
 import { fetchSets } from "../api/sets";
 
+interface SetItem {
+  id: number;
+  year?: number;
+  brand?: string;
+  sport?: string;
+  name?: string;
+  set_name?: string;
+  total_cards?: number;
+}
+
 export default function SetsPage() {
-  const [sets, setSets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [sets, setSets] = useState<SetItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [q, setQ] = useState("");       // search box text
-  const [search, setSearch] = useState(""); // actual search term
+  const [q, setQ] = useState<string>(""); // search input
+  const [search, setSearch] = useState<string>(""); // actual search term
 
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
+  const [page, setPage] = useState<number>(1);
+  const [pages, setPages] = useState<number>(1);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     fetchSets({ q: search, page })
-      .then((data) => {
+      .then((data: any) => {
         console.log("sets response:", data);
 
         if (Array.isArray(data)) {
@@ -31,15 +42,17 @@ export default function SetsPage() {
         const items = Array.isArray(data.items) ? data.items : [];
         setSets(items);
 
-        const currentPage = typeof data.page === "number" ? data.page : page;
-        const totalPages = typeof data.pages === "number" ? data.pages : 1;
+        const currentPage =
+          typeof data.page === "number" ? data.page : page;
+        const totalPages =
+          typeof data.pages === "number" ? data.pages : 1;
 
         setPage(currentPage);
         setPages(totalPages);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error("Error fetching sets:", err);
-        setError(err.message || "Failed to load sets");
+        setError(err?.message || "Failed to load sets");
         setSets([]);
         setPages(1);
         setPage(1);
@@ -47,7 +60,7 @@ export default function SetsPage() {
       .finally(() => setLoading(false));
   }, [search, page]);
 
-  function handleSubmit(e) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setPage(1);
     setSearch(q.trim());
@@ -93,20 +106,20 @@ export default function SetsPage() {
       {!loading && !error && sets.length > 0 && (
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {sets.map((set) => (
+            {sets.map((setItem) => (
               <div
-                key={set.id}
+                key={setItem.id}
                 className="rounded-2xl bg-slate-900 p-3 flex flex-col gap-2 border border-slate-800"
               >
                 <div className="text-xs text-slate-400">
-                  {set.year} • {set.brand} • {set.sport}
+                  {setItem.year} • {setItem.brand} • {setItem.sport}
                 </div>
                 <div className="font-semibold text-sm">
-                  {set.name || set.set_name}
+                  {setItem.name || setItem.set_name}
                 </div>
-                {typeof set.total_cards === "number" && (
+                {typeof setItem.total_cards === "number" && (
                   <div className="text-xs text-slate-400">
-                    {set.total_cards} cards in set
+                    {setItem.total_cards} cards in set
                   </div>
                 )}
               </div>
