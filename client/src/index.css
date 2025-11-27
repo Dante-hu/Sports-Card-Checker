@@ -1,1 +1,396 @@
 @import "tailwindcss";
+
+/* ---------- Global base ---------- */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: rgb(15 23 42);  /* slate-900-ish */
+  color: rgb(226 232 240);          /* slate-200-ish */
+}
+
+/* Pages wrapper */
+.cards-page,
+.owned-page,
+.wantlist-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---------- Header / title / search ---------- */
+
+.cards-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cards-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(226 232 240); /* slate-200 */
+}
+
+.cards-subtitle {
+  margin-top: 0.2rem;
+  font-size: 0.875rem;
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+.cards-subtitle-term {
+  font-weight: 600;
+  color: rgb(56 189 248); /* sky-400 */
+}
+
+/* Search form */
+.cards-search-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.cards-search-input {
+  border-radius: 999px;
+  border: 1px solid rgb(51 65 85); /* slate-700 */
+  background-color: rgb(15 23 42); /* slate-900 */
+  padding: 0.5rem 0.9rem;
+  font-size: 0.875rem;
+  color: rgb(226 232 240);
+  min-width: 220px;
+}
+
+.cards-search-input::placeholder {
+  color: rgb(100 116 139); /* slate-500 */
+}
+
+.cards-search-input:focus {
+  outline: none;
+  border-color: rgb(56 189 248); /* sky-400 */
+}
+
+.cards-search-button {
+  border-radius: 999px;
+  border: none;
+  background-color: rgb(56 189 248); /* sky-400 */
+  color: rgb(15 23 42);              /* dark text */
+  padding: 0.5rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cards-search-button:hover {
+  background-color: rgb(59 130 246); /* blue-500 */
+}
+
+/* ---------- Status text ---------- */
+
+.cards-status {
+  font-size: 0.9rem;
+  color: rgb(148 163 184); /* slate-400 */
+}
+
+.cards-status-error {
+  color: rgb(248 113 113); /* red-400 */
+}
+
+/* ---------- GRID: 1 / 4 / 5 columns ---------- */
+
+.cards-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Card tiles ---------- */
+
+.card-tile {
+  border-radius: 1rem;
+  padding: 0.75rem;
+  background-color: rgb(15 23 42);  /* slate-900 */
+  border: 1px solid rgb(30 41 59);  /* slate-800 */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card-tile--clickable {
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-tile--clickable:hover {
+  border-color: rgb(56 189 248); /* sky-400 */
+  transform: translateY(-1px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.45);
+}
+
+/* Image area */
+.card-image-wrapper {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: rgb(15 23 42);
+  border: 1px solid rgb(30 41 59);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+}
+
+.card-image-wrapper--empty {
+  background: radial-gradient(circle at top, rgb(30 64 175), rgb(15 23 42));
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-image-placeholder {
+  font-size: 0.8rem;
+  color: rgb(148 163 184);
+}
+
+/* Text area */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.card-player {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgb(226 232 240);
+}
+
+.card-meta-line {
+  font-size: 0.8rem;
+  color: rgb(148 163 184);
+}
+
+.card-set {
+  font-size: 0.8rem;
+  color: rgb(156 163 175);
+}
+
+.cards-note {
+  font-size: 0.75rem;
+  color: rgb(196 181 253); /* violet-ish */
+}
+
+/* ---------- Pagination ---------- */
+
+.cards-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.cards-page-button {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgb(51 65 85);
+  background-color: rgb(15 23 42);
+  color: rgb(226 232 240);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.cards-page-button:hover:not(:disabled) {
+  background-color: rgb(30 41 59);
+  border-color: rgb(56 189 248);
+}
+
+.cards-page-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cards-page-info {
+  font-size: 0.85rem;
+  color: rgb(156 163 175);
+}
+
+/* ---------- Overlay / popup ---------- */
+
+.card-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.18s ease-out;
+}
+
+/* Inner panel */
+.card-overlay-inner {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background-color: rgb(15 23 42);
+  border: 1px solid rgb(51 65 85);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
+  animation: fadeInUp 0.2s ease-out;
+}
+
+/* Close button */
+.card-overlay-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: none;
+  border-radius: 999px;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: rgb(148 163 184);
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.card-overlay-close:hover {
+  background-color: rgba(15, 23, 42, 0.8);
+  color: rgb(226 232 240);
+}
+
+/* Titles */
+.card-overlay-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: rgb(226 232 240);
+  margin-bottom: 0.25rem;
+}
+
+.card-overlay-subtitle {
+  font-size: 0.85rem;
+  color: rgb(148 163 184);
+  margin-bottom: 0.75rem;
+}
+
+/* Image inside overlay */
+.card-overlay-image {
+  width: 100%;
+  border-radius: 0.85rem;
+  margin: 0.5rem 0 0.75rem;
+  border: 1px solid rgb(30 41 59);
+  object-fit: cover;
+}
+
+.card-overlay-image-placeholder {
+  width: 100%;
+  border-radius: 0.85rem;
+  margin: 0.5rem 0 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px solid rgb(30 41 59);
+  background-color: rgb(15 23 42);
+  color: rgb(148 163 184);
+  font-size: 0.85rem;
+}
+
+/* Actions in overlay */
+.card-overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.card-overlay-button {
+  flex: 1 1 0;
+  min-width: 120px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.75rem;
+  border: none;
+  background-color: rgb(56 189 248); /* sky-400 */
+  color: rgb(15 23 42);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.card-overlay-button:hover {
+  background-color: rgb(59 130 246); /* blue-500 */
+}
+
+/* ---------- Toast (bottom-right) ---------- */
+
+.cards-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: #022c22;           /* dark green-ish */
+  color: #e5fdf4;                /* light text */
+  padding: 0.75rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #10b981;     /* emerald border */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  z-index: 2000;
+  max-width: 260px;
+  animation: cards-toast-in 0.25s ease-out;
+}
+
+@keyframes cards-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Simple animations ---------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
