@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request, os, requests
+from flask import Blueprint, jsonify, request
+import os
+import requests
 from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
