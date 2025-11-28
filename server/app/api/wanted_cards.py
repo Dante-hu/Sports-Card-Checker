@@ -36,7 +36,7 @@ def wanted_to_dict(item: WantedCard) -> dict:
     }
 
 
-@wanted_cards_bp.get("/")
+@wanted_cards_bp.get("")
 @login_required
 def get_wanted_cards():
     """Return wantlist items for the logged-in user only."""
@@ -45,7 +45,7 @@ def get_wanted_cards():
     return jsonify([wanted_to_dict(item) for item in items]), 200
 
 
-@wanted_cards_bp.post("/")
+@wanted_cards_bp.post("")
 @login_required
 def add_wanted_card():
     """

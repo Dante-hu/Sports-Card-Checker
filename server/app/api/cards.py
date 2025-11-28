@@ -29,7 +29,7 @@ def serialize_card(card: Card) -> dict:
     }
 
 
-@cards_bp.get("/")
+@cards_bp.get("")
 def list_cards():
     query = Card.query
 
@@ -110,7 +110,7 @@ def create_sample_card():
     return jsonify(serialize_card(card)), 201
 
 
-@cards_bp.post("/")
+@cards_bp.post("")
 def create_card():
     data = request.get_json() or {}
 
