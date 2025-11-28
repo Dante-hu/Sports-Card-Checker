@@ -1,8 +1,9 @@
 // client/src/pages/CardsPage.tsx
 import { useEffect, useState, type FormEvent } from "react";
-import { fetchCards } from "../api/cards";
+import { fetchCards, autoFillCardImage } from "../api/cards";
 import { addOwnedCard } from "../api/owned";
 import { addWantedCard } from "../api/wanted";
+import EbayResults from "../components/EbayResults"; // eBay component
 
 interface Card {
   id: number;
@@ -13,6 +14,19 @@ interface Card {
   card_number: string | number;
   team?: string | null;
   image_url?: string | null;
+}
+
+function buildEbayQueryFromCard(card: Card): string {
+  const parts: string[] = [];
+
+  if (card.year) parts.push(String(card.year));
+  if (card.brand) parts.push(card.brand);        // e.g. "Upper Deck"
+  if (card.set_name) parts.push(card.set_name);  // e.g. "Series 1", "O-Pee-Chee"
+  if (card.player_name) parts.push(card.player_name);
+  if (card.card_number) parts.push(`#${card.card_number}`);
+  if (card.team) parts.push(card.team);
+
+  return parts.join(" ").trim();
 }
 
 export default function CardsPage() {
@@ -30,6 +44,8 @@ export default function CardsPage() {
 
   // Expanded card
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  // eBay query based on selected card
+  const ebayQuery = selectedCard ? buildEbayQueryFromCard(selectedCard) : "";
 
   // Notification toast
   const [toast, setToast] = useState<string | null>(null);
@@ -103,6 +119,43 @@ export default function CardsPage() {
   // Click card
   function handleCardClick(card: Card): void {
     setSelectedCard(card);
+
+    // If the card has no image yet, try to auto-fill one from eBay
+    const raw = card.image_url ?? "";
+    const trimmed = raw.toString().trim();
+    const hasImage =
+      trimmed !== "" &&
+      trimmed.toLowerCase() !== "null" &&
+      trimmed.toLowerCase() !== "none";
+
+    if (!hasImage) {
+      (async () => {
+        try {
+          const updated = await autoFillCardImage(card.id);
+
+          if (updated && updated.image_url) {
+            // Update the selected card in the overlay
+            setSelectedCard((prev) =>
+              prev && prev.id === card.id
+                ? { ...prev, image_url: updated.image_url }
+                : prev
+            );
+
+            // Update the card in the grid list
+            setCards((prev) =>
+              prev.map((c) =>
+                c.id === card.id ? { ...c, image_url: updated.image_url } : c
+              )
+            );
+
+            showToast("Auto-filled image from eBay");
+          }
+        } catch (err) {
+          console.error("Failed to auto-fill card image:", err);
+          // optional: showToast("Could not auto-fill image");
+        }
+      })();
+    }
   }
 
   // Close overlay
@@ -264,6 +317,14 @@ export default function CardsPage() {
           <div
             className="card-overlay-inner"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "1000px",
+              width: "90vw",
+              display: "flex",
+              gap: "1.5rem",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
           >
             <button
               className="card-overlay-close"
@@ -273,54 +334,75 @@ export default function CardsPage() {
               ×
             </button>
 
-            <h2 className="card-overlay-title">
-              {selectedCard.year} {selectedCard.brand}
-            </h2>
-            <p className="card-overlay-subtitle">
-              {selectedCard.player_name} • #{selectedCard.card_number}
-              {selectedCard.team ? ` • ${selectedCard.team}` : ""} •{" "}
-              {selectedCard.set_name}
-            </p>
+            {/* LEFT COLUMN: title + card + buttons */}
+            <div
+              style={{
+                flex: "0 0 280px",
+                maxWidth: "100%",
+              }}
+            >
+              <h2 className="card-overlay-title">
+                {selectedCard.year} {selectedCard.brand}
+              </h2>
+              <p className="card-overlay-subtitle">
+                {selectedCard.player_name} • #{selectedCard.card_number}
+                {selectedCard.team ? ` • ${selectedCard.team}` : ""} •{" "}
+                {selectedCard.set_name}
+              </p>
 
-            {(() => {
-              const raw = selectedCard.image_url ?? "";
-              const trimmed = raw.toString().trim();
-              const hasImage =
-                trimmed !== "" &&
-                trimmed.toLowerCase() !== "null" &&
-                trimmed.toLowerCase() !== "none";
+              {(() => {
+                const raw = selectedCard.image_url ?? "";
+                const trimmed = raw.toString().trim();
+                const hasImage =
+                  trimmed !== "" &&
+                  trimmed.toLowerCase() !== "null" &&
+                  trimmed.toLowerCase() !== "none";
 
-              if (!hasImage) {
+                if (!hasImage) {
+                  return (
+                    <div className="card-overlay-image-placeholder">
+                      No image available
+                    </div>
+                  );
+                }
+
                 return (
-                  <div className="card-overlay-image-placeholder">
-                    No image available
-                  </div>
+                  <img
+                    src={trimmed}
+                    alt={selectedCard.player_name}
+                    className="card-overlay-image"
+                  />
                 );
-              }
+              })()}
 
-              return (
-                <img
-                  src={trimmed}
-                  alt={selectedCard.player_name}
-                  className="card-overlay-image"
-                />
-              );
-            })()}
-
-            <div className="card-overlay-actions">
-              <button
-                className="card-overlay-button"
-                onClick={handleAddOwned}
-              >
-                Add to Owned
-              </button>
-              <button
-                className="card-overlay-button"
-                onClick={handleAddWanted}
-              >
-                Add to Wantlist
-              </button>
+              <div className="card-overlay-actions">
+                <button
+                  className="card-overlay-button"
+                  onClick={handleAddOwned}
+                >
+                  Add to Owned
+                </button>
+                <button
+                  className="card-overlay-button"
+                  onClick={handleAddWanted}
+                >
+                  Add to Wantlist
+                </button>
+              </div>
             </div>
+
+            {/* RIGHT COLUMN: eBay listings */}
+            {ebayQuery && (
+              <div
+                className="card-overlay-ebay"
+                style={{
+                  flex: "1 1 0",
+                  minWidth: "260px",
+                }}
+              >
+                <EbayResults query={ebayQuery} />
+              </div>
+            )}
           </div>
         </div>
       )}

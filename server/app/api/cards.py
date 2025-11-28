@@ -3,17 +3,19 @@ from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
 from ..models.set import Set
+
+import os
+import requests
+
 cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 
 def serialize_card(card: Card) -> dict:
     """Helper to keep JSON output consistent."""
     raw_year = card.year
-    # If year is a string of digits like "2023", return it as int 2023
     if isinstance(raw_year, str) and raw_year.isdigit():
         year_value = int(raw_year)
     else:
-        # For things like "2024-25" or None, just return as-is
         year_value = raw_year
     return {
         "id": card.id,
@@ -32,7 +34,6 @@ def serialize_card(card: Card) -> dict:
 def list_cards():
     query = Card.query
 
-    # ----- filters -----
     sport = request.args.get("sport")
     year = request.args.get("year", type=int)
     brand = request.args.get("brand")
@@ -64,11 +65,9 @@ def list_cards():
             )
         )
 
-    # ----- pagination -----
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=20, type=int)
 
-    # safety limits
     if page < 1:
         page = 1
     if per_page < 1:
@@ -77,7 +76,6 @@ def list_cards():
         per_page = 100
 
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-
     items = [serialize_card(c) for c in pagination.items]
 
     return jsonify(
@@ -93,7 +91,6 @@ def list_cards():
 
 @cards_bp.post("/sample")
 def create_sample_card():
-    """Create a hard-coded sample card (useful for quick testing)."""
     card = Card(
         sport="Hockey",
         year=2023,
@@ -122,7 +119,6 @@ def create_card():
     team = data.get("team")
     image_url = data.get("image_url")
 
-    # Validate required fields
     missing = [
         field
         for field, value in {
@@ -139,7 +135,6 @@ def create_card():
     if missing:
         return jsonify({"error": f"Missing fields: {', '.join(missing)}"}), 400
 
-    # 🔹 AUTO-CREATE OR FETCH EXISTING SET
     set_obj = Set.query.filter_by(
         sport=sport,
         year=year,
@@ -155,9 +150,7 @@ def create_card():
             set_name=set_name,
         )
         db.session.add(set_obj)
-        # will commit later together
 
-    # 🔹 CREATE THE CARD
     card = Card(
         sport=sport,
         year=year,
@@ -177,15 +170,6 @@ def create_card():
 
 @cards_bp.route("/<int:card_id>", methods=["PATCH", "PUT"])
 def update_card(card_id: int):
-    """
-    Update an existing card.
-
-    PATCH /api/cards/1
-    PUT   /api/cards/1
-
-    Body can include any of:
-    sport, year, brand, set_name, card_number, player_name, team, image_url
-    """
     card = Card.query.get_or_404(card_id)
     data = request.get_json() or {}
 
@@ -213,3 +197,103 @@ def update_card(card_id: int):
 
     db.session.commit()
     return jsonify(serialize_card(card))
+
+
+# ----------------------------
+# STRICT eBay auto-image logic
+# ----------------------------
+
+def build_ebay_query_from_card(card: Card) -> str:
+    parts = []
+    if card.year:
+        parts.append(str(card.year))
+    if card.brand:
+        parts.append(card.brand)
+    if card.set_name:
+        parts.append(card.set_name)
+    if card.player_name:
+        parts.append(card.player_name)
+    if card.card_number is not None:
+        parts.append(f"#{card.card_number}")
+    return " ".join(parts).strip()
+
+
+@cards_bp.post("/<int:card_id>/auto-image")
+def auto_fill_card_image(card_id: int):
+    card = Card.query.get(card_id)
+    if not card:
+        return jsonify({"error": "Card not found"}), 404
+
+    query = build_ebay_query_from_card(card)
+    if not query:
+        return jsonify({"error": "Cannot build search query"}), 400
+
+    token = os.environ.get("EBAY_OAUTH_TOKEN")
+    if not token:
+        return jsonify({"error": "EBAY_OAUTH_TOKEN not configured"}), 500
+
+    marketplace_id = os.environ.get("EBAY_MARKETPLACE_ID", "EBAY_CA")
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "X-EBAY-C-MARKETPLACE-ID": marketplace_id,
+    }
+
+    # get more results so strict filtering can work
+    params = {"q": query, "limit": 12}
+
+    try:
+        resp = requests.get(
+            "https://api.ebay.com/buy/browse/v1/item_summary/search",
+            headers=headers,
+            params=params,
+            timeout=10,
+        )
+        resp.raise_for_status()
+    except requests.RequestException as exc:
+        return jsonify({"error": "Failed to contact eBay", "details": str(exc)}), 502
+
+    data = resp.json()
+    items = data.get("itemSummaries") or []
+    if not items:
+        return jsonify(serialize_card(card)), 200
+
+    # STRICT FILTERING
+    wanted = []
+    if card.player_name:
+        wanted.append(card.player_name.lower())
+    if card.card_number:
+        wanted.append(str(card.card_number).lower())
+    if card.brand:
+        wanted.append(card.brand.lower())
+    if card.set_name:
+        wanted.append(card.set_name.lower())
+    if card.team:
+        wanted.append(card.team.lower())
+
+    best = None
+    best_score = 0
+
+    for item in items:
+        title = (item.get("title") or "").lower()
+        score = sum(token in title for token in wanted)
+        if score > best_score:
+            best_score = score
+            best = item
+
+    # STRICT threshold: must match at least 3 tokens
+    if best is None or best_score < 3:
+        return jsonify(serialize_card(card)), 200
+
+    image_url = (
+        (best.get("image") or {}).get("imageUrl")
+        or (best.get("thumbnailImages") or [{}])[0].get("imageUrl")
+    )
+
+    if not image_url:
+        return jsonify(serialize_card(card)), 200
+
+    card.image_url = image_url
+    db.session.commit()
+
+    return jsonify(serialize_card(card)), 200
