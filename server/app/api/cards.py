@@ -1,11 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, os, requests
 from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
 from ..models.set import Set
-
-import os
-import requests
 
 cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
