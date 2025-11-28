@@ -62,7 +62,9 @@ def import_set(filepath: Path):
         created += 1
 
     db.session.commit()
-    print(f"{os.path.basename(filepath)} → Imported {created} cards, skipped {skipped} duplicates")
+    print(
+        f"{os.path.basename(filepath)} → Imported {created} cards, skipped {skipped} duplicates"
+    )
 
 
 def seed_all_sets():

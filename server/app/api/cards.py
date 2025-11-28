@@ -3,6 +3,7 @@ from sqlalchemy import or_
 from ..models.card import Card
 from ..extensions import db
 from ..models.set import Set
+
 cards_bp = Blueprint("cards", __name__, url_prefix="/api/cards")
 
 
