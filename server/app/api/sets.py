@@ -72,31 +72,38 @@ def get_cards_for_set(set_id):
 
     # Serialize cards (use to_dict if it exists)
     items = [
-        c.to_dict() if hasattr(c, "to_dict") else {
-            "id": c.id,
-            "sport": c.sport,
-            "year": c.year,
-            "brand": c.brand,
-            "set_name": c.set_name,
-            "card_number": c.card_number,
-            "player_name": c.player_name,
-            "team": c.team,
-            "image_url": c.image_url,
-        }
+        (
+            c.to_dict()
+            if hasattr(c, "to_dict")
+            else {
+                "id": c.id,
+                "sport": c.sport,
+                "year": c.year,
+                "brand": c.brand,
+                "set_name": c.set_name,
+                "card_number": c.card_number,
+                "player_name": c.player_name,
+                "team": c.team,
+                "image_url": c.image_url,
+            }
+        )
         for c in pagination.items
     ]
 
-    return jsonify(
-        {
-            "items": items,
-            "page": page,
-            "per_page": per_page,
-            "total": pagination.total,
-            "pages": pagination.pages,
-            "has_next": pagination.has_next,
-            "has_prev": pagination.has_prev,
-        }
-    ), 200
+    return (
+        jsonify(
+            {
+                "items": items,
+                "page": page,
+                "per_page": per_page,
+                "total": pagination.total,
+                "pages": pagination.pages,
+                "has_next": pagination.has_next,
+                "has_prev": pagination.has_prev,
+            }
+        ),
+        200,
+    )
 
 
 @sets_bp.post("/")

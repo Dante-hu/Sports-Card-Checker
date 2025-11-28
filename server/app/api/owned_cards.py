@@ -40,7 +40,6 @@ def owned_card_to_dict(owned: OwnedCard) -> dict:
                 "card_number": owned.card.card_number,
                 "player_name": owned.card.player_name,
                 "team": owned.card.team,
-                # 👇👇👇 THIS LINE IS THE FIX
                 "image_url": owned.card.image_url,
             }
             if owned.card is not None
@@ -49,7 +48,7 @@ def owned_card_to_dict(owned: OwnedCard) -> dict:
     }
 
 
-@owned_cards_bp.get("/")
+@owned_cards_bp.get("")
 @login_required
 def list_owned_cards():
     """
@@ -76,7 +75,7 @@ def get_owned_card(owned_id: int):
     return jsonify(owned_card_to_dict(owned)), 200
 
 
-@owned_cards_bp.post("/")
+@owned_cards_bp.post("")
 @login_required
 def create_owned_card():
     """
@@ -231,13 +230,16 @@ def delete_owned_card(owned_id: int):
         return jsonify({"deleted": True, "remaining": 0}), 200
 
     db.session.commit()
-    return jsonify(
-        {
-            "deleted": False,
-            "remaining": base.quantity,
-            "owned": owned_card_to_dict(base),
-        }
-    ), 200
+    return (
+        jsonify(
+            {
+                "deleted": False,
+                "remaining": base.quantity,
+                "owned": owned_card_to_dict(base),
+            }
+        ),
+        200,
+    )
 
 
 @owned_cards_bp.post("/by-name")
