@@ -1,5 +1,5 @@
 // client/src/pages/CardsPage.tsx
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { fetchCards, autoFillCardImage } from "../api/cards";
 import { addOwnedCard } from "../api/owned";
 import { addWantedCard } from "../api/wanted";
@@ -20,8 +20,8 @@ function buildEbayQueryFromCard(card: Card): string {
   const parts: string[] = [];
 
   if (card.year) parts.push(String(card.year));
-  if (card.brand) parts.push(card.brand);        // e.g. "Upper Deck"
-  if (card.set_name) parts.push(card.set_name);  // e.g. "Series 1", "O-Pee-Chee"
+  if (card.brand) parts.push(card.brand); // e.g. "Upper Deck"
+  if (card.set_name) parts.push(card.set_name); // e.g. "Series 1", "O-Pee-Chee"
   if (card.player_name) parts.push(card.player_name);
   if (card.card_number) parts.push(`#${card.card_number}`);
   if (card.team) parts.push(card.team);
@@ -50,11 +50,15 @@ export default function CardsPage() {
   // Notification toast
   const [toast, setToast] = useState<string | null>(null);
 
+  // Track which card IDs we've already tried to auto-fill this session
+  const autoImageRequestedIdsRef = useRef<Set<number>>(new Set());
+
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   }
 
+  // Load cards from the backend
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -98,6 +102,51 @@ export default function CardsPage() {
       .finally(() => setLoading(false));
   }, [search, page]);
 
+  // 🔥 Auto-fill missing images in the background (no click needed)
+  useEffect(() => {
+    if (!cards || cards.length === 0) return;
+
+    for (const card of cards) {
+      const raw = card.image_url ?? "";
+      const trimmed = raw.toString().trim();
+      const hasImage =
+        trimmed !== "" &&
+        trimmed.toLowerCase() !== "null" &&
+        trimmed.toLowerCase() !== "none";
+
+      // Skip cards that already have an image
+      if (hasImage) continue;
+
+      // Skip if we've already tried this card ID
+      if (autoImageRequestedIdsRef.current.has(card.id)) continue;
+      autoImageRequestedIdsRef.current.add(card.id);
+
+      (async () => {
+        try {
+          const updated = await autoFillCardImage(card.id);
+
+          if (updated && updated.image_url) {
+            // Update card in grid
+            setCards((prev) =>
+              prev.map((c) =>
+                c.id === card.id ? { ...c, image_url: updated.image_url } : c
+              )
+            );
+
+            // If this card is currently selected in the overlay, update that too
+            setSelectedCard((prev) =>
+              prev && prev.id === card.id
+                ? { ...prev, image_url: updated.image_url }
+                : prev
+            );
+          }
+        } catch (err) {
+          console.error("Auto-image failed:", err);
+        }
+      })();
+    }
+  }, [cards]);
+
   function handleSubmit(e: FormEvent<HTMLFormElement>): void {
     e.preventDefault();
     setPage(1);
@@ -116,46 +165,9 @@ export default function CardsPage() {
     }
   }
 
-  // Click card
+  // Click card -> JUST open overlay now (no longer triggers auto-fill)
   function handleCardClick(card: Card): void {
     setSelectedCard(card);
-
-    // If the card has no image yet, try to auto-fill one from eBay
-    const raw = card.image_url ?? "";
-    const trimmed = raw.toString().trim();
-    const hasImage =
-      trimmed !== "" &&
-      trimmed.toLowerCase() !== "null" &&
-      trimmed.toLowerCase() !== "none";
-
-    if (!hasImage) {
-      (async () => {
-        try {
-          const updated = await autoFillCardImage(card.id);
-
-          if (updated && updated.image_url) {
-            // Update the selected card in the overlay
-            setSelectedCard((prev) =>
-              prev && prev.id === card.id
-                ? { ...prev, image_url: updated.image_url }
-                : prev
-            );
-
-            // Update the card in the grid list
-            setCards((prev) =>
-              prev.map((c) =>
-                c.id === card.id ? { ...c, image_url: updated.image_url } : c
-              )
-            );
-
-            showToast("Auto-filled image from eBay");
-          }
-        } catch (err) {
-          console.error("Failed to auto-fill card image:", err);
-          // optional: showToast("Could not auto-fill image");
-        }
-      })();
-    }
   }
 
   // Close overlay

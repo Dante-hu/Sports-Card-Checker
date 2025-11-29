@@ -6,6 +6,8 @@ import {
   type Card as WantedCard,
   deleteWantedItem,
 } from "../api/wanted";
+import EbayResults from "../components/EbayResults";
+import { buildEbayQueryFromCard } from "../utils/ebay";
 
 export default function WantlistPage() {
   const [items, setItems] = useState<WantedItem[]>([]);
@@ -18,10 +20,12 @@ export default function WantlistPage() {
   const [hasPrev, setHasPrev] = useState<boolean>(false);
 
   const [toast, setToast] = useState<string | null>(null);
-  const [selectedWanted, setSelectedWanted] = useState<WantedItem | null>(null);
+  const [selectedWanted, setSelectedWanted] =
+    useState<WantedItem | null>(null);
 
-  // NEW: confirm dialog for remove
-  const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
+  // confirm dialog for remove
+  const [showRemoveDialog, setShowRemoveDialog] =
+    useState<boolean>(false);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -215,12 +219,20 @@ export default function WantlistPage() {
         </>
       )}
 
-      {/* overlay for selected wantlist item */}
+      {/* overlay for selected wantlist item + eBay on the right */}
       {selectedWanted && (
         <div className="card-overlay" onClick={closeSelected}>
           <div
             className="card-overlay-inner"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "1000px",
+              width: "90vw",
+              display: "flex",
+              gap: "1.5rem",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
           >
             <button
               className="card-overlay-close"
@@ -240,76 +252,99 @@ export default function WantlistPage() {
                 trimmed.toLowerCase() !== "null" &&
                 trimmed.toLowerCase() !== "none";
 
+              const ebayQuery = buildEbayQueryFromCard(card);
+
               return (
                 <>
-                  <h2 className="card-overlay-title">
-                    {card.year} {card.brand}
-                  </h2>
-                  <p className="card-overlay-subtitle">
-                    {card.player_name} • #{card.card_number}
-                    {card.team ? ` • ${card.team}` : ""} • {card.set_name}
-                  </p>
-
-                  {hasImage ? (
-                    <img
-                      src={trimmed}
-                      alt={card.player_name || "Card"}
-                      className="card-overlay-image"
-                    />
-                  ) : (
-                    <div className="card-overlay-image-placeholder">
-                      No image available
-                    </div>
-                  )}
-
-                  {selectedWanted.notes && (
-                    <p className="mt-3 text-sm text-slate-200">
-                      Notes: {selectedWanted.notes}
+                  {/* LEFT COLUMN: card details + notes + remove */}
+                  <div
+                    style={{
+                      flex: "0 0 280px",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <h2 className="card-overlay-title">
+                      {card.year} {card.brand}
+                    </h2>
+                    <p className="card-overlay-subtitle">
+                      {card.player_name} • #{card.card_number}
+                      {card.team ? ` • ${card.team}` : ""} • {card.set_name}
                     </p>
+
+                    {hasImage ? (
+                      <img
+                        src={trimmed}
+                        alt={card.player_name || "Card"}
+                        className="card-overlay-image"
+                      />
+                    ) : (
+                      <div className="card-overlay-image-placeholder">
+                        No image available
+                      </div>
+                    )}
+
+                    {selectedWanted.notes && (
+                      <p className="mt-3 text-sm text-slate-200">
+                        Notes: {selectedWanted.notes}
+                      </p>
+                    )}
+
+                    <div className="card-overlay-actions">
+                      <button
+                        className="card-overlay-button"
+                        onClick={handleRemoveClicked}
+                      >
+                        Remove from Wantlist
+                      </button>
+                    </div>
+
+                    {/* Confirm remove popup */}
+                    {showRemoveDialog && (
+                      <div className="card-overlay mt-4">
+                        <div
+                          className="card-overlay-inner max-w-sm mx-auto"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <h3 className="card-overlay-title text-lg mb-2">
+                            Remove from Wantlist?
+                          </h3>
+                          <p className="text-sm text-slate-200 mb-3">
+                            This will remove this card from your wantlist.
+                          </p>
+                          <div className="flex justify-end gap-2">
+                            <button
+                              className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
+                              onClick={confirmRemove}
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
+                              onClick={() => setShowRemoveDialog(false)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT COLUMN: eBay listings */}
+                  {ebayQuery && (
+                    <div
+                      className="card-overlay-ebay"
+                      style={{
+                        flex: "1 1 0",
+                        minWidth: "260px",
+                      }}
+                    >
+                      <EbayResults query={ebayQuery} />
+                    </div>
                   )}
                 </>
               );
             })()}
-
-            <div className="card-overlay-actions">
-              <button
-                className="card-overlay-button"
-                onClick={handleRemoveClicked}
-              >
-                Remove from Wantlist
-              </button>
-            </div>
-
-            {/* Confirm remove popup */}
-            {showRemoveDialog && (
-              <div className="card-overlay mt-4">
-                <div
-                  className="card-overlay-inner max-w-sm mx-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <h3 className="card-overlay-title text-lg mb-2">
-                    Remove from Wantlist?
-                  </h3>
-                  <p className="text-sm text-slate-200 mb-3">
-                    This will remove this card from your wantlist.
-                  </p>
-                  <div className="flex justify-end gap-2">
-                    <button
-                      className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
-                      onClick={confirmRemove}
-                    >
-                      Confirm
-                    </button>
-                    <button
-                      className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
-                      onClick={() => setShowRemoveDialog(false)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

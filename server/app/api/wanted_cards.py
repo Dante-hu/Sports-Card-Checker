@@ -48,16 +48,6 @@ def get_wanted_cards():
 @wanted_cards_bp.post("/")
 @login_required
 def add_wanted_card():
-    """
-    Add a card to the logged-in user's wantlist by card_id or player_name.
-
-    Expected JSON:
-    {
-      "card_id": 1,              # or
-      "player_name": "Bedard",   # one of these is required
-      "notes": "PC card"         # optional
-    }
-    """
     user = g.current_user
     data = request.get_json() or {}
 
