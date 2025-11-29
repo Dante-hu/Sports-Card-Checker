@@ -29,7 +29,7 @@ def test_create_sample_card(client):
 
 def test_create_card_valid_payload(client, sample_card_payload):
     """POST /api/cards/ with full payload."""
-    rsp = client.post("/api/cards/", json=sample_card_payload)
+    rsp = client.post("/api/cards", json=sample_card_payload)
     assert rsp.status_code == 201
     created = rsp.json
     for key, value in sample_card_payload.items():
@@ -43,14 +43,14 @@ def test_create_card_missing_field(client):
         "sport": "Baseball",
         # missing required fields
     }
-    rsp = client.post("/api/cards/", json=payload)
+    rsp = client.post("/api/cards", json=payload)
     assert rsp.status_code == 400
     assert "Missing fields" in rsp.json["error"]
 
 
 def test_list_cards_empty_db(client):
     """No cards → empty list."""
-    rsp = client.get("/api/cards/")
+    rsp = client.get("/api/cards")
     assert rsp.status_code == 200
     assert rsp.json["items"] == []
     assert rsp.json["total"] == 0
@@ -59,7 +59,7 @@ def test_list_cards_empty_db(client):
 def test_list_cards_with_sample(client):
     """Insert sample, then list."""
     client.post("/api/cards/sample")  # create one
-    rsp = client.get("/api/cards/")
+    rsp = client.get("/api/cards")
     assert rsp.status_code == 200
     assert rsp.json["total"] == 1
     assert rsp.json["items"][0]["player_name"] == "Connor Bedard"
@@ -80,7 +80,7 @@ def test_filter_by_sport(client):
             "team": "Angels",
         },
     )
-    rsp = client.get("/api/cards/?sport=Hockey")
+    rsp = client.get("/api/cards?sport=Hockey")
     assert rsp.status_code == 200
     assert rsp.json["total"] == 1
     assert rsp.json["items"][0]["sport"] == "Hockey"
@@ -90,7 +90,7 @@ def test_pagination(client):
     """Create 25 cards, ask for page 2 (per_page=10)."""
     for i in range(25):
         client.post(
-            "/api/cards/",
+            "/api/cards",
             json={
                 "sport": "Hockey",
                 "year": 2020,
@@ -101,7 +101,7 @@ def test_pagination(client):
                 "team": "Team",
             },
         )
-    rsp = client.get("/api/cards/?page=2&per_page=10")
+    rsp = client.get("/api/cards?page=2&per_page=10")
     assert rsp.status_code == 200
     assert len(rsp.json["items"]) == 10
     assert rsp.json["page"] == 2
@@ -112,7 +112,8 @@ def test_pagination(client):
 def test_update_card(client, sample_card_payload):
     """PATCH /api/cards/<id> with new image URL."""
     # 1. create
-    create_rsp = client.post("/api/cards/", json=sample_card_payload)
+    create_rsp = client.post("/api/cards", json=sample_card_payload)
+    assert create_rsp.status_code == 201
     card_id = create_rsp.json["id"]
 
     # 2. update

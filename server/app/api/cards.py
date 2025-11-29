@@ -29,7 +29,7 @@ def serialize_card(card: Card) -> dict:
     }
 
 
-@cards_bp.get("/")
+@cards_bp.get("")
 def list_cards():
     query = Card.query
 
@@ -105,7 +105,7 @@ def create_sample_card():
     return jsonify(serialize_card(card)), 201
 
 
-@cards_bp.post("/")
+@cards_bp.post("")
 def create_card():
     data = request.get_json() or {}
 
@@ -169,7 +169,19 @@ def create_card():
 
 @cards_bp.route("/<int:card_id>", methods=["PATCH", "PUT"])
 def update_card(card_id: int):
-    card = Card.query.get_or_404(card_id)
+    """
+    Update an existing card.
+
+    PATCH /api/cards/1
+    PUT   /api/cards/1
+
+    Body can include any of:
+    sport, year, brand, set_name, card_number, player_name, team, image_url
+    """
+    card = Card.query.get(card_id)  # Use get() instead of get_or_404()
+    if not card:
+        return jsonify({"error": "Card not found"}), 404
+
     data = request.get_json() or {}
 
     updatable_fields = [
