@@ -15,6 +15,7 @@ export interface Card {
   player_name: string;
   card_number: string | number;
   team?: string | null;
+  image_url?: string | null;
 }
 
 export interface PaginatedCardsResponse {
@@ -36,9 +37,10 @@ export async function fetchCards(
   params.set("page", String(page));
   params.set("per_page", String(perPage));
 
-  // trailing slash avoids redirect issues
   const url = `/api/cards/?${params.toString()}`;
-
-  // api.get returns parsed JSON
   return api.get(url);
+}
+
+export async function autoFillCardImage(cardId: number) {
+  return api.post(`/api/cards/${cardId}/auto-image`);
 }

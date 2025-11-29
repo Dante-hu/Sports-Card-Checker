@@ -24,3 +24,5 @@ selenium
 requests
 flask_sqlalchemy
 flask-cors
+python-dotenv
+requests
