@@ -10,7 +10,7 @@ class Set(db.Model):
 
     id = Column(Integer, primary_key=True)
     sport = Column(String(50), nullable=False, index=True)
-    year = Column(Integer, nullable=False, index=True)
+    year = Column(String(20), nullable=False, index=True)
     brand = Column(String(50), nullable=False)
     set_name = Column(String(120), nullable=False)
 

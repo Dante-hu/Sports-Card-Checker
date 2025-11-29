@@ -23,9 +23,13 @@ def import_set(filepath: Path):
 
     for item in data:
         sport = item["sport"]
-        year = item["year"]
+        # store year consistently as string (handles 2024 and "2024-25")
+        year = str(item["year"])
         brand = item["brand"]
         set_name = item["set_name"]
+
+        # card_number may be int in JSON – force to string for Postgres
+        card_number = str(item["card_number"])
 
         # ✅ make sure the Set exists (auto-create if needed)
         Set.get_or_create(
@@ -41,7 +45,7 @@ def import_set(filepath: Path):
             year=year,
             brand=brand,
             set_name=set_name,
-            card_number=item["card_number"],
+            card_number=card_number,
         ).first()
 
         if exists:
@@ -53,7 +57,7 @@ def import_set(filepath: Path):
             year=year,
             brand=brand,
             set_name=set_name,
-            card_number=item["card_number"],
+            card_number=card_number,
             player_name=item["player_name"],
             team=item["team"],
             image_url=item["image_url"],
@@ -63,7 +67,8 @@ def import_set(filepath: Path):
 
     db.session.commit()
     print(
-        f"{os.path.basename(filepath)} → Imported {created} cards, skipped {skipped} duplicates"
+        f"{os.path.basename(filepath)} → Imported {created} cards, "
+        f"skipped {skipped} duplicates"
     )
 
 
@@ -90,7 +95,7 @@ def seed_all_sets():
 
 
 if __name__ == "__main__":
-    # Optional CLI usage:
+    
     from app import create_app
 
     app = create_app()

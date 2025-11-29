@@ -1,13 +1,13 @@
 // client/src/api/client.ts
+export const API_BASE_URL = "http://localhost:5000";
 
-// Vite will proxy /api calls, so no hardcoded backend URL.
-export const API_BASE_URL = "";
 
-export interface RequestOptions extends RequestInit {
-  headers?: Record<string, string>;
-}
+type RequestOptions = RequestInit & {
+  // body will always be JSON string if present
+  body?: string;
+};
 
-async function request(path: string, options: RequestOptions = {}): Promise<any> {
+async function request(path: string, options: RequestOptions = {}) {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     credentials: "include",
     headers: {
@@ -17,39 +17,56 @@ async function request(path: string, options: RequestOptions = {}): Promise<any>
     ...options,
   });
 
+  // --- ERROR PATH: read body ONCE as text ---
   if (!res.ok) {
     let message = `Request failed with status ${res.status}`;
+    const bodyText = await res.text(); // single read
 
-    try {
-      const data = await res.json();
-      if (data && data.error) {
-        message = data.error;
+    if (bodyText) {
+      try {
+        const data = JSON.parse(bodyText);
+        if (data && (data.error || data.message)) {
+          message = data.error || data.message;
+        } else {
+          message = bodyText;
+        }
+      } catch {
+        message = bodyText;
       }
-    } catch {
-      const text = await res.text();
-      if (text) message = text;
     }
 
     throw new Error(message);
   }
 
-  // No content
+  // --- SUCCESS PATH ---
   if (res.status === 204) {
     return null;
   }
 
-  return res.json();
+  const text = await res.text(); // single read
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 export const api = {
-  get: (path: string): Promise<any> => request(path),
-
-  post: (path: string, body?: any): Promise<any> =>
+  get: (path: string) => request(path),
+  post: (path: string, body?: unknown) =>
     request(path, {
       method: "POST",
       body: body ? JSON.stringify(body) : undefined,
     }),
-
-  del: (path: string): Promise<any> =>
-    request(path, { method: "DELETE" }),
+  put: (path: string, body?: unknown) =>
+    request(path, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+  delete: (path: string) =>
+    request(path, {
+      method: "DELETE",
+    }),
 };

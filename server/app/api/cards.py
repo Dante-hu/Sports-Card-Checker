@@ -219,27 +219,35 @@ def build_ebay_query_from_card(card: Card) -> str:
 
 @cards_bp.post("/<int:card_id>/auto-image")
 def auto_fill_card_image(card_id: int):
+    """
+    Try to automatically fill card.image_url using the first eBay search result.
+
+    POST /api/cards/<card_id>/auto-image
+    """
     card = Card.query.get(card_id)
     if not card:
         return jsonify({"error": "Card not found"}), 404
 
     query = build_ebay_query_from_card(card)
     if not query:
-        return jsonify({"error": "Cannot build search query"}), 400
+        return jsonify({"error": "Cannot build search query for this card"}), 400
 
     token = os.environ.get("EBAY_OAUTH_TOKEN")
-    if not token:
-        return jsonify({"error": "EBAY_OAUTH_TOKEN not configured"}), 500
+    marketplace = os.environ.get("EBAY_MARKETPLACE_ID", "EBAY_CA")
 
-    marketplace_id = os.environ.get("EBAY_MARKETPLACE_ID", "EBAY_CA")
+    # If no token, just return the card unchanged
+    if not token:
+        return jsonify(serialize_card(card)), 200
 
     headers = {
         "Authorization": f"Bearer {token}",
-        "X-EBAY-C-MARKETPLACE-ID": marketplace_id,
+        "X-EBAY-C-MARKETPLACE-ID": marketplace,
+        "Content-Type": "application/json",
     }
-
-    # get more results so strict filtering can work
-    params = {"q": query, "limit": 12}
+    params = {
+        "q": query,
+        "limit": 1,  # just grab the first match
+    }
 
     try:
         resp = requests.get(
@@ -248,51 +256,35 @@ def auto_fill_card_image(card_id: int):
             params=params,
             timeout=10,
         )
-        resp.raise_for_status()
     except requests.RequestException as exc:
-        return jsonify({"error": "Failed to contact eBay", "details": str(exc)}), 502
+        # Network / connection error -> just log and return card unchanged
+        print("eBay auto-image request error:", exc)
+        return jsonify(serialize_card(card)), 200
+
+    # If eBay returns non-200 (e.g. 401 Unauthorized), don't blow up
+    if resp.status_code != 200:
+        print("eBay auto-image non-200:", resp.status_code, resp.text[:200])
+        return jsonify(serialize_card(card)), 200
 
     data = resp.json()
     items = data.get("itemSummaries") or []
     if not items:
+        # nothing found, keep card as-is
         return jsonify(serialize_card(card)), 200
 
-    # STRICT FILTERING
-    wanted = []
-    if card.player_name:
-        wanted.append(card.player_name.lower())
-    if card.card_number:
-        wanted.append(str(card.card_number).lower())
-    if card.brand:
-        wanted.append(card.brand.lower())
-    if card.set_name:
-        wanted.append(card.set_name.lower())
-    if card.team:
-        wanted.append(card.team.lower())
-
-    best = None
-    best_score = 0
-
-    for item in items:
-        title = (item.get("title") or "").lower()
-        score = sum(token in title for token in wanted)
-        if score > best_score:
-            best_score = score
-            best = item
-
-    # STRICT threshold: must match at least 3 tokens
-    if best is None or best_score < 3:
-        return jsonify(serialize_card(card)), 200
-
+    first = items[0]
     image_url = (
-        (best.get("image") or {}).get("imageUrl")
-        or (best.get("thumbnailImages") or [{}])[0].get("imageUrl")
+        first.get("image", {}).get("imageUrl")
+        or (first.get("thumbnailImages") or [{}])[0].get("imageUrl")
     )
 
     if not image_url:
+        # still nothing usable
         return jsonify(serialize_card(card)), 200
 
+    # Save the image URL on the card
     card.image_url = image_url
     db.session.commit()
 
     return jsonify(serialize_card(card)), 200
+

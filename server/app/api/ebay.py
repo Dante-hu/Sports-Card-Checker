@@ -12,8 +12,8 @@ def ebay_search():
         return jsonify({"error": "Missing q parameter"}), 400
 
     try:
-        data = search_ebay_items(q, limit=5)
-        return jsonify(data)
+        items = search_ebay_items(q, limit=5)
+        return jsonify({"itemSummaries": items})
     except Exception as e:
-        # You can make this nicer later
+
         return jsonify({"error": str(e)}), 500

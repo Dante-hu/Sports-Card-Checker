@@ -10,7 +10,7 @@ class User(db.Model):
     id = Column(Integer, primary_key=True)
     email = Column(String(80), unique=True, nullable=False, index=True)
     username = Column(String(80), unique=True, nullable=True)
-    password_hash = Column(String(128), nullable=False)
+    password_hash = Column(String(512), nullable=False)
     created_at = Column(
         DateTime,
         default=datetime.datetime.now(datetime.timezone.utc),
