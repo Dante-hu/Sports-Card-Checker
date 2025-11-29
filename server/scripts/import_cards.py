@@ -95,7 +95,6 @@ def seed_all_sets():
 
 
 if __name__ == "__main__":
-    
     from app import create_app
 
     app = create_app()

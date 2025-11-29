@@ -3,6 +3,7 @@ import os
 import requests
 from typing import List, Dict, Any
 
+
 # We’ll choose environment based on EBAY_ENVIRONMENT
 def get_ebay_base_url() -> str:
     env = os.environ.get("EBAY_ENVIRONMENT", "PRODUCTION").upper()

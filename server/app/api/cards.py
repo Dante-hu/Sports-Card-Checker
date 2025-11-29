@@ -287,4 +287,3 @@ def auto_fill_card_image(card_id: int):
     db.session.commit()
 
     return jsonify(serialize_card(card)), 200
-
