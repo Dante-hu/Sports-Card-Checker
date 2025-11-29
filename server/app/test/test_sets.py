@@ -36,7 +36,7 @@ class TestSets:
         assert r.status_code == 201
         data = r.json
         assert data["sport"] == "Basketball"
-        assert data["year"] == 2022
+        assert data["year"] == "2022"
         assert data["brand"] == "Panini"
         assert data["set_name"] == "Prizm"
 
