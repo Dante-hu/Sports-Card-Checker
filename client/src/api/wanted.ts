@@ -51,6 +51,6 @@ export async function addWantedCard(cardId: number, notes: string | null = null)
 }
 
 export async function deleteWantedItem(wantedId: number) {
-  return api.del(`/api/wanted/${wantedId}`);
+  return api.delete(`/api/wanted/${wantedId}`);
 }
 

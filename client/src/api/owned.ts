@@ -1,3 +1,4 @@
+// client/src/api/owned.ts
 import { api } from "./client";
 
 export interface FetchOwnedParams {
@@ -26,14 +27,14 @@ export async function fetchOwned(
   params.set("page", String(page));
   params.set("per_page", String(perPage));
 
-
-  const path = `/api/owned-cards/?${params.toString()}`;
-
+  // note: no extra slash before ?
+  const path = `/api/owned-cards?${params.toString()}`;
   return api.get(path);
 }
 
 export async function addOwnedCard(cardId: number, quantity: number = 1) {
-  return api.post("/api/owned-cards/", {
+  // POST to /api/owned-cards  (no trailing slash)
+  return api.post("/api/owned-cards", {
     card_id: cardId,
     quantity,
   });
@@ -53,7 +54,4 @@ export async function deleteOwnedCard(
     ? `/api/owned-cards/${ownedId}?${qs}`
     : `/api/owned-cards/${ownedId}`;
 
-  return api.del(path);
-}
-
-
+  return api.delete(path);}
