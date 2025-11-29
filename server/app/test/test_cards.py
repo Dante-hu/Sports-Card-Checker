@@ -90,7 +90,7 @@ def test_pagination(client):
     """Create 25 cards, ask for page 2 (per_page=10)."""
     for i in range(25):
         client.post(
-            "/api/cards",  
+            "/api/cards",
             json={
                 "sport": "Hockey",
                 "year": 2020,
@@ -101,17 +101,18 @@ def test_pagination(client):
                 "team": "Team",
             },
         )
-    rsp = client.get("/api/cards?page=2&per_page=10")  
+    rsp = client.get("/api/cards?page=2&per_page=10")
     assert rsp.status_code == 200
     assert len(rsp.json["items"]) == 10
     assert rsp.json["page"] == 2
     assert rsp.json["per_page"] == 10
     assert rsp.json["total"] == 25
 
+
 def test_update_card(client, sample_card_payload):
     """PATCH /api/cards/<id> with new image URL."""
     # 1. create
-    create_rsp = client.post("/api/cards", json=sample_card_payload)  
+    create_rsp = client.post("/api/cards", json=sample_card_payload)
     assert create_rsp.status_code == 201
     card_id = create_rsp.json["id"]
 
@@ -123,6 +124,7 @@ def test_update_card(client, sample_card_payload):
 
     # 3. verify other fields unchanged
     assert rsp.json["player_name"] == sample_card_payload["player_name"]
+
 
 def test_update_card_invalid_year(client):
     """Year must be integer."""

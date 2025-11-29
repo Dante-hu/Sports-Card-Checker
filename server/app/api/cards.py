@@ -190,12 +190,12 @@ def update_card(card_id: int):
     card = Card.query.get(card_id)  # Use get() instead of get_or_404()
     if not card:
         return jsonify({"error": "Card not found"}), 404
-    
+
     data = request.get_json() or {}
-    
+
     updatable_fields = [
         "sport",
-        "year", 
+        "year",
         "brand",
         "set_name",
         "card_number",
