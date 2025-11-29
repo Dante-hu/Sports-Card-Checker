@@ -187,12 +187,15 @@ def update_card(card_id: int):
     Body can include any of:
     sport, year, brand, set_name, card_number, player_name, team, image_url
     """
-    card = Card.query.get_or_404(card_id)
+    card = Card.query.get(card_id)  # Use get() instead of get_or_404()
+    if not card:
+        return jsonify({"error": "Card not found"}), 404
+    
     data = request.get_json() or {}
-
+    
     updatable_fields = [
         "sport",
-        "year",
+        "year", 
         "brand",
         "set_name",
         "card_number",
@@ -213,4 +216,4 @@ def update_card(card_id: int):
                 setattr(card, field, data[field])
 
     db.session.commit()
-    return jsonify(serialize_card(card))
+    return jsonify(serialize_card(card)), 200
