@@ -5,6 +5,8 @@ import {
   deleteOwnedCard,
   type OwnedCard,
 } from "../api/owned";
+import EbayResults from "../components/EbayResults";
+import { buildEbayQueryFromCard } from "../utils/ebay";
 
 interface Card {
   id?: number;
@@ -28,10 +30,13 @@ export default function OwnedPage() {
   const [hasPrev, setHasPrev] = useState<boolean>(false);
 
   const [toast, setToast] = useState<string | null>(null);
-  const [selectedOwned, setSelectedOwned] = useState<OwnedCard | null>(null);
+  const [selectedOwned, setSelectedOwned] = useState<OwnedCard | null>(
+    null
+  );
 
   // Popup for confirm remove
-  const [showRemoveDialog, setShowRemoveDialog] = useState<boolean>(false);
+  const [showRemoveDialog, setShowRemoveDialog] =
+    useState<boolean>(false);
   const [removeCount, setRemoveCount] = useState<number>(1);
 
   function showToast(msg: string) {
@@ -102,10 +107,8 @@ export default function OwnedPage() {
   // Clicked "Remove from Owned" in main overlay
   function handleRemoveClicked(): void {
     if (!selectedOwned) return;
-    const qty = selectedOwned.quantity ?? 1;
-
-    setRemoveCount(1);      // default
-    setShowRemoveDialog(true); // always show popup now
+    setRemoveCount(1);
+    setShowRemoveDialog(true);
   }
 
   // Actually call API and update state
@@ -252,12 +255,20 @@ export default function OwnedPage() {
         </>
       )}
 
-      {/* main overlay for card details */}
+      {/* Enlarged card overlay (matching CardsPage layout) */}
       {selectedOwned && (
         <div className="card-overlay" onClick={closeSelected}>
           <div
             className="card-overlay-inner"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "1000px",
+              width: "90vw",
+              display: "flex",
+              gap: "1.5rem",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
           >
             <button
               className="card-overlay-close"
@@ -278,117 +289,142 @@ export default function OwnedPage() {
                 trimmed.toLowerCase() !== "none";
 
               const qty = selectedOwned.quantity ?? 1;
+              const ebayQuery = buildEbayQueryFromCard(card);
 
               return (
                 <>
-                  <h2 className="card-overlay-title">
-                    {card.year} {card.brand}
-                  </h2>
-                  <p className="card-overlay-subtitle">
-                    {card.player_name} • #{card.card_number}
-                    {card.team ? ` • ${card.team}` : ""} • {card.set_name}
-                    {qty ? ` • Quantity: ${qty}` : ""}
-                  </p>
+                  {/* LEFT COLUMN: title + card + remove */}
+                  <div
+                    style={{
+                      flex: "0 0 280px",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <h2 className="card-overlay-title">
+                      {card.year} {card.brand}
+                    </h2>
+                    <p className="card-overlay-subtitle">
+                      {card.player_name} • #{card.card_number}
+                      {card.team ? ` • ${card.team}` : ""} • {card.set_name}
+                      {qty ? ` • Quantity: ${qty}` : ""}
+                    </p>
 
-                  {hasImage ? (
-                    <img
-                      src={trimmed}
-                      alt={card.player_name || "Card"}
-                      className="card-overlay-image"
-                    />
-                  ) : (
-                    <div className="card-overlay-image-placeholder">
-                      No image available
+                    {hasImage ? (
+                      <img
+                        src={trimmed}
+                        alt={card.player_name || "Card"}
+                        className="card-overlay-image"
+                      />
+                    ) : (
+                      <div className="card-overlay-image-placeholder">
+                        No image available
+                      </div>
+                    )}
+
+                    <div className="card-overlay-actions">
+                      <button
+                        className="card-overlay-button"
+                        onClick={handleRemoveClicked}
+                      >
+                        Remove from Owned
+                      </button>
+                    </div>
+
+                    {/* SECOND POPUP: confirm (and maybe how many) */}
+                    {showRemoveDialog && selectedOwned && (
+                      <div className="card-overlay mt-4">
+                        <div
+                          className="card-overlay-inner max-w-sm mx-auto"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {(() => {
+                            const qtyInner =
+                              selectedOwned.quantity ?? 1;
+
+                            return (
+                              <>
+                                <h3 className="card-overlay-title text-lg mb-2">
+                                  {qtyInner > 1
+                                    ? "How many copies do you want to remove?"
+                                    : "Remove this card from Owned?"}
+                                </h3>
+                                <p className="text-sm text-slate-200 mb-3">
+                                  You currently own{" "}
+                                  <strong>{qtyInner}</strong> copy
+                                  {qtyInner > 1 ? "ies" : ""} of this card.
+                                </p>
+
+                                {qtyInner > 1 && (
+                                  <div className="flex items-center gap-2 mb-4">
+                                    <label className="text-sm text-slate-200">
+                                      Quantity to remove:
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={qtyInner}
+                                      value={removeCount}
+                                      onChange={(e) => {
+                                        const val =
+                                          Number(e.target.value) || 1;
+                                        const clamped = Math.min(
+                                          Math.max(val, 1),
+                                          qtyInner
+                                        );
+                                        setRemoveCount(clamped);
+                                      }}
+                                      className="w-20 rounded-md border border-slate-600 bg-slate-900 px-2 py-1 text-sm"
+                                    />
+                                  </div>
+                                )}
+
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
+                                    onClick={() =>
+                                      confirmAndRemove(
+                                        selectedOwned.quantity &&
+                                        selectedOwned.quantity > 1
+                                          ? removeCount
+                                          : 1
+                                      )
+                                    }
+                                  >
+                                    Confirm
+                                  </button>
+                                  <button
+                                    className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
+                                    onClick={() => {
+                                      setShowRemoveDialog(false);
+                                      setRemoveCount(1);
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT COLUMN: eBay listings (same feel as CardsPage) */}
+                  {ebayQuery && (
+                    <div
+                      className="card-overlay-ebay"
+                      style={{
+                        flex: "1 1 0",
+                        minWidth: "260px",
+                      }}
+                    >
+                      <EbayResults query={ebayQuery} />
                     </div>
                   )}
                 </>
               );
             })()}
-
-            <div className="card-overlay-actions">
-              <button
-                className="card-overlay-button"
-                onClick={handleRemoveClicked}
-              >
-                Remove from Owned
-              </button>
-            </div>
-
-            {/* SECOND POPUP: confirm (and maybe how many) */}
-            {showRemoveDialog && selectedOwned && (
-              <div className="card-overlay mt-4">
-                <div
-                  className="card-overlay-inner max-w-sm mx-auto"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {(() => {
-                    const qty = selectedOwned.quantity ?? 1;
-
-                    return (
-                      <>
-                        <h3 className="card-overlay-title text-lg mb-2">
-                          {qty > 1
-                            ? "How many copies do you want to remove?"
-                            : "Remove this card from Owned?"}
-                        </h3>
-                        <p className="text-sm text-slate-200 mb-3">
-                          You currently own{" "}
-                          <strong>{qty}</strong> copy
-                          {qty > 1 ? "ies" : ""} of this card.
-                        </p>
-
-                        {qty > 1 && (
-                          <div className="flex items-center gap-2 mb-4">
-                            <label className="text-sm text-slate-200">
-                              Quantity to remove:
-                            </label>
-                            <input
-                              type="number"
-                              min={1}
-                              max={qty}
-                              value={removeCount}
-                              onChange={(e) => {
-                                const val = Number(e.target.value) || 1;
-                                const clamped = Math.min(
-                                  Math.max(val, 1),
-                                  qty
-                                );
-                                setRemoveCount(clamped);
-                              }}
-                              className="w-20 rounded-md border border-slate-600 bg-slate-900 px-2 py-1 text-sm"
-                            />
-                          </div>
-                        )}
-
-                        <div className="flex justify-end gap-2">
-                          <button
-                            className="px-3 py-1.5 rounded-lg text-sm bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-medium"
-                            onClick={() =>
-                              confirmAndRemove(
-                                selectedOwned.quantity && selectedOwned.quantity > 1
-                                  ? removeCount
-                                  : 1
-                              )
-                            }
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            className="px-3 py-1.5 rounded-lg text-sm border border-slate-600 bg-slate-900 hover:bg-slate-800"
-                            onClick={() => {
-                              setShowRemoveDialog(false);
-                              setRemoveCount(1);
-                            }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

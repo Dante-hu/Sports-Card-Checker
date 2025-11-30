@@ -88,23 +88,6 @@ def list_cards():
     )
 
 
-@cards_bp.post("/sample")
-def create_sample_card():
-    card = Card(
-        sport="Hockey",
-        year=2023,
-        brand="Upper Deck",
-        set_name="Series 1",
-        card_number="201",
-        player_name="Connor Bedard",
-        team="Chicago Blackhawks",
-        image_url=None,
-    )
-    db.session.add(card)
-    db.session.commit()
-    return jsonify(serialize_card(card)), 201
-
-
 @cards_bp.post("")
 def create_card():
     data = request.get_json() or {}
@@ -229,10 +212,52 @@ def build_ebay_query_from_card(card: Card) -> str:
     return " ".join(parts).strip()
 
 
+# Keywords that usually mean multi-card images / sets / lots
+BAD_TITLE_KEYWORDS = [
+    "team set",
+    "complete set",
+    "factory set",
+    "base set",
+    "master set",
+    "lot",
+    "card lot",
+    "mixed lot",
+    "assorted",
+    "random",
+    "box",
+    "case",
+    "pick your card",
+    "pick from list",
+]
+
+
+def looks_like_single_player_card(item: dict, card: Card) -> bool:
+    """Heuristic filter to avoid team sets / lots / multi-player images."""
+    title = (item.get("title") or "").lower()
+
+    if not title:
+        return False
+
+    # Require the player's last name to be in the title, if we have one
+    if card.player_name:
+        parts = card.player_name.split()
+        if parts:
+            last_name = parts[-1].lower()
+            if last_name not in title:
+                return False
+
+    # Reject anything that looks like a set / lot / box etc.
+    for bad in BAD_TITLE_KEYWORDS:
+        if bad in title:
+            return False
+
+    return True
+
+
 @cards_bp.post("/<int:card_id>/auto-image")
 def auto_fill_card_image(card_id: int):
     """
-    Try to automatically fill card.image_url using the first eBay search result.
+    Try to automatically fill card.image_url using a suitable eBay search result.
 
     POST /api/cards/<card_id>/auto-image
     """
@@ -256,9 +281,10 @@ def auto_fill_card_image(card_id: int):
         "X-EBAY-C-MARKETPLACE-ID": marketplace,
         "Content-Type": "application/json",
     }
+    # Ask for more than 1 so we can skip bad ones
     params = {
         "q": query,
-        "limit": 1,  # just grab the first match
+        "limit": 10,
     }
 
     try:
@@ -284,18 +310,38 @@ def auto_fill_card_image(card_id: int):
         # nothing found, keep card as-is
         return jsonify(serialize_card(card)), 200
 
-    first = items[0]
-    image_url = (
-        first.get("image", {}).get("imageUrl")
-        or (first.get("thumbnailImages") or [{}])[0].get("imageUrl")
-    )
+    chosen_url = None
 
-    if not image_url:
+    # Try to pick a "single player" card first
+    for item in items:
+        if not looks_like_single_player_card(item, card):
+            continue
+
+        image_url = (
+            item.get("image", {}).get("imageUrl")
+            or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
+        )
+        if image_url:
+            chosen_url = image_url
+            break
+
+    # If nothing passed the filter, fall back to the first image we can find
+    if not chosen_url:
+        for item in items:
+            image_url = (
+                item.get("image", {}).get("imageUrl")
+                or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
+            )
+            if image_url:
+                chosen_url = image_url
+                break
+
+    if not chosen_url:
         # still nothing usable
         return jsonify(serialize_card(card)), 200
 
     # Save the image URL on the card
-    card.image_url = image_url
+    card.image_url = chosen_url
     db.session.commit()
 
     return jsonify(serialize_card(card)), 200
