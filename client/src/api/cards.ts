@@ -5,6 +5,10 @@ export interface FetchCardsParams {
   q?: string;
   page?: number;
   perPage?: number;
+  sport?: string;
+  year?: number;
+  brand?: string;
+  set?: string; // set name
 }
 
 export interface Card {
@@ -26,19 +30,40 @@ export interface PaginatedCardsResponse {
 }
 
 export async function fetchCards(
-  { q = "", page = 1, perPage = 20 }: FetchCardsParams = {}
+  params: FetchCardsParams = {}
 ): Promise<PaginatedCardsResponse | Card[]> {
-  const params = new URLSearchParams();
+  const searchParams = new URLSearchParams();
 
-  if (q) {
-    params.set("q", q);
+  if (params.q) {
+    searchParams.set("q", params.q);
   }
 
-  params.set("page", String(page));
-  params.set("per_page", String(perPage));
+  if (params.page !== undefined) {
+    searchParams.set("page", String(params.page));
+  }
 
-  // 👇 FIX: no slash before "?"
-  const url = `/api/cards?${params.toString()}`;
+  if (params.perPage !== undefined) {
+    searchParams.set("per_page", String(params.perPage));
+  }
+
+  if (params.sport) {
+    searchParams.set("sport", params.sport);
+  }
+
+  if (params.year !== undefined) {
+    searchParams.set("year", String(params.year));
+  }
+
+  if (params.brand) {
+    searchParams.set("brand", params.brand);
+  }
+
+  if (params.set) {
+    searchParams.set("set", params.set);
+  }
+
+  // no slash before "?"
+  const url = `/api/cards?${searchParams.toString()}`;
   return api.get(url);
 }
 
