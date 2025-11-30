@@ -66,6 +66,7 @@ def list_cards():
                 Card.team.ilike(like),
                 Card.brand.ilike(like),
                 Card.set_name.ilike(like),
+                Card.sport.ilike(like),
             )
         )
 
