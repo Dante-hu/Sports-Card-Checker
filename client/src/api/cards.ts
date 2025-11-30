@@ -37,7 +37,8 @@ export async function fetchCards(
   params.set("page", String(page));
   params.set("per_page", String(perPage));
 
-  const url = `/api/cards/?${params.toString()}`;
+  // 👇 FIX: no slash before "?"
+  const url = `/api/cards?${params.toString()}`;
   return api.get(url);
 }
 
