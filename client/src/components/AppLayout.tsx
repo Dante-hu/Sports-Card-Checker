@@ -65,6 +65,17 @@ export default function AppLayout() {
             </NavLink>
 
             <NavLink
+              to="/sets"
+              className={({ isActive }) =>
+                `${linkBaseClasses} ${
+                  isActive ? activeClasses : inactiveClasses
+                }`
+              }
+            >
+              Sets
+            </NavLink>
+
+            <NavLink
               to="/wantlist"
               className={({ isActive }: { isActive: boolean }) =>
                 `${linkBaseClasses} ${

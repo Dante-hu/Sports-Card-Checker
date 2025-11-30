@@ -5,6 +5,7 @@ import CardsPage from "./pages/CardsPage";
 import OwnedPage from "./pages/OwnedPage";
 import WantlistPage from "./pages/WantlistPage";
 import AppLayout from "./components/AppLayout";
+import SetsPage from "./pages/SetsPage";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/cards" element={<CardsPage />} />
           <Route path="/owned" element={<OwnedPage />} />
+          <Route path="/sets" element={<SetsPage />} />
           <Route path="/wantlist" element={<WantlistPage />} />
         </Route>
 

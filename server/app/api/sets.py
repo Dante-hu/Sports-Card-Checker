@@ -6,6 +6,21 @@ from ..models.card import Card
 sets_bp = Blueprint("sets", __name__, url_prefix="/api/sets")
 
 
+def serialize_set_with_total(s: Set) -> dict:
+    """Base to_dict plus total number of cards in this set in the cards table."""
+    data = s.to_dict()
+    total_cards = (
+        Card.query.filter_by(
+            sport=s.sport,
+            year=s.year,
+            brand=s.brand,
+            set_name=s.set_name,
+        ).count()
+    )
+    data["total_cards"] = total_cards
+    return data
+
+
 @sets_bp.get("")
 def list_sets():
     # ?page=1&per_page=20
@@ -15,7 +30,9 @@ def list_sets():
     # safety cap so nobody asks for like 10,000 at once
     per_page = min(per_page, 100)
 
-    pagination = Set.query.order_by(Set.year.desc(), Set.brand, Set.set_name).paginate(
+    pagination = Set.query.order_by(
+        Set.year.desc(), Set.brand, Set.set_name
+    ).paginate(
         page=page,
         per_page=per_page,
         error_out=False,
@@ -23,7 +40,7 @@ def list_sets():
 
     return jsonify(
         {
-            "items": [s.to_dict() for s in pagination.items],
+            "items": [serialize_set_with_total(s) for s in pagination.items],
             "page": page,
             "per_page": per_page,
             "total": pagination.total,
@@ -40,7 +57,7 @@ def get_set(set_id):
     if not s:
         return jsonify({"error": f"Set with id {set_id} not found"}), 404
 
-    return jsonify(s.to_dict()), 200
+    return jsonify(serialize_set_with_total(s)), 200
 
 
 @sets_bp.get("/<int:set_id>/cards")
@@ -120,7 +137,10 @@ def create_set():
     set_name = data.get("set_name")
 
     if not sport or year is None or not brand or not set_name:
-        return jsonify({"error": "sport, year, brand, and set_name are required"}), 400
+        return (
+            jsonify({"error": "sport, year, brand, and set_name are required"}),
+            400,
+        )
 
     # Check for existing set
     existing = Set.query.filter_by(
@@ -131,7 +151,7 @@ def create_set():
     ).first()
 
     if existing:
-        return jsonify(existing.to_dict()), 200
+        return jsonify(serialize_set_with_total(existing)), 200
 
     new_set = Set(
         sport=sport,
@@ -143,4 +163,4 @@ def create_set():
     db.session.add(new_set)
     db.session.commit()
 
-    return jsonify(new_set.to_dict()), 201
+    return jsonify(serialize_set_with_total(new_set)), 201
