@@ -16,6 +16,13 @@ interface Card {
   image_url?: string | null;
 }
 
+interface FiltersState {
+  sport: string;
+  year: string;
+  brand: string;
+  set_name: string;
+}
+
 function buildEbayQueryFromCard(card: Card): string {
   const parts: string[] = [];
 
@@ -42,6 +49,15 @@ export default function CardsPage() {
   const [hasNext, setHasNext] = useState<boolean>(false);
   const [hasPrev, setHasPrev] = useState<boolean>(false);
 
+  // Filters
+  const [filters, setFilters] = useState<FiltersState>({
+    sport: "",
+    year: "",
+    brand: "",
+    set_name: "",
+  });
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+
   // Expanded card
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   // eBay query based on selected card
@@ -58,12 +74,28 @@ export default function CardsPage() {
     setTimeout(() => setToast(null), 2500);
   }
 
-  // Load cards from the backend
+  // Load cards from the backend (with search + filters + pagination)
   useEffect(() => {
     setLoading(true);
     setError(null);
 
-    fetchCards({ q: search, page })
+    const params: any = { q: search, page };
+
+    if (filters.sport.trim()) {
+      params.sport = filters.sport.trim();
+    }
+    if (filters.year.trim()) {
+      params.year = Number(filters.year.trim());
+    }
+    if (filters.brand.trim()) {
+      params.brand = filters.brand.trim();
+    }
+    if (filters.set_name.trim()) {
+      // backend expects ?set=...
+      params.set = filters.set_name.trim();
+    }
+
+    fetchCards(params)
       .then((data: any) => {
         console.log("cards response:", data);
 
@@ -100,7 +132,7 @@ export default function CardsPage() {
         setHasNext(false);
       })
       .finally(() => setLoading(false));
-  }, [search, page]);
+  }, [search, page, filters]);
 
   // 🔥 Auto-fill missing images in the background (no click needed)
   useEffect(() => {
@@ -165,7 +197,7 @@ export default function CardsPage() {
     }
   }
 
-  // Click card -> JUST open overlay now (no longer triggers auto-fill)
+  // Click card -> open overlay
   function handleCardClick(card: Card): void {
     setSelectedCard(card);
   }
@@ -203,6 +235,21 @@ export default function CardsPage() {
     }
   }
 
+  function handleClearFilters(): void {
+    setFilters({
+      sport: "",
+      year: "",
+      brand: "",
+      set_name: "",
+    });
+    setPage(1);
+  }
+
+  function handleApplyFilters(): void {
+    setPage(1);
+    setShowFilters(false);
+  }
+
   return (
     <div className="cards-page">
       {/* Bottom-right toast */}
@@ -227,7 +274,17 @@ export default function CardsPage() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
-          <button className="cards-search-button">Search</button>
+          <button className="cards-search-button" type="submit">
+            Search
+          </button>
+          {/* Filter button beside search */}
+          <button
+            type="button"
+            className="cards-search-button cards-filter-button"
+            onClick={() => setShowFilters(true)}
+          >
+            Filters
+          </button>
         </form>
       </div>
 
@@ -321,6 +378,127 @@ export default function CardsPage() {
             </button>
           </div>
         </>
+      )}
+
+      {/* Filters popup (same overlay theme as card overlay) */}
+      {showFilters && (
+        <div
+          className="card-overlay"
+          onClick={() => setShowFilters(false)}
+        >
+          <div
+            className="card-overlay-inner"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "420px" }}
+          >
+            <button
+              className="card-overlay-close"
+              onClick={() => setShowFilters(false)}
+              aria-label="Close filters"
+            >
+              ×
+            </button>
+
+            <h2 className="cards-title" style={{ marginBottom: "0.75rem" }}>
+              Filters
+            </h2>
+
+            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
+              <label
+                className="cards-subtitle"
+                style={{ display: "block", marginBottom: "0.25rem" }}
+              >
+                Sport
+              </label>
+              <input
+                className="cards-search-input"
+                placeholder="e.g. Hockey"
+                value={filters.sport}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, sport: e.target.value }))
+                }
+              />
+            </div>
+
+            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
+              <label
+                className="cards-subtitle"
+                style={{ display: "block", marginBottom: "0.25rem" }}
+              >
+                Year
+              </label>
+              <input
+                className="cards-search-input"
+                placeholder="e.g. 2022"
+                value={filters.year}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, year: e.target.value }))
+                }
+              />
+            </div>
+
+            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
+              <label
+                className="cards-subtitle"
+                style={{ display: "block", marginBottom: "0.25rem" }}
+              >
+                Brand
+              </label>
+              <input
+                className="cards-search-input"
+                placeholder="e.g. Upper Deck"
+                value={filters.brand}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, brand: e.target.value }))
+                }
+              />
+            </div>
+
+            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
+              <label
+                className="cards-subtitle"
+                style={{ display: "block", marginBottom: "0.25rem" }}
+              >
+                Set name
+              </label>
+              <input
+                className="cards-search-input"
+                placeholder="e.g. Series 1"
+                value={filters.set_name}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    set_name: e.target.value,
+                  }))
+                }
+              />
+            </div>
+
+            <div
+              className="cards-pagination"
+              style={{
+                marginTop: "1rem",
+                justifyContent: "flex-end",
+                gap: "0.5rem",
+              }}
+            >
+              <button
+                type="button"
+                className="cards-page-button"
+                onClick={handleClearFilters}
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                className="cards-page-button"
+                onClick={handleApplyFilters}
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Enlarged card overlay */}

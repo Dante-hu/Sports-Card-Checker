@@ -34,7 +34,8 @@ def list_cards():
     query = Card.query
 
     sport = request.args.get("sport")
-    year = request.args.get("year", type=int)
+    # year as raw string (no type=int), so it can match things like "2024-25"
+    year = request.args.get("year")
     brand = request.args.get("brand")
     set_name = request.args.get("set")
     player = request.args.get("player")
@@ -43,8 +44,12 @@ def list_cards():
 
     if sport:
         query = query.filter(Card.sport.ilike(f"%{sport}%"))
-    if year is not None:
-        query = query.filter(Card.year == year)
+
+    if year:
+        # use ilike so "2024" or "2024-25" both work
+        like = f"%{year}%"
+        query = query.filter(Card.year.ilike(like))
+
     if brand:
         query = query.filter(Card.brand.ilike(f"%{brand}%"))
     if set_name:
