@@ -38,7 +38,7 @@ export async function fetchWanted(
   params.set("page", String(page));
   params.set("per_page", String(perPage));
 
-  const path = `/api/wanted/?${params.toString()}`;
+  const path = `/api/wanted?${params.toString()}`;
 
   return api.get(path);
 }
