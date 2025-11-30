@@ -16,7 +16,7 @@ class TestOwnedCards:
         return client  # client now holds session
 
     def _sample_card(self, client):
-        """Create a card via /api/cards/ and return its id."""
+        """Create a card via /api/cards and return its id."""
         payload = {
             "sport": "Hockey",
             "year": 2023,
@@ -26,7 +26,7 @@ class TestOwnedCards:
             "player_name": "Connor Bedard",
             "team": "Chicago Blackhawks",
         }
-        r = client.post("/api/cards/", json=payload)
+        r = client.post("/api/cards", json=payload)
         assert r.status_code == 201
         data = r.json
         assert "id" in data
@@ -36,7 +36,6 @@ class TestOwnedCards:
     def test_list_empty(self, client):
         client = self._signup(client)
         r = client.get("/api/owned-cards")
-        print("STATUS:", r.status_code, "LOCATION:", r.headers.get("Location"))
         assert r.status_code == 200
         assert r.json == []
 
@@ -91,7 +90,7 @@ class TestOwnedCards:
         client = self._signup(client)
         # add the card first so it exists
         client.post(
-            "/api/cards/",
+            "/api/cards",
             json={
                 "sport": "Hockey",
                 "year": 2023,

@@ -88,7 +88,7 @@ def list_cards():
     )
 
 
-@cards_bp.post("/")
+@cards_bp.post("")
 def create_card():
     data = request.get_json() or {}
 

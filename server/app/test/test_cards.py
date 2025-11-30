@@ -18,7 +18,7 @@ def sample_card_payload():
 
 
 def test_create_card_valid_payload(client, sample_card_payload):
-    """POST /api/cards/ with full payload."""
+    """POST /api/cards with full payload."""
     rsp = client.post("/api/cards", json=sample_card_payload)
     assert rsp.status_code == 201
     created = rsp.json
@@ -57,10 +57,10 @@ def test_list_cards_with_sample(client):
         "player_name": "Connor Bedard",
         "team": "Chicago Blackhawks",
     }
-    create_rsp = client.post("/api/cards/", json=payload)
+    create_rsp = client.post("/api/cards", json=payload)
     assert create_rsp.status_code == 201
 
-    rsp = client.get("/api/cards/")
+    rsp = client.get("/api/cards")
     assert rsp.status_code == 200
     assert rsp.json["total"] == 1
 
@@ -77,7 +77,7 @@ def test_filter_by_sport(client):
         "player_name": "Connor Bedard",
         "team": "Chicago Blackhawks",
     }
-    r1 = client.post("/api/cards/", json=hockey_payload)
+    r1 = client.post("/api/cards", json=hockey_payload)
     assert r1.status_code == 201
 
     # Baseball card
@@ -90,10 +90,10 @@ def test_filter_by_sport(client):
         "player_name": "Mike Trout",
         "team": "Angels",
     }
-    r2 = client.post("/api/cards/", json=baseball_payload)
+    r2 = client.post("/api/cards", json=baseball_payload)
     assert r2.status_code == 201
 
-    rsp = client.get("/api/cards/?sport=Hockey")
+    rsp = client.get("/api/cards?sport=Hockey")
     assert rsp.status_code == 200
     assert rsp.json["total"] == 1
 
@@ -149,7 +149,7 @@ def test_update_card_invalid_year(client):
         "player_name": "Connor Bedard",
         "team": "Chicago Blackhawks",
     }
-    create_rsp = client.post("/api/cards/", json=payload)
+    create_rsp = client.post("/api/cards", json=payload)
     assert create_rsp.status_code == 201
     card_id = create_rsp.json["id"]
 
@@ -161,5 +161,3 @@ def test_get_card_by_id_404(client):
     """PATCH /api/cards/999999 → 404 (method allowed, id not found)."""
     rsp = client.patch("/api/cards/999999", json={"year": 2024})
     assert rsp.status_code == 404
-
-
