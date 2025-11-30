@@ -6,7 +6,7 @@ from ..models.card import Card
 sets_bp = Blueprint("sets", __name__, url_prefix="/api/sets")
 
 
-@sets_bp.get("/")
+@sets_bp.get("")
 def list_sets():
     # ?page=1&per_page=20
     page = request.args.get("page", default=1, type=int)
@@ -106,7 +106,7 @@ def get_cards_for_set(set_id):
     )
 
 
-@sets_bp.post("/")
+@sets_bp.post("")
 def create_set():
     """
     Create a set defined by sport + year + brand + set_name.
