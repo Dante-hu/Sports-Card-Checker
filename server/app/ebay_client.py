@@ -2,6 +2,7 @@
 import os
 import requests
 from typing import List, Dict, Any
+import base64
 
 
 # We’ll choose environment based on EBAY_ENVIRONMENT
@@ -15,13 +16,44 @@ def get_ebay_base_url() -> str:
 
 def get_ebay_token() -> str | None:
     """
-    Read the eBay OAuth token from the environment.
-
-    Set this before running the server, e.g. in CMD:
-
-        set EBAY_OAUTH_TOKEN=v1.YOUR_REAL_TOKEN_HERE
+    Uses the stored eBay REFRESH TOKEN to get a fresh ACCESS TOKEN.
+    Returns the access token string, or None on failure.
     """
-    return os.environ.get("EBAY_OAUTH_TOKEN")
+
+    client_id = os.getenv("EBAY_CLIENT_ID")
+    client_secret = os.getenv("EBAY_CLIENT_SECRET")
+    refresh_token = os.getenv("EBAY_REFRESH_TOKEN")
+
+    if not all([client_id, client_secret, refresh_token]):
+        print("❌ Missing eBay environment variables.")
+        return None
+
+    # Prepare Basic Auth header
+    basic_auth = base64.b64encode(
+        f"{client_id}:{client_secret}".encode()
+    ).decode()
+
+    url = "https://api.ebay.com/identity/v1/oauth2/token"
+
+    headers = {
+        "Authorization": f"Basic {basic_auth}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+
+    data = {
+        "grant_type": "refresh_token",
+        "refresh_token": refresh_token,
+        "scope": "https://api.ebay.com/oauth/api_scope"
+    }
+
+    resp = requests.post(url, headers=headers, data=data)
+
+    if resp.status_code != 200:
+        print("❌ Failed to refresh eBay token:", resp.text)
+        return None
+
+    token = resp.json().get("access_token")
+    return token
 
 
 def _call_ebay(q: str, limit: int, marketplace: str) -> List[Dict[str, Any]]:

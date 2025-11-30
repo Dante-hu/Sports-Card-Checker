@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./server
+    container_name: cardchecker-backend
+    env_file:
+      - server/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - ./server:/app
+
+  db:
+    image: postgres:16
+    container_name: cardchecker-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sports_cards
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

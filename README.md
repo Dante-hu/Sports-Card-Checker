@@ -36,3 +36,13 @@ _README will grow with the code; for now this file only gets you running._
 1. cd client
 2. npm install
 ```
+## 4. Docker
+
+docker compose build
+
+docker compose up
+
+http://localhost:5000
+
+localhost:5433(your port) 
+
