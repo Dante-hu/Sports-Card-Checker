@@ -1,7 +1,8 @@
 // client/src/pages/SetsPage.tsx
 import { useEffect, useState } from "react";
 import { fetchOwned, deleteOwnedCard, type OwnedCard } from "../api/owned";
-import {fetchSets,
+import {
+  fetchSets,
   fetchSetCards,
   type SetItem,
   type SetCard,
@@ -18,7 +19,7 @@ export default function SetsPage() {
   const [setCards, setSetCards] = useState<SetCard[]>([]);
 
   const [toast, setToast] = useState<string | null>(null);
-  const [selectedOwned, setSelectedOwned] = useState<OwnedCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<SetCard | null>(null);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [removeCount, setRemoveCount] = useState(1);
 
@@ -72,41 +73,10 @@ export default function SetsPage() {
     setView("sets");
   }
 
-  function handleOwnedClick(item: OwnedCard) {
-    setSelectedOwned(item);
-    setShowRemoveDialog(false);
-    setRemoveCount(1);
-  }
-
   function closeSelected() {
-    setSelectedOwned(null);
+    setSelectedCard(null);
     setShowRemoveDialog(false);
     setRemoveCount(1);
-  }
-
-  async function confirmAndRemove(count: number) {
-    if (!selectedOwned) return;
-    const qty = selectedOwned.quantity ?? 1;
-    const safe = Math.min(Math.max(count, 1), qty);
-
-    try {
-      const res = await deleteOwnedCard(selectedOwned.id, safe);
-
-      if (res?.owned) {
-        setOwned((prev) =>
-          prev.map((i) =>
-            i.id === selectedOwned.id ? { ...i, ...res.owned } : i
-          )
-        );
-      } else {
-        setOwned((prev) => prev.filter((i) => i.id !== selectedOwned.id));
-      }
-
-      showToast("Removed from Owned");
-      closeSelected();
-    } catch {
-      showToast("Failed to remove");
-    }
   }
 
   function findOwnedForCard(card: SetCard): OwnedCard | undefined {
@@ -127,10 +97,45 @@ export default function SetsPage() {
     });
   }
 
+  function handleCardClick(card: SetCard) {
+    setSelectedCard(card);
+    setShowRemoveDialog(false);
+    setRemoveCount(1);
+  }
+
+  async function confirmAndRemove(count: number) {
+    if (!selectedCard) return;
+    const ownedEntry = findOwnedForCard(selectedCard);
+    if (!ownedEntry) return;
+
+    const qty = ownedEntry.quantity ?? 1;
+    const safe = Math.min(Math.max(count, 1), qty);
+
+    try {
+      const res = await deleteOwnedCard(ownedEntry.id, safe);
+
+      if (res?.owned) {
+        setOwned((prev) =>
+          prev.map((i) =>
+            i.id === ownedEntry.id ? { ...i, ...res.owned } : i
+          )
+        );
+      } else {
+        setOwned((prev) => prev.filter((i) => i.id !== ownedEntry.id));
+      }
+
+      showToast("Removed from Owned");
+      closeSelected();
+    } catch {
+      showToast("Failed to remove");
+    }
+  }
+
   return (
     <div className="owned-page">
       {toast && <div className="cards-toast">{toast}</div>}
 
+      {/* SET LIST */}
       {view === "sets" && (
         <>
           <h1 className="cards-title mb-4">Sets</h1>
@@ -177,6 +182,7 @@ export default function SetsPage() {
         </>
       )}
 
+      {/* CARDS IN ONE SET */}
       {view === "cards" && selectedSet && (
         <>
           <div className="mb-4 flex items-center justify-between">
@@ -216,11 +222,7 @@ export default function SetsPage() {
                   key={card.id}
                   className="card-tile card-tile--clickable"
                   style={{ opacity: isOwned ? 1 : 0.35 }}
-                  onClick={
-                    isOwned && ownedEntry
-                      ? () => handleOwnedClick(ownedEntry)
-                      : undefined
-                  }
+                  onClick={() => handleCardClick(card)}
                 >
                   <div
                     className={
@@ -250,45 +252,67 @@ export default function SetsPage() {
         </>
       )}
 
-      {selectedOwned && (
+      {/* CARD POPUP (OWNED OR MISSING) WITH WIDE EBAY COLUMN */}
+      {selectedCard && (
         <div className="card-overlay" onClick={closeSelected}>
           <div
             className="card-overlay-inner"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "1000px",
+              width: "90vw",
+              display: "flex",
+              gap: "1.5rem",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+            }}
           >
-            <button className="card-overlay-close" onClick={closeSelected}>
+            <button
+              className="card-overlay-close"
+              onClick={closeSelected}
+              aria-label="Close"
+            >
               ×
             </button>
 
             {(() => {
-              const c = selectedOwned.card || {};
+              const c = selectedCard;
+              const ownedEntry = findOwnedForCard(c);
+              const qty = ownedEntry?.quantity ?? 0;
+
               const img = c.image_url?.trim() || "";
               const hasImg =
                 img && img.toLowerCase() !== "null" && img !== "none";
 
-              const ebayQuery = buildEbayQueryFromCard(c);
-              const qty = selectedOwned.quantity ?? 1;
+              const ebayQuery = buildEbayQueryFromCard(c as any);
 
               return (
                 <>
-                  <h2 className="card-overlay-title">
-                    {c.year} {c.brand}
-                  </h2>
-                  <p className="card-overlay-subtitle">
-                    {c.player_name} • #{c.card_number} • {c.set_name} • x{qty}
-                  </p>
+                  {/* LEFT COLUMN */}
+                  <div
+                    style={{
+                      flex: "0 0 280px",
+                      maxWidth: "100%",
+                    }}
+                  >
+                    <h2 className="card-overlay-title">
+                      {c.year} {c.brand}
+                    </h2>
+                    <p className="card-overlay-subtitle">
+                      {c.player_name} • #{c.card_number} • {c.set_name} •{" "}
+                      {ownedEntry ? `x${qty}` : "Missing from your collection"}
+                    </p>
 
-                  <div className="mt-4 flex flex-col gap-4 md:flex-row">
-                    <div className="md:w-1/2 flex flex-col items-center">
-                      {hasImg ? (
-                        <img src={img} className="card-overlay-image" />
-                      ) : (
-                        <div className="card-overlay-image-placeholder">
-                          No image
-                        </div>
-                      )}
+                    {hasImg ? (
+                      <img src={img} className="card-overlay-image" />
+                    ) : (
+                      <div className="card-overlay-image-placeholder">
+                        No image
+                      </div>
+                    )}
 
-                      <div className="mt-4 w-full flex flex-col items-center">
+                    {ownedEntry && (
+                      <div className="card-overlay-actions">
                         <button
                           className="card-overlay-button"
                           onClick={() => setShowRemoveDialog(true)}
@@ -333,14 +357,21 @@ export default function SetsPage() {
                           </div>
                         )}
                       </div>
-                    </div>
-
-                    {ebayQuery && (
-                      <div className="md:w-1/2">
-                        <EbayResults query={ebayQuery} />
-                      </div>
                     )}
                   </div>
+
+                  {/* RIGHT COLUMN: eBay listings */}
+                  {ebayQuery && (
+                    <div
+                      className="card-overlay-ebay"
+                      style={{
+                        flex: "1 1 0",
+                        minWidth: "260px",
+                      }}
+                    >
+                      <EbayResults query={ebayQuery} />
+                    </div>
+                  )}
                 </>
               );
             })()}
