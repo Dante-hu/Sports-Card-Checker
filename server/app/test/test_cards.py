@@ -160,3 +160,5 @@ def test_get_card_by_id_404(client):
     """PATCH /api/cards/999999 → 404 (method allowed, id not found)."""
     rsp = client.patch("/api/cards/999999", json={"year": 2024})
     assert rsp.status_code == 404
+
+
