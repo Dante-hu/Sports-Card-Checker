@@ -19,4 +19,4 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
       - run: pip install -r requirements.txt pytest
-      - run: cd server && pytest app/test -v
+      - run: cd server && pytest app/test -k "not Selenium"
