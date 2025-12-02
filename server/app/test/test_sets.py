@@ -24,7 +24,6 @@ class TestSets:
         assert isinstance(data, list)
         assert data == []  # no sets yet
 
-
     def test_create_set(self, client):
         """POST /api/sets creates row."""
         payload = {
@@ -85,7 +84,6 @@ class TestSets:
         data = r.json
         assert isinstance(data, list)
         assert len(data) == 25
-
 
     def test_create_set_missing_field(self, client):
         payload = {"sport": "Soccer"}  # missing year, brand, set_name
