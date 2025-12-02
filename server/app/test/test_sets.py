@@ -65,8 +65,6 @@ class TestSets:
         assert r.status_code == 404
         assert "not found" in r.json["error"]
 
-
-
     def test_create_set_missing_field(self, client):
         payload = {"sport": "Soccer"}  # missing year, brand, set_name
         r = client.post("/api/sets", json=payload)
