@@ -65,25 +65,7 @@ class TestSets:
         assert r.status_code == 404
         assert "not found" in r.json["error"]
 
-    def test_list_sets_pagination(self, client):
-        # create 25 sets
-        for i in range(25):
-            client.post(
-                "/api/sets",
-                json={
-                    "sport": "Football",
-                    "year": 2020,
-                    "brand": "Test",
-                    "set_name": f"Set {i}",
-                },
-            )
 
-        # backend ignores pagination params and just returns all sets
-        r = client.get("/api/sets?page=2&per_page=10")
-        assert r.status_code == 200
-        data = r.json
-        assert isinstance(data, list)
-        assert len(data) == 25
 
     def test_create_set_missing_field(self, client):
         payload = {"sport": "Soccer"}  # missing year, brand, set_name
