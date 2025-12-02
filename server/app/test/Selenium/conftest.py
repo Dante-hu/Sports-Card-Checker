@@ -13,7 +13,7 @@ from selenium.webdriver.chrome.options import Options
 # Database configuration
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:postgres123@localhost:5432/sports_card_checker",
+    "postgresql://postgres:postgres123@localhost:5433/sports_card_checker",
 )
 
 
