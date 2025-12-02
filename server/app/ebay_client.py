@@ -25,7 +25,7 @@ def get_ebay_token() -> str | None:
     refresh_token = os.getenv("EBAY_REFRESH_TOKEN")
 
     if not all([client_id, client_secret, refresh_token]):
-        print("❌ Missing eBay environment variables.")
+        print(" Missing eBay environment variables.")
         return None
 
     # Prepare Basic Auth header

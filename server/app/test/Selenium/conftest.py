@@ -10,91 +10,76 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-# Database configuration - same as your main app
+# Database configuration
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://postgres:postgres123@localhost:5432/sports_card_checker",
 )
 
 
+# ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+# REGISTER MARKER — THIS MUST BE A HOOK, NOT A FIXTURE!
+def pytest_configure(config):
+    """Register custom markers to avoid pytest warnings"""
+    config.addinivalue_line("markers", "no_auto_clean: skip auto DB cleanup (for card E2E tests)")
+# ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+
+
 @pytest.fixture(scope="session")
 def db_connection():
-    """Create a database connection for test setup/teardown"""
     conn = psycopg2.connect(DATABASE_URL)
     yield conn
     conn.close()
 
 
 @pytest.fixture(autouse=True)
-def clean_database(db_connection):
-    """Clean the database before each test"""
-    # Skip database cleaning for tests that don't need it
-    # (useful for read-only tests)
+def clean_database(db_connection, request):
+    """Clean DB after each test — unless marked with @pytest.mark.no_auto_clean"""
     yield
-    # Clean after test runs
-    with db_connection.cursor() as cursor:
-        # Disable foreign key checks temporarily
-        cursor.execute("SET session_replication_role = 'replica';")
 
-        # Get all tables (excluding alembic_version for migrations)
-        cursor.execute(
-            """
-            SELECT tablename 
-            FROM pg_tables 
+    # Skip cleanup if test/file has the marker
+    if request.node.get_closest_marker("no_auto_clean"):
+        return
+
+    with db_connection.cursor() as cursor:
+        cursor.execute("SET session_replication_role = 'replica';")
+        cursor.execute("""
+            SELECT tablename FROM pg_tables 
             WHERE schemaname = 'public' 
             AND tablename NOT IN ('alembic_version')
-        """
-        )
-
-        tables = cursor.fetchall()
-
-        # Truncate all tables
-        for table in tables:
-            cursor.execute(
-                sql.SQL("TRUNCATE TABLE {} CASCADE").format(sql.Identifier(table[0]))
-            )
-
-        # Re-enable foreign key checks
+        """)
+        for (table,) in cursor.fetchall():
+            cursor.execute(sql.SQL("TRUNCATE TABLE {} CASCADE").format(sql.Identifier(table)))
         cursor.execute("SET session_replication_role = 'origin';")
         db_connection.commit()
 
 
 @pytest.fixture
 def driver():
-    """Selenium WebDriver fixture - matches your working test"""
     options = Options()
-
-    # Add options for better stability
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
-
-    # Uncomment for headless mode (for CI/CD)
     # options.add_argument("--headless=new")
 
     driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(5)
-
     yield driver
-
     driver.quit()
 
 
 @pytest.fixture
 def wait(driver):
-    """WebDriverWait fixture for explicit waits"""
     return WebDriverWait(driver, 10)
 
 
 @pytest.fixture
 def unique_email():
-    """Generate a unique email for tests"""
-    return f"selenium_{int(time.time())}@example.com"
+    return f"selenium_{int(time.time())}_{os.getpid()}@example.com"
 
 
 @pytest.fixture
 def test_user_data(unique_email):
-    """Test user data for signup/login tests"""
     return {
         "email": unique_email,
         "password": "S3lenium!",
