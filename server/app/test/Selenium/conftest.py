@@ -17,12 +17,11 @@ DATABASE_URL = os.getenv(
 )
 
 
-# ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-# REGISTER MARKER — THIS MUST BE A HOOK, NOT A FIXTURE!
+
+# register marker 
 def pytest_configure(config):
     """Register custom markers to avoid pytest warnings"""
     config.addinivalue_line("markers", "no_auto_clean: skip auto DB cleanup (for card E2E tests)")
-# ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
 
 @pytest.fixture(scope="session")
