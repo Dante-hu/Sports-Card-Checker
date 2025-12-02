@@ -17,6 +17,10 @@ class User(db.Model):
         nullable=False,
     )
 
+    # NEW: security question / answer for password reset
+    security_question = Column(String(255), nullable=True)
+    security_answer_hash = Column(String(512), nullable=True)
+
     # relationships
     owned_cards = db.relationship(
         "OwnedCard",
@@ -40,6 +44,28 @@ class User(db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+
+    # NEW: helpers for the security answer
+    def set_security_answer(self, answer: str | None) -> None:
+        """
+        Store a normalized, hashed version of the security answer.
+        Normalization = strip whitespace + lowercasing.
+        """
+        if answer:
+            normalized = answer.strip().lower()
+            self.security_answer_hash = generate_password_hash(normalized)
+        else:
+            self.security_answer_hash = None
+
+    def check_security_answer(self, candidate: str) -> bool:
+        """
+        Check a candidate security answer against the stored hash.
+        Uses the same normalization as set_security_answer.
+        """
+        if not self.security_answer_hash or not candidate:
+            return False
+        normalized = candidate.strip().lower()
+        return check_password_hash(self.security_answer_hash, normalized)
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

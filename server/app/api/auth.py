@@ -44,7 +44,9 @@ def login_required(f):
 # Routes
 @auth_bp.post("/signup")
 def signup():
-    data, err, code = _validate_signup(request.get_json() or {})
+    # NOTE: we grab the raw body FIRST so we can use security_question too
+    raw_data = request.get_json() or {}
+    data, err, code = _validate_signup(raw_data)
     if err:
         return jsonify(err), code
 
@@ -52,10 +54,19 @@ def signup():
     if exists:
         return jsonify({"error": "Email already registered"}), 409
 
+    # NEW: security question + answer are optional at signup
+    security_question = (raw_data.get("security_question") or "").strip()
+    security_answer = (raw_data.get("security_answer") or "").strip()
+
     user = User(
         email=data["email"],
         password_hash=generate_password_hash(data["password"]),
     )
+
+    if security_question and security_answer:
+        user.security_question = security_question
+        user.set_security_answer(security_answer)
+
     db.session.add(user)
     db.session.commit()
 
@@ -182,3 +193,113 @@ def me_summary():
         ),
         200,
     )
+
+
+# -----------------------------
+# NEW: Set / change security question (must be logged in)
+# -----------------------------
+@auth_bp.post("/security-question")
+@login_required
+def set_security_question():
+    """
+    Allow the logged-in user to set or update their security question + answer.
+    Body: { "question": "...", "answer": "..." }
+    """
+    user = g.current_user
+    data = request.get_json() or {}
+
+    question = (data.get("question") or "").strip()
+    answer = (data.get("answer") or "").strip()
+
+    if not question or not answer:
+        return jsonify({"error": "question and answer are required"}), 400
+
+    user.security_question = question
+    user.set_security_answer(answer)
+
+    db.session.commit()
+
+    return jsonify({"message": "Security question updated"}), 200
+
+
+# -----------------------------
+# NEW: Forgot password - get security question by email
+# -----------------------------
+@auth_bp.post("/forgot-password")
+def forgot_password():
+    """
+    Step 1 of reset: user gives email, we return the security question
+    (if it exists) WITHOUT exposing the answer.
+    Body: { "email": "..." }
+    """
+    data = request.get_json() or {}
+    raw_email = data.get("email")
+    if not raw_email:
+        return jsonify({"error": "email is required"}), 400
+
+    email = raw_email.strip().lower()
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not user.security_question:
+        return (
+            jsonify(
+                {
+                    "error": "No security question set for this account or account not found"
+                }
+            ),
+            404,
+        )
+
+    return (
+        jsonify(
+            {
+                "email": email,
+                "security_question": user.security_question,
+            }
+        ),
+        200,
+    )
+
+
+# -----------------------------
+# NEW: Reset password using security answer
+# -----------------------------
+@auth_bp.post("/reset-password")
+def reset_password_with_security_answer():
+    """
+    Step 2 of reset: user provides email, security answer, and new password.
+    Body: { "email": "...", "answer": "...", "new_password": "..." }
+    """
+    data = request.get_json() or {}
+
+    raw_email = data.get("email")
+    answer = data.get("answer")
+    new_password = data.get("new_password")
+
+    if not raw_email or not answer or not new_password:
+        return (
+            jsonify(
+                {
+                    "error": "email, answer, and new_password are all required",
+                }
+            ),
+            400,
+        )
+
+    email = raw_email.strip().lower()
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not user.security_question or not user.security_answer_hash:
+        return jsonify({"error": "Unable to reset password for this account"}), 400
+
+    if not user.check_security_answer(answer):
+        return jsonify({"error": "Incorrect security answer"}), 401
+
+    # update password
+    user.set_password(new_password)
+    db.session.commit()
+
+    # Optional: log them in immediately:
+    session["user_id"] = user.id
+
+    return jsonify({"message": "Password reset successful"}), 200

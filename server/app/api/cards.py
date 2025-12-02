@@ -71,7 +71,7 @@ def list_cards():
         )
 
     page = request.args.get("page", default=1, type=int)
-    per_page = request.args.get("per_page", default=20, type=int)
+    per_page = request.args.get("per_page", default=100, type=int)
 
     if page < 1:
         page = 1

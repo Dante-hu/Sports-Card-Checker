@@ -1,12 +1,18 @@
 // client/src/pages/SetsPage.tsx
 import { useEffect, useState } from "react";
-import { fetchOwned, deleteOwnedCard, type OwnedCard } from "../api/owned";
+import {
+  fetchOwned,
+  deleteOwnedCard,
+  addOwnedCard,
+  type OwnedCard,
+} from "../api/owned";
 import {
   fetchSets,
   fetchSetCards,
   type SetItem,
   type SetCard,
 } from "../api/sets";
+import { addWantedCard } from "../api/wanted";
 import EbayResults from "../components/EbayResults";
 import { buildEbayQueryFromCard } from "../utils/ebay";
 
@@ -23,17 +29,26 @@ export default function SetsPage() {
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [removeCount, setRemoveCount] = useState(1);
 
+  // Filters for the Sets list
+  const [sportFilter, setSportFilter] = useState<string>("");
+  const [yearFilter, setYearFilter] = useState<string>("");
+
+  // NEW: search within cards of a single set
+  const [cardSearch, setCardSearch] = useState<string>("");
+
   function showToast(msg: string) {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
   }
 
   useEffect(() => {
+    // Load sets once; backend now returns all sets (no pagination).
     fetchSets({ page: 1, perPage: 500 }).then((data) => {
       const arr = Array.isArray(data) ? data : data.items;
       setSets(arr);
     });
 
+    // Load owned cards for progress and overlays.
     fetchOwned({ page: 1, perPage: 500 }).then((data) => {
       const arr = Array.isArray(data) ? data : data.items;
       setOwned(arr);
@@ -61,8 +76,10 @@ export default function SetsPage() {
   async function openSet(set: SetItem) {
     setSelectedSet(set);
     setView("cards");
+    setCardSearch(""); // reset search when opening a new set
 
-    const data = await fetchSetCards(set.id, { page: 1, perPage: 500 });
+    // Backend now returns ALL cards for the set in one shot.
+    const data = await fetchSetCards(set.id, { page: 1, perPage: 9999 });
     const arr = Array.isArray(data) ? data : data.items;
     setSetCards(arr);
   }
@@ -71,6 +88,7 @@ export default function SetsPage() {
     setSelectedSet(null);
     setSetCards([]);
     setView("sets");
+    setCardSearch("");
   }
 
   function closeSelected() {
@@ -131,17 +149,99 @@ export default function SetsPage() {
     }
   }
 
+  // ---------- SET LIST FILTERING ----------
+  const uniqueSports = Array.from(new Set(sets.map((s) => s.sport))).sort();
+  const uniqueYears = Array.from(
+    new Set(sets.map((s) => String(s.year)))
+  )
+    .sort()
+    .reverse();
+
+  const filteredSets = sets.filter((s) => {
+    const matchesSport = sportFilter ? s.sport === sportFilter : true;
+    const matchesYear = yearFilter ? String(s.year) === yearFilter : true;
+    return matchesSport && matchesYear;
+  });
+
+  // ---------- CARD SEARCH (inside a set) ----------
+  const visibleCards = setCards.filter((card) => {
+    if (!cardSearch.trim()) return true;
+    const q = cardSearch.toLowerCase();
+
+    const name = (card.player_name || "").toLowerCase();
+    const team = (card.team || "").toLowerCase();
+    const number = String(card.card_number || "").toLowerCase();
+
+    return (
+      name.includes(q) ||
+      team.includes(q) ||
+      number.includes(q)
+    );
+  });
+
   return (
     <div className="owned-page">
       {toast && <div className="cards-toast">{toast}</div>}
 
-      {/* SET LIST */}
+      {/* SET LIST VIEW */}
       {view === "sets" && (
         <>
           <h1 className="cards-title mb-4">Sets</h1>
 
+          {/* Filters styled similarly to the rest of the cards UI */}
+          <div className="mb-4 rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3">
+            <div className="flex flex-wrap gap-4 items-end">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs uppercase tracking-wide text-slate-300">
+                  Sport
+                </label>
+                <select
+                  className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+                  value={sportFilter}
+                  onChange={(e) => setSportFilter(e.target.value)}
+                >
+                  <option value="">All sports</option>
+                  {uniqueSports.map((sport) => (
+                    <option key={sport} value={sport}>
+                      {sport}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-xs uppercase tracking-wide text-slate-300">
+                  Year
+                </label>
+                <select
+                  className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+                  value={yearFilter}
+                  onChange={(e) => setYearFilter(e.target.value)}
+                >
+                  <option value="">All years</option>
+                  {uniqueYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                className="ml-auto rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm font-medium hover:bg-slate-700"
+                type="button"
+                onClick={() => {
+                  setSportFilter("");
+                  setYearFilter("");
+                }}
+              >
+                Clear filters
+              </button>
+            </div>
+          </div>
+
           <div className="cards-grid">
-            {sets.map((s) => {
+            {filteredSets.map((s) => {
               const ownedCards = ownedInSet(s);
 
               const collected = new Set(
@@ -182,10 +282,10 @@ export default function SetsPage() {
         </>
       )}
 
-      {/* CARDS IN ONE SET */}
+      {/* CARDS IN A SINGLE SET */}
       {view === "cards" && selectedSet && (
         <>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             {(() => {
               const headerParts = [
                 selectedSet.year,
@@ -198,16 +298,27 @@ export default function SetsPage() {
               return <h1 className="cards-title">{headerTitle}</h1>;
             })()}
 
-            <button
-              className="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700"
-              onClick={backToSets}
-            >
-              ← Back to Sets
-            </button>
+            <div className="flex items-center gap-3">
+              {/* NEW: search bar for cards in this set */}
+              <input
+                type="text"
+                placeholder="Search cards (name, team, #)..."
+                className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+                value={cardSearch}
+                onChange={(e) => setCardSearch(e.target.value)}
+              />
+
+              <button
+                className="rounded-md border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-medium hover:bg-slate-700"
+                onClick={backToSets}
+              >
+                ← Back to Sets
+              </button>
+            </div>
           </div>
 
           <div className="cards-grid">
-            {setCards.map((card) => {
+            {visibleCards.map((card) => {
               const ownedEntry = findOwnedForCard(card);
               const isOwned = !!ownedEntry;
 
@@ -252,7 +363,7 @@ export default function SetsPage() {
         </>
       )}
 
-      {/* CARD POPUP (OWNED OR MISSING) WITH WIDE EBAY COLUMN */}
+      {/* CARD OVERLAY (OWNED OR MISSING) */}
       {selectedCard && (
         <div className="card-overlay" onClick={closeSelected}>
           <div
@@ -311,20 +422,66 @@ export default function SetsPage() {
                       </div>
                     )}
 
-                    {ownedEntry && (
-                      <div className="card-overlay-actions">
-                        <button
-                          className="card-overlay-button"
-                          onClick={() => setShowRemoveDialog(true)}
-                        >
-                          Remove from Owned
-                        </button>
+                    {/* ACTIONS: add / wantlist / remove */}
+                    <div className="mt-4 flex flex-col gap-2">
+                      {/* Add to Owned */}
+                      <button
+                        className="card-overlay-button"
+                        onClick={async () => {
+                          if (!c.id) return;
+                          try {
+                            await addOwnedCard(c.id);
 
-                        {showRemoveDialog && (
-                          <div className="mt-4">
-                            {qty > 1 && (
+                            // Refresh owned so quantities + opacity update
+                            const data = await fetchOwned({
+                              page: 1,
+                              perPage: 500,
+                            });
+                            const arr = Array.isArray(data)
+                              ? data
+                              : data.items;
+                            setOwned(arr);
+
+                            showToast("Added to Owned");
+                          } catch {
+                            showToast("Failed to add to Owned");
+                          }
+                        }}
+                      >
+                        Add to Owned
+                      </button>
+
+                      {/* Add to Wantlist */}
+                      <button
+                        className="card-overlay-button"
+                        onClick={async () => {
+                          if (!c.id) return;
+                          try {
+                            await addWantedCard(c.id);
+                            showToast("Added to Wantlist");
+                          } catch {
+                            showToast("Failed to add to Wantlist");
+                          }
+                        }}
+                      >
+                        Add to Wantlist
+                      </button>
+
+                      {/* Remove from Owned (styled to match overlay) */}
+                      {ownedEntry && (
+                        <div className="mt-2 rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2">
+                          <p className="mb-2 text-xs text-slate-300">
+                            You currently own <strong>x{qty}</strong> of this
+                            card.
+                          </p>
+
+                          {qty > 1 && (
+                            <div className="mb-2 flex items-center gap-2">
+                              <span className="text-xs text-slate-300">
+                                Remove:
+                              </span>
                               <input
-                                className="w-20 rounded border bg-slate-900 px-2 py-1"
+                                className="w-20 rounded-md border border-slate-600 bg-slate-950 px-2 py-1 text-sm"
                                 type="number"
                                 min={1}
                                 max={qty}
@@ -333,31 +490,42 @@ export default function SetsPage() {
                                   setRemoveCount(
                                     Math.max(
                                       1,
-                                      Math.min(qty, Number(e.target.value))
+                                      Math.min(
+                                        qty,
+                                        Number(e.target.value) || 1
+                                      )
                                     )
                                   )
                                 }
                               />
-                            )}
-
-                            <div className="flex gap-2 mt-3">
-                              <button
-                                className="px-3 py-1.5 rounded bg-emerald-600 text-slate-950 font-semibold"
-                                onClick={() => confirmAndRemove(removeCount)}
-                              >
-                                Confirm
-                              </button>
-                              <button
-                                className="px-3 py-1.5 rounded bg-slate-700"
-                                onClick={() => setShowRemoveDialog(false)}
-                              >
-                                Cancel
-                              </button>
+                              <span className="text-xs text-slate-400">
+                                (max {qty})
+                              </span>
                             </div>
+                          )}
+
+                          <div className="flex gap-2">
+                            <button
+                              className="card-overlay-button"
+                              onClick={() =>
+                                confirmAndRemove(removeCount)
+                              }
+                            >
+                              Confirm remove
+                            </button>
+                            <button
+                              className="card-overlay-button"
+                              onClick={() => {
+                                setShowRemoveDialog(false);
+                                setRemoveCount(1);
+                              }}
+                            >
+                              Cancel
+                            </button>
                           </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* RIGHT COLUMN: eBay listings */}
