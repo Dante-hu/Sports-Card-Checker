@@ -26,3 +26,4 @@ flask_sqlalchemy
 flask-cors
 python-dotenv
 requests
+psycopg2
