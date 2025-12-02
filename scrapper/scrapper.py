@@ -249,7 +249,7 @@ def parse_scc_file(path: str):
                 "card_number": card_number,
                 "player_name": player_name,
                 "team": None,               # no team in this layout
-                "image_url": front_img_url, # ✅ thumbnail URL from page
+                "image_url": front_img_url,  # ✅ thumbnail URL from page
                 "is_rookie": False,
             }
         )

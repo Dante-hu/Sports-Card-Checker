@@ -13,10 +13,9 @@ def wanted_to_dict(item: WantedCard) -> dict:
         "user_id": item.user_id,
         "card_id": item.card_id,
         "notes": item.notes,
-        # your model uses date_added, not created_at
-        "date_added": (
-            item.date_added.isoformat()
-            if getattr(item, "date_added", None) is not None
+        "created_at": (
+            item.created_at.isoformat()
+            if getattr(item, "created_at", None) is not None
             else None
         ),
         "card": (
@@ -35,13 +34,6 @@ def wanted_to_dict(item: WantedCard) -> dict:
             else None
         ),
     }
-
-
-# 🔹 Preflight handler: NO auth, NO redirect
-@wanted_cards_bp.route("", methods=["OPTIONS"])
-def wanted_options():
-    # flask_cors will add the right CORS headers; we just need a 200
-    return "", 200
 
 
 @wanted_cards_bp.get("")

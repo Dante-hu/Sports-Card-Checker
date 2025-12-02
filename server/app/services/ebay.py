@@ -2,6 +2,7 @@ import os
 import base64
 import requests
 
+
 def get_ebay_access_token():
     client_id = os.getenv("EBAY_CLIENT_ID")
     client_secret = os.getenv("EBAY_CLIENT_SECRET")

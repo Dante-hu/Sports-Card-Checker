@@ -6,6 +6,8 @@ import OwnedPage from "./pages/OwnedPage";
 import WantlistPage from "./pages/WantlistPage";
 import AppLayout from "./components/AppLayout";
 import SetsPage from "./pages/SetsPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 export default function App() {
   return (
@@ -14,6 +16,8 @@ export default function App() {
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* Protected-ish routes with navbar */}
         <Route element={<AppLayout />}>

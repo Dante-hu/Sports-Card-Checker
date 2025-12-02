@@ -23,36 +23,24 @@ def serialize_set_with_total(s: Set) -> dict:
 
 @sets_bp.get("")
 def list_sets():
-    # ?page=1&per_page=20
-    page = request.args.get("page", default=1, type=int)
-    per_page = request.args.get("per_page", default=20, type=int)
-
-    # safety cap so nobody asks for like 10,000 at once
-    per_page = min(per_page, 100)
-
-    pagination = Set.query.order_by(
-        Set.year.desc(), Set.brand, Set.set_name
-    ).paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False,
+    """
+    Return ALL sets as a simple list (no server-side pagination).
+    Frontend can filter client-side.
+    """
+    sets = (
+        Set.query.order_by(
+            Set.year.desc(),
+            Set.brand,
+            Set.set_name,
+        )
+        .all()
     )
 
-    return jsonify(
-        {
-            "items": [serialize_set_with_total(s) for s in pagination.items],
-            "page": page,
-            "per_page": per_page,
-            "total": pagination.total,
-            "pages": pagination.pages,
-            "has_next": pagination.has_next,
-            "has_prev": pagination.has_prev,
-        }
-    )
+    return jsonify([serialize_set_with_total(s) for s in sets])
 
 
 @sets_bp.get("/<int:set_id>")
-def get_set(set_id):
+def get_set(set_id: int):
     s = Set.query.get(set_id)
     if not s:
         return jsonify({"error": f"Set with id {set_id} not found"}), 404
@@ -61,33 +49,30 @@ def get_set(set_id):
 
 
 @sets_bp.get("/<int:set_id>/cards")
-def get_cards_for_set(set_id):
+def get_cards_for_set(set_id: int):
     """
-    Return cards belonging to a specific set, WITH pagination.
-    We still match cards using the set's sport, year, brand, and set_name.
+    Return *all* cards for this set in a single response.
+
+    We keep the same response shape as pagination (items, page, pages, etc.)
+    but effectively there is only 1 page with all cards.
     """
 
-    # pagination params: ?page=1&per_page=20
-    page = request.args.get("page", default=1, type=int)
-    per_page = request.args.get("per_page", default=20, type=int)
-    per_page = min(per_page, 100)  # safety cap
-
-    # Find the set
     set_obj = Set.query.get(set_id)
     if not set_obj:
         return jsonify({"error": f"Set with id {set_id} not found"}), 404
 
-    # Base query for cards in this set
-    query = Card.query.filter_by(
-        sport=set_obj.sport,
-        year=set_obj.year,
-        brand=set_obj.brand,
-        set_name=set_obj.set_name,
-    ).order_by(Card.card_number)
+    # Get ALL cards that belong to this set
+    cards = (
+        Card.query.filter_by(
+            sport=set_obj.sport,
+            year=set_obj.year,
+            brand=set_obj.brand,
+            set_name=set_obj.set_name,
+        )
+        .order_by(Card.card_number)
+        .all()
+    )
 
-    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
-
-    # Serialize cards (use to_dict if it exists)
     items = [
         (
             c.to_dict()
@@ -104,22 +89,23 @@ def get_cards_for_set(set_id):
                 "image_url": c.image_url,
             }
         )
-        for c in pagination.items
+        for c in cards
     ]
 
-    return (
-        jsonify(
-            {
-                "items": items,
-                "page": page,
-                "per_page": per_page,
-                "total": pagination.total,
-                "pages": pagination.pages,
-                "has_next": pagination.has_next,
-                "has_prev": pagination.has_prev,
-            }
-        ),
-        200,
+    total = len(items)
+
+    # Shape compatible with previous paginated version,
+    # but now it's just 1 page with all cards.
+    return jsonify(
+        {
+            "items": items,
+            "page": 1,
+            "per_page": total,
+            "total": total,
+            "pages": 1,
+            "has_next": False,
+            "has_prev": False,
+        }
     )
 
 

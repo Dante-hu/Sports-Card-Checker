@@ -1,12 +1,11 @@
-// client/src/pages/LoginPage.tsx
+// client/src/pages/ForgotPasswordPage.tsx
 import { useState, type FormEvent } from "react";
-import { login } from "../api/auth";
+import { forgotPasswordGetQuestion } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function LoginPage() {
+export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -17,11 +16,20 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const user = await login(email, password);
-      console.log("Logged in:", user);
-      navigate("/cards");
+      const data = await forgotPasswordGetQuestion(email);
+      console.log("forgot-password response:", data);
+
+      navigate("/reset-password", {
+        state: {
+          email: data.email,
+          securityQuestion: data.security_question,
+        },
+      });
     } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "Login failed");
+      const msg =
+        err?.response?.data?.error ||
+        "Could not find that account or security question.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -33,9 +41,12 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl w-full max-w-sm space-y-4"
       >
-        <h1 className="text-2xl font-semibold text-slate-50">Login</h1>
+        <h1 className="text-2xl font-semibold text-slate-50">
+          Forgot password
+        </h1>
         <p className="text-sm text-slate-400">
-          Log in to manage your owned cards and wantlist.
+          Enter your account email. We&apos;ll show your security question so
+          you can reset your password.
         </p>
 
         {error && (
@@ -55,39 +66,20 @@ export default function LoginPage() {
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm text-slate-200">Password</label>
-          <input
-            className="w-full rounded-lg bg-slate-800 px-3 py-2 text-slate-50 text-sm"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            required
-          />
-        </div>
-
         <button
           type="submit"
           disabled={loading}
           className="w-full rounded-lg py-2 text-sm font-medium bg-emerald-500 disabled:bg-emerald-900 text-slate-950"
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? "Checking..." : "Next"}
         </button>
 
-        <div className="flex flex-col gap-1 text-xs text-slate-400 text-center">
-          <button
-            type="button"
-            className="text-emerald-400 hover:underline mx-auto"
-          >
-            <Link to="/forgot-password">Forgot password?</Link>
-          </button>
-          <p>
-            Don&apos;t have an account?{" "}
-            <Link className="text-emerald-400 hover:underline" to="/signup">
-              Sign up
-            </Link>
-          </p>
-        </div>
+        <p className="text-xs text-slate-400 text-center">
+          Remembered it?{" "}
+          <Link className="text-emerald-400 hover:underline" to="/login">
+            Back to login
+          </Link>
+        </p>
       </form>
     </div>
   );

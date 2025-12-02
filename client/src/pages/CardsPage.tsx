@@ -3,11 +3,13 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { fetchCards, autoFillCardImage } from "../api/cards";
 import { addOwnedCard } from "../api/owned";
 import { addWantedCard } from "../api/wanted";
+import { fetchSets, type SetItem } from "../api/sets";
 import EbayResults from "../components/EbayResults"; // eBay component
 
 interface Card {
   id: number;
-  year: number;
+  sport: string;
+  year: number | string;
   brand: string;
   set_name: string;
   player_name: string;
@@ -20,15 +22,14 @@ interface FiltersState {
   sport: string;
   year: string;
   brand: string;
-  set_name: string;
 }
 
 function buildEbayQueryFromCard(card: Card): string {
   const parts: string[] = [];
 
   if (card.year) parts.push(String(card.year));
-  if (card.brand) parts.push(card.brand); // e.g. "Upper Deck"
-  if (card.set_name) parts.push(card.set_name); // e.g. "Series 1", "O-Pee-Chee"
+  if (card.brand) parts.push(card.brand);
+  if (card.set_name) parts.push(card.set_name);
   if (card.player_name) parts.push(card.player_name);
   if (card.card_number) parts.push(`#${card.card_number}`);
   if (card.team) parts.push(card.team);
@@ -49,24 +50,21 @@ export default function CardsPage() {
   const [hasNext, setHasNext] = useState<boolean>(false);
   const [hasPrev, setHasPrev] = useState<boolean>(false);
 
-  // Filters
+  // Filters: sport / year / brand
   const [filters, setFilters] = useState<FiltersState>({
     sport: "",
     year: "",
     brand: "",
-    set_name: "",
   });
-  const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  // Expanded card
+  // All sets (used just to build dropdown options globally)
+  const [sets, setSets] = useState<SetItem[]>([]);
+
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  // eBay query based on selected card
   const ebayQuery = selectedCard ? buildEbayQueryFromCard(selectedCard) : "";
 
-  // Notification toast
   const [toast, setToast] = useState<string | null>(null);
 
-  // Track which card IDs we've already tried to auto-fill this session
   const autoImageRequestedIdsRef = useRef<Set<number>>(new Set());
 
   function showToast(msg: string) {
@@ -74,26 +72,24 @@ export default function CardsPage() {
     setTimeout(() => setToast(null), 2500);
   }
 
-  // Load cards from the backend (with search + filters + pagination)
+  // Load ALL sets once, for dropdown options
+  useEffect(() => {
+    fetchSets({ page: 1, perPage: 500 }).then((data: any) => {
+      const arr = Array.isArray(data) ? data : data.items;
+      setSets(arr || []);
+    });
+  }, []);
+
+  // Load cards from backend with search + filters + pagination
   useEffect(() => {
     setLoading(true);
     setError(null);
 
     const params: any = { q: search, page };
 
-    if (filters.sport.trim()) {
-      params.sport = filters.sport.trim();
-    }
-    if (filters.year.trim()) {
-      params.year = Number(filters.year.trim());
-    }
-    if (filters.brand.trim()) {
-      params.brand = filters.brand.trim();
-    }
-    if (filters.set_name.trim()) {
-      // backend expects ?set=...
-      params.set = filters.set_name.trim();
-    }
+    if (filters.sport.trim()) params.sport = filters.sport.trim();
+    if (filters.year.trim()) params.year = filters.year.trim();
+    if (filters.brand.trim()) params.brand = filters.brand.trim();
 
     fetchCards(params)
       .then((data: any) => {
@@ -118,7 +114,6 @@ export default function CardsPage() {
 
         setPage(currentPage);
         setPages(totalPages);
-
         setHasPrev(currentPage > 1);
         setHasNext(currentPage < totalPages);
       })
@@ -134,7 +129,7 @@ export default function CardsPage() {
       .finally(() => setLoading(false));
   }, [search, page, filters]);
 
-  // 🔥 Auto-fill missing images in the background (no click needed)
+  // Auto-fill missing images in background
   useEffect(() => {
     if (!cards || cards.length === 0) return;
 
@@ -146,10 +141,7 @@ export default function CardsPage() {
         trimmed.toLowerCase() !== "null" &&
         trimmed.toLowerCase() !== "none";
 
-      // Skip cards that already have an image
       if (hasImage) continue;
-
-      // Skip if we've already tried this card ID
       if (autoImageRequestedIdsRef.current.has(card.id)) continue;
       autoImageRequestedIdsRef.current.add(card.id);
 
@@ -158,14 +150,12 @@ export default function CardsPage() {
           const updated = await autoFillCardImage(card.id);
 
           if (updated && updated.image_url) {
-            // Update card in grid
             setCards((prev) =>
               prev.map((c) =>
                 c.id === card.id ? { ...c, image_url: updated.image_url } : c
               )
             );
 
-            // If this card is currently selected in the overlay, update that too
             setSelectedCard((prev) =>
               prev && prev.id === card.id
                 ? { ...prev, image_url: updated.image_url }
@@ -186,28 +176,21 @@ export default function CardsPage() {
   }
 
   function goToPrev(): void {
-    if (page > 1 && hasPrev) {
-      setPage((p) => p - 1);
-    }
+    if (page > 1 && hasPrev) setPage((p) => p - 1);
   }
 
   function goToNext(): void {
-    if (hasNext) {
-      setPage((p) => p + 1);
-    }
+    if (hasNext) setPage((p) => p + 1);
   }
 
-  // Click card -> open overlay
   function handleCardClick(card: Card): void {
     setSelectedCard(card);
   }
 
-  // Close overlay
   function closeSelected(): void {
     setSelectedCard(null);
   }
 
-  // Add to Owned
   async function handleAddOwned(): Promise<void> {
     if (!selectedCard) return;
 
@@ -221,7 +204,6 @@ export default function CardsPage() {
     }
   }
 
-  // Add to Wantlist
   async function handleAddWanted(): Promise<void> {
     if (!selectedCard) return;
 
@@ -240,19 +222,27 @@ export default function CardsPage() {
       sport: "",
       year: "",
       brand: "",
-      set_name: "",
     });
     setPage(1);
   }
 
-  function handleApplyFilters(): void {
-    setPage(1);
-    setShowFilters(false);
-  }
+  // Dropdown options derived from ALL sets (not just current cards page)
+  const sportOptions = Array.from(
+    new Set(sets.map((s) => s.sport).filter(Boolean))
+  ).sort();
+
+  const yearOptions = Array.from(
+    new Set(sets.map((s) => String(s.year)).filter(Boolean))
+  )
+    .sort()
+    .reverse();
+
+  const brandOptions = Array.from(
+    new Set(sets.map((s) => s.brand).filter(Boolean))
+  ).sort();
 
   return (
     <div className="cards-page">
-      {/* Bottom-right toast */}
       {toast && <div className="cards-toast">{toast}</div>}
 
       {/* Header + search bar */}
@@ -277,18 +267,86 @@ export default function CardsPage() {
           <button className="cards-search-button" type="submit">
             Search
           </button>
-          {/* Filter button beside search */}
-          <button
-            type="button"
-            className="cards-search-button cards-filter-button"
-            onClick={() => setShowFilters(true)}
-          >
-            Filters
-          </button>
         </form>
       </div>
 
-      {/* Status messages */}
+      {/* Filters panel directly under search */}
+      <div className="mb-4 rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3">
+        <div className="flex flex-wrap gap-4 items-end">
+          {/* Sport dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs uppercase tracking-wide text-slate-300">
+              Sport
+            </label>
+            <select
+              className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+              value={filters.sport}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, sport: e.target.value }))
+              }
+            >
+              <option value="">All sports</option>
+              {sportOptions.map((sport) => (
+                <option key={sport} value={sport}>
+                  {sport}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Year dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs uppercase tracking-wide text-slate-300">
+              Year
+            </label>
+            <select
+              className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+              value={filters.year}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, year: e.target.value }))
+              }
+            >
+              <option value="">All years</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Brand dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs uppercase tracking-wide text-slate-300">
+              Brand
+            </label>
+            <select
+              className="cards-input rounded-md border border-slate-600 bg-slate-950 px-3 py-1.5 text-sm"
+              value={filters.brand}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, brand: e.target.value }))
+              }
+            >
+              <option value="">All brands</option>
+              {brandOptions.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            className="ml-auto rounded-md border border-slate-600 bg-slate-800 px-3 py-1.5 text-sm font-medium hover:bg-slate-700"
+            onClick={handleClearFilters}
+          >
+            Clear filters
+          </button>
+        </div>
+      </div>
+
+      {/* Status */}
       {loading && <p className="cards-status">Loading cards…</p>}
       {!loading && error && (
         <p className="cards-status cards-status-error">Error: {error}</p>
@@ -297,7 +355,7 @@ export default function CardsPage() {
         <p className="cards-status">No cards found.</p>
       )}
 
-      {/* Cards grid */}
+      {/* Cards grid + pagination */}
       {!loading && !error && cards.length > 0 && (
         <>
           <div className="cards-grid">
@@ -315,7 +373,6 @@ export default function CardsPage() {
                   className="card-tile card-tile--clickable"
                   onClick={() => handleCardClick(card)}
                 >
-                  {/* IMAGE AREA */}
                   <div
                     className={
                       hasImage
@@ -336,7 +393,6 @@ export default function CardsPage() {
                     )}
                   </div>
 
-                  {/* TEXT AREA */}
                   <div className="card-content">
                     <p className="card-player">{card.player_name}</p>
 
@@ -354,7 +410,6 @@ export default function CardsPage() {
             })}
           </div>
 
-          {/* Pagination */}
           <div className="cards-pagination">
             <button
               onClick={goToPrev}
@@ -365,8 +420,7 @@ export default function CardsPage() {
             </button>
 
             <span className="cards-page-info">
-              Page <strong>{page}</strong> of{" "}
-              <strong>{pages || 1}</strong>
+              Page <strong>{page}</strong> of <strong>{pages || 1}</strong>
             </span>
 
             <button
@@ -380,128 +434,7 @@ export default function CardsPage() {
         </>
       )}
 
-      {/* Filters popup (same overlay theme as card overlay) */}
-      {showFilters && (
-        <div
-          className="card-overlay"
-          onClick={() => setShowFilters(false)}
-        >
-          <div
-            className="card-overlay-inner"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "420px" }}
-          >
-            <button
-              className="card-overlay-close"
-              onClick={() => setShowFilters(false)}
-              aria-label="Close filters"
-            >
-              ×
-            </button>
-
-            <h2 className="cards-title" style={{ marginBottom: "0.75rem" }}>
-              Filters
-            </h2>
-
-            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
-              <label
-                className="cards-subtitle"
-                style={{ display: "block", marginBottom: "0.25rem" }}
-              >
-                Sport
-              </label>
-              <input
-                className="cards-search-input"
-                placeholder="e.g. Hockey"
-                value={filters.sport}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, sport: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
-              <label
-                className="cards-subtitle"
-                style={{ display: "block", marginBottom: "0.25rem" }}
-              >
-                Year
-              </label>
-              <input
-                className="cards-search-input"
-                placeholder="e.g. 2022"
-                value={filters.year}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, year: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
-              <label
-                className="cards-subtitle"
-                style={{ display: "block", marginBottom: "0.25rem" }}
-              >
-                Brand
-              </label>
-              <input
-                className="cards-search-input"
-                placeholder="e.g. Upper Deck"
-                value={filters.brand}
-                onChange={(e) =>
-                  setFilters((prev) => ({ ...prev, brand: e.target.value }))
-                }
-              />
-            </div>
-
-            <div className="cards-filters-group" style={{ marginBottom: "0.75rem" }}>
-              <label
-                className="cards-subtitle"
-                style={{ display: "block", marginBottom: "0.25rem" }}
-              >
-                Set name
-              </label>
-              <input
-                className="cards-search-input"
-                placeholder="e.g. Series 1"
-                value={filters.set_name}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    set_name: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div
-              className="cards-pagination"
-              style={{
-                marginTop: "1rem",
-                justifyContent: "flex-end",
-                gap: "0.5rem",
-              }}
-            >
-              <button
-                type="button"
-                className="cards-page-button"
-                onClick={handleClearFilters}
-              >
-                Clear
-              </button>
-              <button
-                type="button"
-                className="cards-page-button"
-                onClick={handleApplyFilters}
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Enlarged card overlay */}
+      {/* Overlay */}
       {selectedCard && (
         <div className="card-overlay" onClick={closeSelected}>
           <div
@@ -524,7 +457,6 @@ export default function CardsPage() {
               ×
             </button>
 
-            {/* LEFT COLUMN: title + card + buttons */}
             <div
               style={{
                 flex: "0 0 280px",
@@ -581,7 +513,6 @@ export default function CardsPage() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: eBay listings */}
             {ebayQuery && (
               <div
                 className="card-overlay-ebay"

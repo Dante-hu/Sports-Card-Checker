@@ -43,8 +43,12 @@ export async function fetchWanted(
   return api.get(path);
 }
 
-export async function addWantedCard(cardId: number, notes: string | null = null) {
-  return api.post("/api/wanted/", {
+export async function addWantedCard(
+  cardId: number,
+  notes: string | null = null
+) {
+  // 🔧 removed trailing slash to match backend route "" → /api/wanted
+  return api.post("/api/wanted", {
     card_id: cardId,
     notes,
   });
@@ -53,4 +57,3 @@ export async function addWantedCard(cardId: number, notes: string | null = null)
 export async function deleteWantedItem(wantedId: number) {
   return api.delete(`/api/wanted/${wantedId}`);
 }
-
