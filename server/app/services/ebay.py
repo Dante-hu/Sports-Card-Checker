@@ -8,9 +8,7 @@ def get_ebay_access_token():
     client_secret = os.getenv("EBAY_CLIENT_SECRET")
     refresh_token = os.getenv("EBAY_REFRESH_TOKEN")
 
-    basic_auth = base64.b64encode(
-        f"{client_id}:{client_secret}".encode()
-    ).decode()
+    basic_auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
 
     url = "https://api.ebay.com/identity/v1/oauth2/token"
 
@@ -22,7 +20,7 @@ def get_ebay_access_token():
     data = {
         "grant_type": "refresh_token",
         "refresh_token": refresh_token,
-        "scope": "https://api.ebay.com/oauth/api_scope"
+        "scope": "https://api.ebay.com/oauth/api_scope",
     }
 
     response = requests.post(url, headers=headers, data=data)

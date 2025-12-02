@@ -21,7 +21,9 @@ def create_app():
 
     # DATABASE CONFIG
     # Local Postgres default
-    DEFAULT_LOCAL_DB = "postgresql://postgres:postgres123@localhost:5433/sports_card_checker"
+    DEFAULT_LOCAL_DB = (
+        "postgresql://postgres:postgres123@localhost:5433/sports_card_checker"
+    )
     db_url = os.environ.get("DATABASE_URL", DEFAULT_LOCAL_DB)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url

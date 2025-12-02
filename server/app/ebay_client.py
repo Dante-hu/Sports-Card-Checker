@@ -29,9 +29,7 @@ def get_ebay_token() -> str | None:
         return None
 
     # Prepare Basic Auth header
-    basic_auth = base64.b64encode(
-        f"{client_id}:{client_secret}".encode()
-    ).decode()
+    basic_auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
 
     url = "https://api.ebay.com/identity/v1/oauth2/token"
 
@@ -43,7 +41,7 @@ def get_ebay_token() -> str | None:
     data = {
         "grant_type": "refresh_token",
         "refresh_token": refresh_token,
-        "scope": "https://api.ebay.com/oauth/api_scope"
+        "scope": "https://api.ebay.com/oauth/api_scope",
     }
 
     resp = requests.post(url, headers=headers, data=data)

@@ -128,10 +128,9 @@ def fetch_image_for_card(card: Card) -> str | None:
         if not looks_like_single_player_card(item, card):
             continue
 
-        image_url = (
-            item.get("image", {}).get("imageUrl")
-            or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
-        )
+        image_url = item.get("image", {}).get("imageUrl") or (
+            item.get("thumbnailImages") or [{}]
+        )[0].get("imageUrl")
         if image_url:
             chosen_url = image_url
             break
@@ -139,10 +138,9 @@ def fetch_image_for_card(card: Card) -> str | None:
     # If nothing passed the filter, fall back to the first image we can find
     if not chosen_url:
         for item in items:
-            image_url = (
-                item.get("image", {}).get("imageUrl")
-                or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
-            )
+            image_url = item.get("image", {}).get("imageUrl") or (
+                item.get("thumbnailImages") or [{}]
+            )[0].get("imageUrl")
             if image_url:
                 chosen_url = image_url
                 break
@@ -164,9 +162,7 @@ def update_all_card_images(only_missing: bool = True, sleep_seconds: float = 0.2
     query = Card.query
 
     if only_missing:
-        query = query.filter(
-            or_(Card.image_url.is_(None), Card.image_url == "")
-        )
+        query = query.filter(or_(Card.image_url.is_(None), Card.image_url == ""))
 
     cards = query.all()
     total = len(cards)

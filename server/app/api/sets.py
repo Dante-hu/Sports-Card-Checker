@@ -9,14 +9,12 @@ sets_bp = Blueprint("sets", __name__, url_prefix="/api/sets")
 def serialize_set_with_total(s: Set) -> dict:
     """Base to_dict plus total number of cards in this set in the cards table."""
     data = s.to_dict()
-    total_cards = (
-        Card.query.filter_by(
-            sport=s.sport,
-            year=s.year,
-            brand=s.brand,
-            set_name=s.set_name,
-        ).count()
-    )
+    total_cards = Card.query.filter_by(
+        sport=s.sport,
+        year=s.year,
+        brand=s.brand,
+        set_name=s.set_name,
+    ).count()
     data["total_cards"] = total_cards
     return data
 
@@ -27,14 +25,11 @@ def list_sets():
     Return ALL sets as a simple list (no server-side pagination).
     Frontend can filter client-side.
     """
-    sets = (
-        Set.query.order_by(
-            Set.year.desc(),
-            Set.brand,
-            Set.set_name,
-        )
-        .all()
-    )
+    sets = Set.query.order_by(
+        Set.year.desc(),
+        Set.brand,
+        Set.set_name,
+    ).all()
 
     return jsonify([serialize_set_with_total(s) for s in sets])
 
