@@ -21,9 +21,7 @@ def create_app():
 
     # DATABASE CONFIG
     # Local Postgres default
-    DEFAULT_LOCAL_DB = (
-        "postgresql://postgres:postgres123@localhost:5433/sports_card_checker"
-    )
+    DEFAULT_LOCAL_DB = "postgresql://postgres:postgres123@localhost:5432/sports_card_checker"
     db_url = os.environ.get("DATABASE_URL", DEFAULT_LOCAL_DB)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
@@ -56,5 +54,15 @@ def create_app():
     # Ensure tables exist
     with app.app_context():
         db.create_all()
+    
+    import subprocess
+    import time
+    subprocess.run(
+        ["python", "-m", "scripts.import_cards_from_output"],
+        cwd="../../..",
+        check=True
+    )
+    time.sleep(8)  # Give server time to index 3450 cards
+    yield
 
     return app
