@@ -22,14 +22,14 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
 
     # DATABASE CONFIG
-    DEFAULT_LOCAL_DB = "postgresql://postgres:postgres123@localhost:5433/sports_card_checker"
+    DEFAULT_LOCAL_DB = (
+        "postgresql://postgres:postgres123@localhost:5433/sports_card_checker"
+    )
     db_url = os.environ.get("DATABASE_URL", DEFAULT_LOCAL_DB)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = os.environ.get(
-        "SECRET_KEY", "dev-secret-change-me"
-    )
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
     CORS(
         app,
@@ -61,14 +61,18 @@ def create_app():
 
         for attempt in range(1, max_attempts + 1):
             try:
-                print(f"🔗 Trying to connect to DB (attempt {attempt}/{max_attempts})...")
+                print(
+                    f"🔗 Trying to connect to DB (attempt {attempt}/{max_attempts})..."
+                )
                 db.create_all()
                 print("✅ DB ready and tables created (or already exist).")
                 break
             except OperationalError as e:
                 print(f"⏳ DB not ready yet: {e}")
                 if attempt == max_attempts:
-                    print("❌ Could not connect to DB after several attempts, giving up.")
+                    print(
+                        "❌ Could not connect to DB after several attempts, giving up."
+                    )
                     raise
                 time.sleep(delay)
 

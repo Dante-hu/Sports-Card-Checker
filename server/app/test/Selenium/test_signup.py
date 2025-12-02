@@ -2,6 +2,7 @@
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 
 def test_signup_and_login_flow(driver, wait, unique_email):
@@ -100,7 +101,7 @@ def test_signup_duplicate_email(driver, wait, test_user_data):
             "email" in error_message.text.lower()
             or "already" in error_message.text.lower()
         )
-    except:
+    except TimeoutException:
         # If no error message element, maybe the form just doesn't submit
         # Check we're still on signup page
         assert "signup" in driver.current_url

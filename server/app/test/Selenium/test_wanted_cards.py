@@ -16,7 +16,9 @@ pytestmark = pytest.mark.no_auto_clean
 @pytest.fixture(scope="session", autouse=True)
 def import_all_cards_once():
     print("\nImporting all cards for Wantlist test...")
-    subprocess.run(["python", "-m", "scripts.import_cards_from_output"], cwd="../../..", check=True)
+    subprocess.run(
+        ["python", "-m", "scripts.import_cards_from_output"], cwd="../../..", check=True
+    )
     time.sleep(8)
     yield
 
@@ -27,7 +29,10 @@ def import_all_cards_once():
 def find_and_click_card(driver, wait, player_name: str):
     card = wait.until(
         EC.element_to_be_clickable(
-            (By.XPATH, f"//p[contains(text(),'{player_name}')]//ancestor::div[contains(@class,'card-tile')]")
+            (
+                By.XPATH,
+                f"//p[contains(text(),'{player_name}')]//ancestor::div[contains(@class,'card-tile')]",
+            )
         )
     )
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", card)
@@ -38,25 +43,49 @@ def find_and_click_card(driver, wait, player_name: str):
 def add_to_wantlist(driver, wait, player_name: str):
     find_and_click_card(driver, wait, player_name)
     add_btn = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Add to Wantlist')]"))
+        EC.element_to_be_clickable(
+            (By.XPATH, "//button[contains(text(), 'Add to Wantlist')]")
+        )
     )
     add_btn.click()
     wait.until(
-        EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'cards-toast') and contains(text(),'Added to Wantlist')]"))
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//div[contains(@class,'cards-toast') and contains(text(),'Added to Wantlist')]",
+            )
+        )
     )
-    driver.execute_script("const ov = document.querySelector('.card-overlay'); if (ov) ov.click();")
+    driver.execute_script(
+        "const ov = document.querySelector('.card-overlay'); if (ov) ov.click();"
+    )
     time.sleep(0.5)
 
 
 def remove_from_wantlist(driver, wait):
     remove_btn = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Remove from Wantlist')]"))
+        EC.element_to_be_clickable(
+            (By.XPATH, "//button[contains(text(), 'Remove from Wantlist')]")
+        )
     )
     remove_btn.click()
-    wait.until(EC.presence_of_element_located((By.XPATH, "//h3[contains(text(),'Remove from Wantlist')]")))
+    wait.until(
+        EC.presence_of_element_located(
+            (By.XPATH, "//h3[contains(text(),'Remove from Wantlist')]")
+        )
+    )
     driver.find_element(By.XPATH, "//button[contains(text(),'Confirm')]").click()
-    wait.until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'cards-toast') and contains(text(),'Removed from Wantlist')]")))
-    driver.execute_script("const ov = document.querySelector('.card-overlay'); if (ov) ov.click();")
+    wait.until(
+        EC.presence_of_element_located(
+            (
+                By.XPATH,
+                "//div[contains(@class,'cards-toast') and contains(text(),'Removed from Wantlist')]",
+            )
+        )
+    )
+    driver.execute_script(
+        "const ov = document.querySelector('.card-overlay'); if (ov) ov.click();"
+    )
     time.sleep(0.5)
 
 
@@ -71,9 +100,15 @@ def test_wantlist_full_flow(driver, wait, test_user_data, import_all_cards_once)
     driver.get("http://localhost:5173/signup")
     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
     driver.find_element(By.CSS_SELECTOR, "input[type='email']").send_keys(email)
-    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(test_user_data["password"])
-    driver.find_element(By.CSS_SELECTOR, "input[placeholder*='favourite team']").send_keys("Maple Leafs")
-    driver.find_element(By.CSS_SELECTOR, "input[placeholder*='Answer']").send_keys("Toronto")
+    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(
+        test_user_data["password"]
+    )
+    driver.find_element(
+        By.CSS_SELECTOR, "input[placeholder*='favourite team']"
+    ).send_keys("Maple Leafs")
+    driver.find_element(By.CSS_SELECTOR, "input[placeholder*='Answer']").send_keys(
+        "Toronto"
+    )
     driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
     wait.until(EC.url_contains("/cards"))
     print("Signed up & logged in")
@@ -103,7 +138,9 @@ def test_wantlist_full_flow(driver, wait, test_user_data, import_all_cards_once)
     wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".card-tile")))
 
     wemby = wait.until(
-        EC.presence_of_element_located((By.XPATH, "//p[contains(text(),'Victor Wembanyama')]"))
+        EC.presence_of_element_located(
+            (By.XPATH, "//p[contains(text(),'Victor Wembanyama')]")
+        )
     )
     mcdavid = driver.find_element(By.XPATH, "//p[contains(text(),'Connor McDavid')]")
 
@@ -119,7 +156,9 @@ def test_wantlist_full_flow(driver, wait, test_user_data, import_all_cards_once)
     # 6. Verify only McDavid remains
     driver.get("http://localhost:5173/wantlist")
     remaining = driver.find_elements(By.XPATH, "//p[contains(text(),'Connor McDavid')]")
-    removed = driver.find_elements(By.XPATH, "//p[contains(text(),'Victor Wembanyama')]")
+    removed = driver.find_elements(
+        By.XPATH, "//p[contains(text(),'Victor Wembanyama')]"
+    )
 
     assert len(remaining) > 0
     assert len(removed) == 0
@@ -131,7 +170,9 @@ def test_wantlist_full_flow(driver, wait, test_user_data, import_all_cards_once)
 
     driver.get("http://localhost:5173/wantlist")
     empty_msg = wait.until(
-        EC.presence_of_element_located((By.XPATH, "//p[contains(text(),'Your wantlist is empty')]"))
+        EC.presence_of_element_located(
+            (By.XPATH, "//p[contains(text(),'Your wantlist is empty')]")
+        )
     )
     assert empty_msg.is_displayed()
     print("Wantlist is now empty!")

@@ -17,11 +17,12 @@ DATABASE_URL = os.getenv(
 )
 
 
-
-# register marker 
+# register marker
 def pytest_configure(config):
     """Register custom markers to avoid pytest warnings"""
-    config.addinivalue_line("markers", "no_auto_clean: skip auto DB cleanup (for card E2E tests)")
+    config.addinivalue_line(
+        "markers", "no_auto_clean: skip auto DB cleanup (for card E2E tests)"
+    )
 
 
 @pytest.fixture(scope="session")
@@ -42,13 +43,17 @@ def clean_database(db_connection, request):
 
     with db_connection.cursor() as cursor:
         cursor.execute("SET session_replication_role = 'replica';")
-        cursor.execute("""
-            SELECT tablename FROM pg_tables 
-            WHERE schemaname = 'public' 
+        cursor.execute(
+            """
+            SELECT tablename FROM pg_tables
+            WHERE schemaname = 'public'
             AND tablename NOT IN ('alembic_version')
-        """)
+        """
+        )
         for (table,) in cursor.fetchall():
-            cursor.execute(sql.SQL("TRUNCATE TABLE {} CASCADE").format(sql.Identifier(table)))
+            cursor.execute(
+                sql.SQL("TRUNCATE TABLE {} CASCADE").format(sql.Identifier(table))
+            )
         cursor.execute("SET session_replication_role = 'origin';")
         db_connection.commit()
 

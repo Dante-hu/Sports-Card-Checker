@@ -13,10 +13,10 @@ def test_navigation_visibility_based_on_auth(driver, wait, test_user_data):
 
     # Check which nav links are visible
     nav_links = {
-        "Cards": True,      # Always visible
-        "Owned": False,     # Hidden when not logged in
-        "Sets": True,       # Always visible (public)
-        "Wantlist": False   # Hidden when not logged in
+        "Cards": True,  # Always visible
+        "Owned": False,  # Hidden when not logged in
+        "Sets": True,  # Always visible (public)
+        "Wantlist": False,  # Hidden when not logged in
     }
 
     for link_text, should_be_visible in nav_links.items():
@@ -27,9 +27,9 @@ def test_navigation_visibility_based_on_auth(driver, wait, test_user_data):
             is_visible = link.is_displayed()
 
             if should_be_visible:
-                assert is_visible, (
-                    f"Link '{link_text}' should be visible when not logged in"
-                )
+                assert (
+                    is_visible
+                ), f"Link '{link_text}' should be visible when not logged in"
                 print(f"✓ Link '{link_text}' visible when not logged in")
             else:
                 # Check if it's hidden or not present
@@ -51,23 +51,15 @@ def test_navigation_visibility_based_on_auth(driver, wait, test_user_data):
 
     # Create user via signup
     driver.get("http://localhost:5173/signup")
-    wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
-    )
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
 
+    driver.find_element(By.CSS_SELECTOR, "input[type='email']").send_keys(email)
+    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(password)
     driver.find_element(
-        By.CSS_SELECTOR, "input[type='email']"
-    ).send_keys(email)
-    driver.find_element(
-        By.CSS_SELECTOR, "input[type='password']"
-    ).send_keys(password)
-    driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='e.g. What is your favourite team?']"
+        By.CSS_SELECTOR, "input[placeholder='e.g. What is your favourite team?']"
     ).send_keys(test_user_data["security_question"])
     driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='Answer to your question']"
+        By.CSS_SELECTOR, "input[placeholder='Answer to your question']"
     ).send_keys(test_user_data["security_answer"])
     driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
@@ -75,10 +67,10 @@ def test_navigation_visibility_based_on_auth(driver, wait, test_user_data):
 
     # Now check nav links when logged in
     nav_links_logged_in = {
-        "Cards": True,      # Always visible
-        "Owned": True,      # Visible when logged in
-        "Sets": True,       # Always visible
-        "Wantlist": True    # Visible when logged in
+        "Cards": True,  # Always visible
+        "Owned": True,  # Visible when logged in
+        "Sets": True,  # Always visible
+        "Wantlist": True,  # Visible when logged in
     }
 
     for link_text, should_be_visible in nav_links_logged_in.items():
@@ -89,9 +81,9 @@ def test_navigation_visibility_based_on_auth(driver, wait, test_user_data):
             is_visible = link.is_displayed()
 
             if should_be_visible:
-                assert is_visible, (
-                    f"Link '{link_text}' should be visible when logged in"
-                )
+                assert (
+                    is_visible
+                ), f"Link '{link_text}' should be visible when logged in"
                 print(f"✓ Link '{link_text}' visible when logged in")
             else:
                 if is_visible:

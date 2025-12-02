@@ -15,23 +15,15 @@ def test_logout_functionality(driver, wait, test_user_data):
 
     # Create user via signup
     driver.get("http://localhost:5173/signup")
-    wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
-    )
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
 
+    driver.find_element(By.CSS_SELECTOR, "input[type='email']").send_keys(email)
+    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(password)
     driver.find_element(
-        By.CSS_SELECTOR, "input[type='email']"
-    ).send_keys(email)
-    driver.find_element(
-        By.CSS_SELECTOR, "input[type='password']"
-    ).send_keys(password)
-    driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='e.g. What is your favourite team?']"
+        By.CSS_SELECTOR, "input[placeholder='e.g. What is your favourite team?']"
     ).send_keys(sec_q)
     driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='Answer to your question']"
+        By.CSS_SELECTOR, "input[placeholder='Answer to your question']"
     ).send_keys(sec_a)
     driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
@@ -96,7 +88,7 @@ def test_logout_functionality(driver, wait, test_user_data):
             error_elements = driver.find_elements(
                 By.XPATH,
                 "//*[contains(text(), 'authentication required') or "
-                "contains(text(), 'Authentication Required')]"
+                "contains(text(), 'Authentication Required')]",
             )
             if error_elements:
                 print(f"✓ {page} shows 'authentication required' error")
@@ -115,23 +107,15 @@ def test_logout_from_different_pages(driver, wait, test_user_data):
 
     # Create user via signup
     driver.get("http://localhost:5173/signup")
-    wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
-    )
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']")))
 
+    driver.find_element(By.CSS_SELECTOR, "input[type='email']").send_keys(email)
+    driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(password)
     driver.find_element(
-        By.CSS_SELECTOR, "input[type='email']"
-    ).send_keys(email)
-    driver.find_element(
-        By.CSS_SELECTOR, "input[type='password']"
-    ).send_keys(password)
-    driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='e.g. What is your favourite team?']"
+        By.CSS_SELECTOR, "input[placeholder='e.g. What is your favourite team?']"
     ).send_keys(test_user_data["security_question"])
     driver.find_element(
-        By.CSS_SELECTOR,
-        "input[placeholder='Answer to your question']"
+        By.CSS_SELECTOR, "input[placeholder='Answer to your question']"
     ).send_keys(test_user_data["security_answer"])
     driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
@@ -172,19 +156,13 @@ def test_logout_from_different_pages(driver, wait, test_user_data):
         if page != pages_to_test[-1][0]:
             driver.get("http://localhost:5173/login")
             wait.until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, "input[type='email']")
-                )
+                EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='email']"))
             )
 
-            driver.find_element(
-                By.CSS_SELECTOR, "input[type='email']"
-            ).send_keys(email)
-            driver.find_element(
-                By.CSS_SELECTOR, "input[type='password']"
-            ).send_keys(password)
-            driver.find_element(
-                By.CSS_SELECTOR, "button[type='submit']"
-            ).click()
+            driver.find_element(By.CSS_SELECTOR, "input[type='email']").send_keys(email)
+            driver.find_element(By.CSS_SELECTOR, "input[type='password']").send_keys(
+                password
+            )
+            driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
             wait.until(EC.url_contains("/cards"))
