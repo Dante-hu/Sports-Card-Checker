@@ -1,4 +1,3 @@
-// client/src/pages/SetsPage.tsx
 import { useEffect, useState } from "react";
 import {
   fetchOwned,
@@ -149,7 +148,7 @@ export default function SetsPage() {
     }
   }
 
-  // ---------- SET LIST FILTERING ----------
+  // set list filtering
   const uniqueSports = Array.from(new Set(sets.map((s) => s.sport))).sort();
   const uniqueYears = Array.from(
     new Set(sets.map((s) => String(s.year)))
@@ -163,7 +162,7 @@ export default function SetsPage() {
     return matchesSport && matchesYear;
   });
 
-  // ---------- CARD SEARCH (inside a set) ----------
+  // CARD SEARCH (inside a set)
   const visibleCards = setCards.filter((card) => {
     if (!cardSearch.trim()) return true;
     const q = cardSearch.toLowerCase();

@@ -47,7 +47,7 @@ def get_ebay_token() -> str | None:
     resp = requests.post(url, headers=headers, data=data)
 
     if resp.status_code != 200:
-        print("❌ Failed to refresh eBay token:", resp.text)
+        print("Failed to refresh eBay token:", resp.text)
         return None
 
     token = resp.json().get("access_token")

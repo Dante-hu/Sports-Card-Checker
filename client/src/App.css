@@ -57,7 +57,7 @@
   max-width: 260px;
 }
 
-/* Optional: little fade/slide animation */
+
 @keyframes cards-toast-in {
   from {
     opacity: 0;

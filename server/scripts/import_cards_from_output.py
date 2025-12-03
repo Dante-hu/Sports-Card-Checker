@@ -1,11 +1,9 @@
-# server/scripts/import_cards_from_output.py
-
 import os
 import csv
 from app import create_app
 from app.extensions import db
 from app.models.card import Card
-from app.models.set import Set  # make sure this import path matches your project
+from app.models.set import Set
 
 # Folder where your scraper saves CSV files (relative to server/)
 OUTPUT_FOLDER = "../scrapper/output"
@@ -15,10 +13,10 @@ def import_all_cards():
     app = create_app()
 
     with app.app_context():
-        print(f"📂 Looking for CSV files in: {OUTPUT_FOLDER}")
+        print(f"Looking for CSV files in: {OUTPUT_FOLDER}")
 
         if not os.path.isdir(OUTPUT_FOLDER):
-            print("❌ OUTPUT_FOLDER does not exist or is not a directory.")
+            print("OUTPUT_FOLDER does not exist or is not a directory.")
             return
 
         total_added = 0
@@ -37,7 +35,7 @@ def import_all_cards():
                 continue
 
             csv_path = os.path.join(OUTPUT_FOLDER, filename)
-            print(f"\n📥 Importing from: {csv_path}")
+            print(f"\n Importing from: {csv_path}")
 
             new_sets_this_file = 0
             cards_to_add = []
@@ -54,8 +52,6 @@ def import_all_cards():
                     player_name = row.get("player_name")
                     team = row.get("team")
                     image_url = row.get("image_url") or None
-                    # we still read is_rookie but don't store it yet
-                    # is_rookie_val = row.get("is_rookie")
 
                     # basic validation
                     if not card_number or not player_name or not set_name:
@@ -72,7 +68,7 @@ def import_all_cards():
                         continue
                     seen_cards.add(card_key)
 
-                    # 🔹 Ensure a Set exists for this combo
+                    # Ensure a Set exists for this combo
                     set_key = (sport, year, brand, set_name)
                     if set_key not in known_sets:
                         existing_set = Set.query.filter_by(
@@ -128,19 +124,19 @@ def import_all_cards():
                 db.session.commit()
 
             if cards_to_add:
-                print(f"✅ Added {len(cards_to_add)} cards from {filename}")
+                print(f"Added {len(cards_to_add)} cards from {filename}")
                 total_added += len(cards_to_add)
             else:
                 if new_sets_this_file:
                     print(
-                        f"ℹ️ No new cards, but created {new_sets_this_file} sets from {filename}."
+                        f" No new cards, but created {new_sets_this_file} sets from {filename}."
                     )
                 else:
                     print(
-                        f"ℹ️ No new cards or sets added from {filename} (all duplicates or invalid)."
+                        f"No new cards or sets added from {filename} (all duplicates or invalid)."
                     )
 
-        print(f"\n🎉 Done. Total new cards added from all CSVs: {total_added}")
+        print(f"\n Done. Total new cards added from all CSVs: {total_added}")
 
 
 if __name__ == "__main__":

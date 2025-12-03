@@ -50,7 +50,7 @@ def extract_metadata(soup: BeautifulSoup):
                 brand = text.replace(year, "").strip(" -")
                 break
 
-    # SET NAME: last breadcrumb, cleaned
+    # SET NAME: from last breadcrumb, stripping known words
     if crumb_texts:
         raw = crumb_texts[-1]  # e.g. "Base Hockey Cards" or "Base Cards"
         cleaned = re.sub(
@@ -141,9 +141,6 @@ def parse_scc_file(path: str):
             if card.get("is_rookie"):
                 existing["is_rookie"] = True
 
-    # -------------------------------------------------
-    # 1) Original "panel" layout (e.g., Young Guns)
-    # -------------------------------------------------
     for panel in soup.select("div.panel.panel-primary"):
         h5 = panel.find("h5")
         if not h5:
@@ -175,7 +172,7 @@ def parse_scc_file(path: str):
             team_text = team_div.get_text(" ", strip=True)
             team = team_text or None
 
-        # ROOKIE?
+        # ROOKIE? not implemented
         rc_badge = panel.find("div", class_=re.compile(r"badge.*danger"))
         is_rookie = False
         if rc_badge and "RC" in rc_badge.get_text(strip=True).upper():
@@ -195,16 +192,12 @@ def parse_scc_file(path: str):
             }
         )
 
-    # -------------------------------------------------
-    # 2) New OPC / gallery layout with images
-    #    (only front thumbnail image, e.g. front_thumb_16218044.jpg)
-    # -------------------------------------------------
     for row in soup.select("div.row.border-separator"):
         gallery = row.select_one("div.gallery-wrapper")
         if not gallery:
             continue
 
-        # Find the *front* image only (keep thumbnail!)
+        # Find the *front* image only
         front_img_url = None
         for a in gallery.select("a.popup-image"):
             href = a.get("href") or ""
@@ -212,7 +205,7 @@ def parse_scc_file(path: str):
             src = img.get("src") if img else ""
 
             if "front_" in href or "front_thumb_" in src:
-                # ✅ keep thumbnail if that's what the HTML gives
+                # keep thumbnail if that's what the HTML gives
                 front_img_url = src or href
                 break
 
@@ -248,8 +241,8 @@ def parse_scc_file(path: str):
                 "set_name": set_name,
                 "card_number": card_number,
                 "player_name": player_name,
-                "team": None,               # no team in this layout
-                "image_url": front_img_url,  # ✅ thumbnail URL from page
+                "team": None,
+                "image_url": front_img_url,
                 "is_rookie": False,
             }
         )
@@ -318,7 +311,7 @@ def main():
 
     print(f"\nTOTAL raw cards from all files (before global de-dup): {len(all_cards)}")
 
-    # 🔥 Final global de-duplication
+    # Final global de-duplication
     unique_cards = dedupe_global(all_cards)
     print(f"TOTAL unique cards after global de-dup: {len(unique_cards)}")
 

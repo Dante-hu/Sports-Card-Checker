@@ -1,5 +1,3 @@
-// client/src/utils/ebay.ts
-
 // Minimal shape we need to build an eBay search string
 export interface EbayCardLike {
   year?: number;

@@ -9,11 +9,7 @@ from app.extensions import db
 from app.models.card import Card
 from sqlalchemy import or_
 
-
-# ----------------------------
-# Helper logic (matches cards.py)
-# ----------------------------
-
+# helper logic to filter out unwanted eBay results
 BAD_TITLE_KEYWORDS = [
     "team set",
     "complete set",
