@@ -54,10 +54,10 @@ https://youtu.be/mesbA9erU6Y
 ## 6. System Architecture
 
 ### class diagrams
-![Class Diagram](docs/sports_card_UMl_class)
+![Class Diagram](docs/sports_card_UMl_class.png)
 
 ### package diagrams
-![Package Diagram](docs/sports_card_UML_package)
+![Package Diagram](docs/sports_card_UML_package.png)
 
 ## How to run locally
 1. From the root project directory cd into the server folder in one terminal
