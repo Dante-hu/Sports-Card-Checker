@@ -203,6 +203,7 @@ def update_card(card_id: int):
 # STRICT eBay auto-image logic
 # ----------------------------
 
+
 def build_ebay_query_from_card(card: Card) -> str:
     parts = []
     if card.year:
@@ -323,10 +324,9 @@ def auto_fill_card_image(card_id: int):
         if not looks_like_single_player_card(item, card):
             continue
 
-        image_url = (
-            item.get("image", {}).get("imageUrl")
-            or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
-        )
+        image_url = item.get("image", {}).get("imageUrl") or (
+            item.get("thumbnailImages") or [{}]
+        )[0].get("imageUrl")
         if image_url:
             chosen_url = image_url
             break
@@ -334,10 +334,9 @@ def auto_fill_card_image(card_id: int):
     # If nothing passed the filter, fall back to the first image we can find
     if not chosen_url:
         for item in items:
-            image_url = (
-                item.get("image", {}).get("imageUrl")
-                or (item.get("thumbnailImages") or [{}])[0].get("imageUrl")
-            )
+            image_url = item.get("image", {}).get("imageUrl") or (
+                item.get("thumbnailImages") or [{}]
+            )[0].get("imageUrl")
             if image_url:
                 chosen_url = image_url
                 break

@@ -38,7 +38,8 @@ _README will grow with the code; for now this file only gets you running._
 ```
 ## 4. Docker
 
-docker compose build
+docker compose up --build
+
 
 docker compose up
 

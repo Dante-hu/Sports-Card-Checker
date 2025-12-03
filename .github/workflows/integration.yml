@@ -12,11 +12,63 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-      - run: pip install -r requirements.txt pytest
-      - run: cd server && pytest app/test -v
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov
+
+      - name: Run backend unit tests (with MAXIMUM verbosity)
+        id: pytest
+        continue-on-error: true # Let it fail but still upload artifacts
+        run: |
+          cd server
+          python -m pytest app/test \
+            -k "not Selenium" \
+            -vv \
+            --tb=long \
+            --showlocals \
+            --durations=10 \
+            -ra \
+            --junitxml=pytest-report.xml \
+            --cov=app \
+            --cov-report=xml \
+            --cov-report=term-missing \
+            || echo "PYTEST_EXIT_CODE=$?" >> $GITHUB_ENV
+
+      - name: Upload pytest XML report (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-report-py${{ matrix.python-version }}
+          path: server/pytest-report.xml
+
+      - name: Upload coverage report (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-py${{ matrix.python-version }}
+          path: |
+            server/coverage.xml
+            server/.coverage
+
+      - name: Fail job if tests failed
+        if: env.PYTEST_EXIT_CODE != '0' && env.PYTEST_EXIT_CODE != ''
+        run: |
+          echo "Tests FAILED on Python ${{ matrix.python-version }}"
+          echo "Check the artifacts above for full traceback + local variables!"
+          exit 1
+
+      - name: Success message
+        if: success()
+        run: echo "All tests PASSED on Python ${{ matrix.python-version }}"

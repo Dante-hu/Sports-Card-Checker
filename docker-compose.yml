@@ -1,28 +1,38 @@
-services:
-  backend:
-    build: ./server
-    container_name: cardchecker-backend
-    env_file:
-      - server/.env
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    volumes:
-      - ./server:/app
+version: "3.9"
 
+services:
   db:
     image: postgres:16
-    container_name: cardchecker-db
-    restart: always
+    container_name: scc-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: sports_cards
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: sports_card_checker
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - scc-db-data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: scc-backend
+    depends_on:
+      - db
+    environment:
+      # Point to the *service name* "db", not host.docker.internal
+      DATABASE_URL: postgresql://postgres:postgres123@db:5432/sports_card_checker
+      SECRET_KEY: dev-secret-change-me
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount your scraper output so importer can see the CSVs
+      - ./scrapper/output:/scrapper/output
+    # Optional: if you don't want importer spam every time, you could add:
+    # environment:
+    #   SKIP_IMPORTER: "1"
 
 volumes:
-  pgdata:
+  scc-db-data:
