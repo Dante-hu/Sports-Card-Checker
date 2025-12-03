@@ -1,10 +1,10 @@
-# app/__init__.py
 import os
 import time
 from flask import Flask, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 from sqlalchemy.exc import OperationalError
+from datetime import timedelta
 
 from .extensions import db
 from .models import *  # registers all model classes
@@ -31,20 +31,23 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
-    # Initialize CORS - but we'll handle headers manually for credentials mode
+    # These work with Flask's built-in session
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
+    app.config["SESSION_COOKIE_NAME"] = "sports_card_session"
+    app.config["SESSION_COOKIE_SECURE"] = True  # True for HTTPS
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "None"  # Required for cross-domain
+
+    # Initialize CORS
     CORS(app, supports_credentials=True)
 
     # Handle OPTIONS requests (preflight) for all routes
     @app.before_request
     def handle_options():
         if request.method == "OPTIONS":
-            # Get the origin from the request
             origin = request.headers.get("Origin")
-
-            # Create response for OPTIONS preflight
             response = app.make_default_options_response()
 
-            # ECHO BACK THE SPECIFIC ORIGIN (not wildcard!)
             if origin:
                 response.headers["Access-Control-Allow-Origin"] = origin
 
@@ -55,27 +58,24 @@ def create_app():
                 "Content-Type, Authorization, X-Requested-With"
             )
             response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Max-Age"] = "600"  # Cache for 10 minutes
+            response.headers["Access-Control-Max-Age"] = "600"
             return response
 
     # Add CORS headers to all responses
     @app.after_request
     def add_cors_headers(response):
-        # Get the origin from the request
         origin = request.headers.get("Origin")
 
-        # ECHO BACK THE SPECIFIC ORIGIN
         if origin:
-            # Optional: Add security checks here
-            # Allow all Netlify domains and localhost
-            if any(
-                allowed in origin
-                for allowed in [".netlify.app", "localhost", "127.0.0.1"]
+            # Allow Netlify and localhost
+            if (
+                ".netlify.app" in origin
+                or "localhost" in origin
+                or "127.0.0.1" in origin
             ):
                 response.headers["Access-Control-Allow-Origin"] = origin
             else:
-                # For other origins, you could log or reject
-                print(f"  Request from unexpected origin: {origin}")
+                print(f" Request from unexpected origin: {origin}")
 
         response.headers["Access-Control-Allow-Credentials"] = "true"
         return response
@@ -104,7 +104,7 @@ def create_app():
             except OperationalError as e:
                 print(f" DB not ready yet: {e}")
                 if attempt == max_attempts:
-                    print("Could not connect to DB after several attempts, giving up.")
+                    print(" Could not connect to DB after several attempts, giving up.")
                     raise
                 time.sleep(delay)
 
@@ -118,7 +118,7 @@ def create_app():
 
             importer_cwd = os.path.join(app.root_path, "..")
 
-            print("🔄 Running card importer on startup...")
+            print(" Running card importer on startup...")
 
             env = os.environ.copy()
             env[SKIP_FLAG] = "1"

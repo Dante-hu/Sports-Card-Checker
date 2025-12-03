@@ -46,7 +46,7 @@ def test_logout_functionality(driver, wait, test_user_data):
         # Should load without redirect or error
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         assert page in driver.current_url
-        print(f"✓ Protected page {page} accessible when logged in")
+        print(f"Protected page {page} accessible when logged in")
 
         # Go back to cards page for logout test
         driver.get("http://localhost:5173/cards")
@@ -69,7 +69,7 @@ def test_logout_functionality(driver, wait, test_user_data):
         driver.get(f"http://localhost:5173{page}")
         wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         assert page in driver.current_url
-        print(f"✓ Public page {page} still accessible after logout")
+        print(f"Public page {page} still accessible after logout")
 
     # TEST: After logout, protected pages should redirect or show error
     protected_pages = ["/owned", "/wantlist"]
@@ -81,7 +81,7 @@ def test_logout_functionality(driver, wait, test_user_data):
         current_url = driver.current_url
 
         if "/login" in current_url:
-            print(f"✓ {page} redirects to login after logout")
+            print(f"{page} redirects to login after logout")
             assert "login" in current_url
         else:
             # Check for authentication error message
@@ -91,11 +91,11 @@ def test_logout_functionality(driver, wait, test_user_data):
                 "contains(text(), 'Authentication Required')]",
             )
             if error_elements:
-                print(f"✓ {page} shows 'authentication required' error")
+                print(f"{page} shows 'authentication required' error")
                 assert len(error_elements) > 0
             else:
                 # This would be unexpected
-                print(f"⚠ {page} behavior after logout needs investigation")
+                print(f"{page} behavior after logout needs investigation")
                 print(f"  URL: {current_url}")
 
 
@@ -150,7 +150,7 @@ def test_logout_from_different_pages(driver, wait, test_user_data):
         # Should redirect to login
         wait.until(EC.url_contains("/login"))
         assert "login" in driver.current_url
-        print(f"  ✓ Logout successful from {page}")
+        print(f" Logout successful from {page}")
 
         # Login again for next test (unless it's the last one)
         if page != pages_to_test[-1][0]:
