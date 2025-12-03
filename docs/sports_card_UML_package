@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.2.3">
+  <diagram name="Page-1" id="xYqDTYHkoMAlK9EZH6n0">
+    <mxGraphModel dx="1281" dy="562" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-15" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=60;" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server&amp;nbsp;&amp;nbsp;&lt;/font&gt;&lt;/span&gt;" vertex="1">
+          <mxGeometry height="270" width="200" x="410" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-21" parent="0NXvAiIZcPo9Gkyq9sK6-15" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.data&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="210" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-26" parent="0NXvAiIZcPo9Gkyq9sK6-15" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.scripts&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="240" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-16" parent="0NXvAiIZcPo9Gkyq9sK6-15" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.app&lt;/div&gt;" vertex="1">
+          <mxGeometry height="150" width="200" y="60" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-17" parent="0NXvAiIZcPo9Gkyq9sK6-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.app.api&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-18" parent="0NXvAiIZcPo9Gkyq9sK6-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.app.models&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-19" parent="0NXvAiIZcPo9Gkyq9sK6-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.app.services&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-20" parent="0NXvAiIZcPo9Gkyq9sK6-16" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; server.app.test&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-30" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=60;" value="&lt;div&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="210" width="200" x="140" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-36" parent="0NXvAiIZcPo9Gkyq9sK6-30" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client.pages&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="90" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-37" parent="0NXvAiIZcPo9Gkyq9sK6-30" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client.components&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="120" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-38" parent="0NXvAiIZcPo9Gkyq9sK6-30" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client.utils&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="150" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-39" parent="0NXvAiIZcPo9Gkyq9sK6-30" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client.assets&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="180" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0NXvAiIZcPo9Gkyq9sK6-31" parent="0NXvAiIZcPo9Gkyq9sK6-30" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&amp;lt;&amp;lt;package&amp;gt;&amp;gt; client.api&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="200" y="60" as="geometry">
+            <mxRectangle height="30" width="60" y="20" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
