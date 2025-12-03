@@ -31,17 +31,23 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
-    # Allow ALL origins for now to fix CORS issue
+    # Initialize CORS - but we'll handle headers manually for credentials mode
     CORS(app, supports_credentials=True)
 
     # Handle OPTIONS requests (preflight) for all routes
     @app.before_request
     def handle_options():
         if request.method == "OPTIONS":
+            # Get the origin from the request
+            origin = request.headers.get("Origin")
+
             # Create response for OPTIONS preflight
             response = app.make_default_options_response()
-            # Add CORS headers
-            response.headers["Access-Control-Allow-Origin"] = "*"
+
+            # ECHO BACK THE SPECIFIC ORIGIN (not wildcard!)
+            if origin:
+                response.headers["Access-Control-Allow-Origin"] = origin
+
             response.headers["Access-Control-Allow-Methods"] = (
                 "GET, POST, PUT, DELETE, OPTIONS, PATCH"
             )
@@ -55,7 +61,22 @@ def create_app():
     # Add CORS headers to all responses
     @app.after_request
     def add_cors_headers(response):
-        response.headers["Access-Control-Allow-Origin"] = "*"
+        # Get the origin from the request
+        origin = request.headers.get("Origin")
+
+        # ECHO BACK THE SPECIFIC ORIGIN
+        if origin:
+            # Optional: Add security checks here
+            # Allow all Netlify domains and localhost
+            if any(
+                allowed in origin
+                for allowed in [".netlify.app", "localhost", "127.0.0.1"]
+            ):
+                response.headers["Access-Control-Allow-Origin"] = origin
+            else:
+                # For other origins, you could log or reject
+                print(f"  Request from unexpected origin: {origin}")
+
         response.headers["Access-Control-Allow-Credentials"] = "true"
         return response
 
@@ -83,7 +104,7 @@ def create_app():
             except OperationalError as e:
                 print(f" DB not ready yet: {e}")
                 if attempt == max_attempts:
-                    print(" Could not connect to DB after several attempts, giving up.")
+                    print("Could not connect to DB after several attempts, giving up.")
                     raise
                 time.sleep(delay)
 
