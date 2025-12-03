@@ -51,6 +51,14 @@ localhost:5433(your port)
 ## 5. Presentation
 https://youtu.be/mesbA9erU6Y
 
+## 6. System Architecture
+
+### class diagrams
+![Class Diagram](docs/sports_card_UMl_class)
+
+### package diagrams
+![Package Diagram](docs/sports_card_UML_package)
+
 ## How to run locally
 1. From the root project directory cd into the server folder in one terminal
 ```bash
