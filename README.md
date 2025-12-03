@@ -38,11 +38,17 @@ _README will grow with the code; for now this file only gets you running._
 ```
 ## 4. Docker
 
+To run the backend and Postgres using Docker:
+
+### Build the containers
+```bash
 docker compose build
-
+```
+### Start Everything
+```bash
 docker compose up
-
-http://localhost:5000
-
-localhost:5433(your port) 
-
+```
+### Rebuild after code changes
+```bash
+docker compose up --build
+```
