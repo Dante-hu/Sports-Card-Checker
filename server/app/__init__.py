@@ -1,10 +1,10 @@
 # app/__init__.py
 import os
-import time  # ⬅ add this
-from flask import Flask
+import time
+from flask import Flask, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from sqlalchemy.exc import OperationalError  # ⬅ add this
+from sqlalchemy.exc import OperationalError
 
 from .extensions import db
 from .models import *  # registers all model classes
@@ -14,6 +14,7 @@ from .api.sets import sets_bp
 from .api.wanted_cards import wanted_cards_bp
 from .api.owned_cards import owned_cards_bp
 from .api.ebay import ebay_bp
+
 
 load_dotenv()
 
@@ -31,19 +32,73 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
+    # Get allowed origins from environment or use defaults
+    allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "").strip()
+
+    if allowed_origins_env:
+        # Split comma-separated list from environment
+        allowed_origins = [
+            origin.strip()
+            for origin in allowed_origins_env.split(",")
+            if origin.strip()
+        ]
+    else:
+        # Default origins - more permissive but still secure
+        allowed_origins = [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:3000",  # Common React dev port
+            "https://sportscard-checker.netlify.app",
+            "https://*.netlify.app",  # Allow all Netlify subdomains
+            "https://sportscard-checker-*.netlify.app",  # Netlify deploy previews
+        ]
+
+    print(f"✅ CORS Allowed Origins: {allowed_origins}")
+
     CORS(
         app,
         resources={
             r"/api/*": {
-                "origins": [
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173",
-                    "https://sportscard-checker.netlify.app"
-                ]
+                "origins": allowed_origins,
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+                "allow_headers": [
+                    "Content-Type",
+                    "Authorization",
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin",
+                    "Access-Control-Request-Method",
+                    "Access-Control-Request-Headers",
+                ],
+                "expose_headers": [
+                    "Content-Type",
+                    "Authorization",
+                    "Content-Length",
+                    "X-Request-ID",
+                ],
+                "supports_credentials": True,
+                "max_age": 600,  # Cache preflight requests for 10 minutes
             }
         },
         supports_credentials=True,
     )
+
+    # Add CORS headers to all responses
+    @app.after_request
+    def after_request(response):
+        # Allow credentials
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+
+        # If request origin is in allowed list, echo it back
+        origin = request.headers.get("Origin")
+        if origin and origin in allowed_origins:
+            response.headers.add("Access-Control-Allow-Origin", origin)
+
+        return response
+
+    # ============================================
+    # END CORS CONFIGURATION
+    # ============================================
 
     db.init_app(app)
 
@@ -71,15 +126,11 @@ def create_app():
             except OperationalError as e:
                 print(f"⏳ DB not ready yet: {e}")
                 if attempt == max_attempts:
-                    print(
-                        "❌ Could not connect to DB after several attempts, giving up."
-                    )
+                    print(" Could not connect to DB after several attempts, giving up.")
                     raise
                 time.sleep(delay)
 
-    # ----------------------------------------
-    # Run importer automatically on server start (unchanged)
-    # ----------------------------------------
+    # run importer on startup
     SKIP_FLAG = "SKIP_IMPORTER"
 
     if os.environ.get(SKIP_FLAG) != "1":
