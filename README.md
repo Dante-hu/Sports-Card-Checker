@@ -52,11 +52,11 @@ localhost:5433(your port)
 https://youtu.be/mesbA9erU6Y
 
 ## How to run locally
-1. From the root project directory cd into server folder in one terminal
+1. From the root project directory cd into the server folder in one terminal
 ```bash
-    flask run 
+    python -m flask --app app:create_app run --debug
 ```
-2. From the root project directory cd into client folder in another terminal
+2. From the root project directory cd into the client folder in another terminal
 ```bash
    npm run dev  
 ```
