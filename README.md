@@ -52,3 +52,15 @@ docker compose up
 ```bash
 docker compose up --build
 ```
+## 5. How to run Locally
+1. Navigate to the /server directory and run the following command to run and populate the backend
+```bash
+python -m flask --app app:create_app run --debug
+```
+If the database is already populated you can simply run 'flask run'
+
+2. Navigate to the client directory /client and run the following command
+```bash
+npm run dev
+```
+
