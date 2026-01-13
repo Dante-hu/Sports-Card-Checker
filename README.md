@@ -2,8 +2,7 @@
 
 ## What this repo will become
 
-A web app where users catalogue sports trading-cards (NHL / MLB / NBA / NFL) and fetch live eBay sold prices.  
-_README will grow with the code; for now this file only gets you running._
+A web app where users catalogue sports trading-cards (NHL / MLB / NBA / NFL) and fetch live eBay sold prices. **Important** As of now the live server for the backend no longer works since the free trial is over. To view project please run locally.
 
 ---
 
