@@ -19,7 +19,7 @@ pytest-cov==7.0.0
 Werkzeug
 SQLAlchemy
 flask_jwt_extended
-black==25.11.0
+black==26.1.0
 selenium
 requests
 flask_sqlalchemy
